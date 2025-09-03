@@ -1,0 +1,21 @@
+/* Global styles for Angular application */
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    height: 100%;
+}
+
+/* Override any default Angular styles if needed */
+app-root {
+    display: block;
+    height: 100vh;
+}

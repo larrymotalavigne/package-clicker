@@ -1,0 +1,185 @@
+<div id="game-container">
+    <!-- Left Panel - Package and Stats -->
+    <div id="left-panel">
+        <div id="header">
+            <h1>Package Clicker</h1>
+            <div id="stats">
+                <div id="package-counter">
+                    <span id="package-count">{{ formatNumber(gameState.packages) }}</span> packages
+                </div>
+                <div id="packages-per-second">
+                    per second: <span id="pps">{{ formatNumber(gameState.packagesPerSecond) }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div id="main-game-area">
+            <div id="package-container">
+                <div id="big-package" (click)="clickPackage()">
+                    <div class="package-icon">📦</div>
+                </div>
+                <div id="click-numbers"></div>
+            </div>
+            
+        </div>
+    </div>
+    
+    
+    <!-- Right Panel - Store -->
+    <div id="right-panel">
+        <div id="store">
+            <h2>Package Processing Upgrades</h2>
+            <div id="store-items">
+                <div class="store-item" 
+                     [class.affordable]="canAfford('cursor')" 
+                     (click)="buyBuilding('cursor')">
+                    <div class="item-icon">🚚</div>
+                    <div class="item-info">
+                        <div class="item-name">Delivery Truck</div>
+                        <div class="item-description">Automatically delivers packages</div>
+                        <div class="item-stats">
+                            <span class="item-count">{{ gameState.buildings.cursor.count }}</span> owned | 
+                            <span class="item-production">+{{ gameState.buildings.cursor.pps }} pps each</span>
+                        </div>
+                    </div>
+                    <div class="item-price">{{ formatNumber(getBuildingPrice('cursor')) }}</div>
+                </div>
+                
+                <div class="store-item" 
+                     [class.affordable]="canAfford('grandma')" 
+                     (click)="buyBuilding('grandma')">
+                    <div class="item-icon">🏭</div>
+                    <div class="item-info">
+                        <div class="item-name">Sorting Facility</div>
+                        <div class="item-description">Sorts and processes packages efficiently</div>
+                        <div class="item-stats">
+                            <span class="item-count">{{ gameState.buildings.grandma.count }}</span> owned | 
+                            <span class="item-production">+{{ gameState.buildings.grandma.pps }} pps each</span>
+                        </div>
+                    </div>
+                    <div class="item-price">{{ formatNumber(getBuildingPrice('grandma')) }}</div>
+                </div>
+                
+                <div class="store-item" 
+                     [class.affordable]="canAfford('farm')" 
+                     (click)="buyBuilding('farm')">
+                    <div class="item-icon">🏢</div>
+                    <div class="item-info">
+                        <div class="item-name">Distribution Center</div>
+                        <div class="item-description">Large-scale package distribution hub</div>
+                        <div class="item-stats">
+                            <span class="item-count">{{ gameState.buildings.farm.count }}</span> owned | 
+                            <span class="item-production">+{{ gameState.buildings.farm.pps }} pps each</span>
+                        </div>
+                    </div>
+                    <div class="item-price">{{ formatNumber(getBuildingPrice('farm')) }}</div>
+                </div>
+                
+                <div class="store-item" 
+                     [class.affordable]="canAfford('mine')" 
+                     (click)="buyBuilding('mine')">
+                    <div class="item-icon">✈️</div>
+                    <div class="item-info">
+                        <div class="item-name">Cargo Plane</div>
+                        <div class="item-description">Express air delivery service</div>
+                        <div class="item-stats">
+                            <span class="item-count">{{ gameState.buildings.mine.count }}</span> owned | 
+                            <span class="item-production">+{{ gameState.buildings.mine.pps }} pps each</span>
+                        </div>
+                    </div>
+                    <div class="item-price">{{ formatNumber(getBuildingPrice('mine')) }}</div>
+                </div>
+                
+                <div class="store-item" 
+                     [class.affordable]="canAfford('factory')" 
+                     (click)="buyBuilding('factory')">
+                    <div class="item-icon">🚢</div>
+                    <div class="item-info">
+                        <div class="item-name">Cargo Ship</div>
+                        <div class="item-description">International shipping operations</div>
+                        <div class="item-stats">
+                            <span class="item-count">{{ gameState.buildings.factory.count }}</span> owned | 
+                            <span class="item-production">+{{ gameState.buildings.factory.pps }} pps each</span>
+                        </div>
+                    </div>
+                    <div class="item-price">{{ formatNumber(getBuildingPrice('factory')) }}</div>
+                </div>
+                
+                <div class="store-item" 
+                     [class.affordable]="canAfford('bank')" 
+                     (click)="buyBuilding('bank')">
+                    <div class="item-icon">🏪</div>
+                    <div class="item-info">
+                        <div class="item-name">FedEx Store</div>
+                        <div class="item-description">Retail packaging and shipping services</div>
+                        <div class="item-stats">
+                            <span class="item-count">{{ gameState.buildings.bank.count }}</span> owned | 
+                            <span class="item-production">+{{ gameState.buildings.bank.pps }} pps each</span>
+                        </div>
+                    </div>
+                    <div class="item-price">{{ formatNumber(getBuildingPrice('bank')) }}</div>
+                </div>
+                
+                <div class="store-item" 
+                     [class.affordable]="canAfford('warehouse')" 
+                     (click)="buyBuilding('warehouse')">
+                    <div class="item-icon">🏭</div>
+                    <div class="item-info">
+                        <div class="item-name">Mega Warehouse</div>
+                        <div class="item-description">Massive automated storage and processing facility</div>
+                        <div class="item-stats">
+                            <span class="item-count">{{ gameState.buildings.warehouse.count }}</span> owned | 
+                            <span class="item-production">+{{ gameState.buildings.warehouse.pps }} pps each</span>
+                        </div>
+                    </div>
+                    <div class="item-price">{{ formatNumber(getBuildingPrice('warehouse')) }}</div>
+                </div>
+                
+                <div class="store-item" 
+                     [class.affordable]="canAfford('airport')" 
+                     (click)="buyBuilding('airport')">
+                    <div class="item-icon">🛫</div>
+                    <div class="item-info">
+                        <div class="item-name">International Airport</div>
+                        <div class="item-description">Global express delivery hub with cargo jets</div>
+                        <div class="item-stats">
+                            <span class="item-count">{{ gameState.buildings.airport.count }}</span> owned | 
+                            <span class="item-production">+{{ gameState.buildings.airport.pps }} pps each</span>
+                        </div>
+                    </div>
+                    <div class="item-price">{{ formatNumber(getBuildingPrice('airport')) }}</div>
+                </div>
+                
+                <div class="store-item" 
+                     [class.affordable]="canAfford('spaceport')" 
+                     (click)="buyBuilding('spaceport')">
+                    <div class="item-icon">🚀</div>
+                    <div class="item-info">
+                        <div class="item-name">Space Delivery Port</div>
+                        <div class="item-description">Interplanetary package delivery system</div>
+                        <div class="item-stats">
+                            <span class="item-count">{{ gameState.buildings.spaceport.count }}</span> owned | 
+                            <span class="item-production">+{{ gameState.buildings.spaceport.pps }} pps each</span>
+                        </div>
+                    </div>
+                    <div class="item-price">{{ formatNumber(getBuildingPrice('spaceport')) }}</div>
+                </div>
+                
+                <div class="store-item" 
+                     [class.affordable]="canAfford('ceo')" 
+                     (click)="buyBuilding('ceo')">
+                    <div class="item-icon">👨‍💼</div>
+                    <div class="item-info">
+                        <div class="item-name">Frederic W Smith (CEO)</div>
+                        <div class="item-description">The legendary founder and CEO of FedEx himself!</div>
+                        <div class="item-stats">
+                            <span class="item-count">{{ gameState.buildings.ceo.count }}</span> owned | 
+                            <span class="item-production">+{{ gameState.buildings.ceo.pps }} pps each</span>
+                        </div>
+                    </div>
+                    <div class="item-price">{{ formatNumber(getBuildingPrice('ceo')) }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
