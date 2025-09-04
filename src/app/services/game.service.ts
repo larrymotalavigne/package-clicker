@@ -280,7 +280,7 @@ export class GameService {
     // Merge buildings
     if (loadedState.buildings) {
       Object.keys(merged.buildings).forEach(buildingId => {
-        if (loadedState.buildings![buildingId as keyof typeof loadedState.buildings]) {
+        if (loadedState.buildings && loadedState.buildings[buildingId as keyof typeof loadedState.buildings]) {
           const loadedBuilding = loadedState.buildings[buildingId as keyof typeof loadedState.buildings];
           if (loadedBuilding && typeof loadedBuilding.count === 'number') {
             merged.buildings[buildingId as keyof typeof merged.buildings].count = loadedBuilding.count;
