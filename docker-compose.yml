@@ -4,4 +4,4 @@ services:
     container_name: packageclicker
     restart: unless-stopped
     ports:
-      - "1003:80"
+      - "1004:80"

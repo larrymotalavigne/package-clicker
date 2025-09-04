@@ -1,12 +1,14 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameService } from './services/game.service';
-import { GameState, Achievement } from './models/game.models';
+import { GameState, Achievement, BuildingConfig, Building } from './models/game.models';
+import { BUILDING_CONFIGS } from './config/buildings.config';
+import { BuildingCardComponent } from './components/building-card/building-card.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, BuildingCardComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
@@ -65,5 +67,13 @@ export class AppComponent implements OnInit, OnDestroy {
 
   canAfford(buildingType: string): boolean {
     return this.gameState.packages >= this.getBuildingPrice(buildingType);
+  }
+
+  getBuildingConfigs(): BuildingConfig[] {
+    return BUILDING_CONFIGS;
+  }
+
+  getBuildingData(buildingId: string): Building {
+    return this.gameState.buildings[buildingId as keyof typeof this.gameState.buildings];
   }
 }

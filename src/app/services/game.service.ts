@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { GameState, Achievement, Building } from '../models/game.models';
+import { BUILDING_CONFIGS, getBuildingConfig } from '../config/buildings.config';
+import { BuildingType, isBuildingType, validateBuildingType } from '../types/building-types';
 
 @Injectable({
   providedIn: 'root'
@@ -9,18 +11,7 @@ export class GameService {
     packages: 0,
     packagesPerSecond: 0,
     packagesPerClick: 1,
-    buildings: {
-      cursor: { count: 0, basePrice: 15, pps: 1 },
-      grandma: { count: 0, basePrice: 100, pps: 8 },
-      farm: { count: 0, basePrice: 1100, pps: 47 },
-      mine: { count: 0, basePrice: 12000, pps: 260 },
-      factory: { count: 0, basePrice: 130000, pps: 1400 },
-      bank: { count: 0, basePrice: 1400000, pps: 7800 },
-      warehouse: { count: 0, basePrice: 20000000, pps: 44000 },
-      airport: { count: 0, basePrice: 330000000, pps: 260000 },
-      spaceport: { count: 0, basePrice: 5100000000, pps: 1600000 },
-      ceo: { count: 0, basePrice: 75000000000, pps: 10000000 }
-    },
+    buildings: this.initializeBuildings(),
     achievements: [],
     totalPackagesClicked: 0,
     totalPackagesEarned: 0
@@ -46,6 +37,18 @@ export class GameService {
     this.updatePackagesPerSecond();
     // Initial check without caring about new achievements
     this.checkAchievements();
+  }
+
+  private initializeBuildings(): GameState['buildings'] {
+    const buildings: any = {};
+    BUILDING_CONFIGS.forEach(config => {
+      buildings[config.id] = {
+        count: 0,
+        basePrice: config.basePrice,
+        pps: config.pps
+      };
+    });
+    return buildings as GameState['buildings'];
   }
 
   getGameState(): GameState {
@@ -145,20 +148,185 @@ export class GameService {
     return Math.floor(num).toString();
   }
 
-  saveGameState(): void {
-    localStorage.setItem('packageClickerSave', JSON.stringify(this.gameState));
+  saveGameState(): boolean {
+    try {
+      // Validate game state before saving
+      if (!this.validateGameState(this.gameState)) {
+        console.error('Invalid game state, cannot save');
+        return false;
+      }
+
+      const serializedState = JSON.stringify(this.gameState);
+      
+      // Check if localStorage is available
+      if (typeof Storage === 'undefined') {
+        console.error('localStorage is not supported');
+        return false;
+      }
+
+      localStorage.setItem('packageClickerSave', serializedState);
+      
+      // Verify the save was successful
+      const verification = localStorage.getItem('packageClickerSave');
+      if (verification !== serializedState) {
+        console.error('Save verification failed');
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Failed to save game state:', error);
+      return false;
+    }
   }
 
   private loadGameState(): void {
-    const saved = localStorage.getItem('packageClickerSave');
-    if (saved) {
-      try {
-        const loadedState = JSON.parse(saved);
-        this.gameState = { ...this.gameState, ...loadedState };
-      } catch (e) {
-        console.warn('Could not load save data');
+    try {
+      // Check if localStorage is available
+      if (typeof Storage === 'undefined') {
+        console.warn('localStorage is not supported, using default game state');
+        return;
+      }
+
+      const saved = localStorage.getItem('packageClickerSave');
+      if (!saved) {
+        console.log('No saved game found, starting fresh');
+        return;
+      }
+
+      const loadedState = JSON.parse(saved);
+      
+      // Validate loaded state
+      if (!this.validateGameState(loadedState)) {
+        console.warn('Corrupted save data detected, falling back to backup or default');
+        this.handleCorruptedSave();
+        return;
+      }
+
+      // Merge loaded state with default state to handle missing properties
+      this.gameState = this.mergeGameStates(this.gameState, loadedState);
+      console.log('Game state loaded successfully');
+
+    } catch (error) {
+      console.error('Failed to load game state:', error);
+      this.handleCorruptedSave();
+    }
+  }
+
+  private validateGameState(state: any): state is GameState {
+    if (!state || typeof state !== 'object') {
+      return false;
+    }
+
+    // Check required properties
+    const requiredProperties = ['packages', 'packagesPerSecond', 'packagesPerClick', 'buildings', 'achievements', 'totalPackagesClicked', 'totalPackagesEarned'];
+    for (const prop of requiredProperties) {
+      if (!(prop in state)) {
+        console.error(`Missing required property: ${prop}`);
+        return false;
       }
     }
+
+    // Validate numeric properties
+    if (typeof state.packages !== 'number' || state.packages < 0) {
+      console.error('Invalid packages value');
+      return false;
+    }
+
+    if (typeof state.packagesPerSecond !== 'number' || state.packagesPerSecond < 0) {
+      console.error('Invalid packagesPerSecond value');
+      return false;
+    }
+
+    // Validate buildings object
+    if (!state.buildings || typeof state.buildings !== 'object') {
+      console.error('Invalid buildings object');
+      return false;
+    }
+
+    // Validate each building
+    for (const buildingId of Object.keys(state.buildings)) {
+      if (!isBuildingType(buildingId)) {
+        console.error(`Invalid building type: ${buildingId}`);
+        return false;
+      }
+
+      const building = state.buildings[buildingId];
+      if (!building || typeof building.count !== 'number' || building.count < 0) {
+        console.error(`Invalid building data for ${buildingId}`);
+        return false;
+      }
+    }
+
+    // Validate achievements array
+    if (!Array.isArray(state.achievements)) {
+      console.error('Invalid achievements array');
+      return false;
+    }
+
+    return true;
+  }
+
+  private mergeGameStates(defaultState: GameState, loadedState: Partial<GameState>): GameState {
+    const merged = { ...defaultState };
+
+    // Safely merge numeric properties
+    if (typeof loadedState.packages === 'number') merged.packages = loadedState.packages;
+    if (typeof loadedState.packagesPerSecond === 'number') merged.packagesPerSecond = loadedState.packagesPerSecond;
+    if (typeof loadedState.packagesPerClick === 'number') merged.packagesPerClick = loadedState.packagesPerClick;
+    if (typeof loadedState.totalPackagesClicked === 'number') merged.totalPackagesClicked = loadedState.totalPackagesClicked;
+    if (typeof loadedState.totalPackagesEarned === 'number') merged.totalPackagesEarned = loadedState.totalPackagesEarned;
+
+    // Merge buildings
+    if (loadedState.buildings) {
+      Object.keys(merged.buildings).forEach(buildingId => {
+        if (loadedState.buildings![buildingId as keyof typeof loadedState.buildings]) {
+          const loadedBuilding = loadedState.buildings[buildingId as keyof typeof loadedState.buildings];
+          if (loadedBuilding && typeof loadedBuilding.count === 'number') {
+            merged.buildings[buildingId as keyof typeof merged.buildings].count = loadedBuilding.count;
+          }
+        }
+      });
+    }
+
+    // Merge achievements
+    if (Array.isArray(loadedState.achievements)) {
+      merged.achievements = [...loadedState.achievements];
+    }
+
+    return merged;
+  }
+
+  private handleCorruptedSave(): void {
+    console.warn('Attempting to restore from backup save...');
+    
+    try {
+      const backupSave = localStorage.getItem('packageClickerSave_backup');
+      if (backupSave) {
+        const backupState = JSON.parse(backupSave);
+        if (this.validateGameState(backupState)) {
+          this.gameState = this.mergeGameStates(this.gameState, backupState);
+          console.log('Restored from backup save');
+          return;
+        }
+      }
+    } catch (error) {
+      console.error('Backup save also corrupted:', error);
+    }
+
+    // Create a backup of the corrupted save for debugging
+    try {
+      const corruptedSave = localStorage.getItem('packageClickerSave');
+      if (corruptedSave) {
+        localStorage.setItem('packageClickerSave_corrupted_' + Date.now(), corruptedSave);
+      }
+    } catch (error) {
+      console.error('Failed to backup corrupted save:', error);
+    }
+
+    // Remove corrupted save and use default state
+    localStorage.removeItem('packageClickerSave');
+    console.log('Using default game state due to corrupted save');
   }
 
   resetGame(): void {
@@ -167,18 +335,7 @@ export class GameService {
       packages: 0,
       packagesPerSecond: 0,
       packagesPerClick: 1,
-      buildings: {
-        cursor: { count: 0, basePrice: 15, pps: 1 },
-        grandma: { count: 0, basePrice: 100, pps: 8 },
-        farm: { count: 0, basePrice: 1100, pps: 47 },
-        mine: { count: 0, basePrice: 12000, pps: 260 },
-        factory: { count: 0, basePrice: 130000, pps: 1400 },
-        bank: { count: 0, basePrice: 1400000, pps: 7800 },
-        warehouse: { count: 0, basePrice: 20000000, pps: 44000 },
-        airport: { count: 0, basePrice: 330000000, pps: 260000 },
-        spaceport: { count: 0, basePrice: 5100000000, pps: 1600000 },
-        ceo: { count: 0, basePrice: 75000000000, pps: 10000000 }
-      },
+      buildings: this.initializeBuildings(),
       achievements: [],
       totalPackagesClicked: 0,
       totalPackagesEarned: 0

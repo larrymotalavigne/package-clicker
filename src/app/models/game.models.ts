@@ -4,6 +4,15 @@ export interface Building {
   pps: number;
 }
 
+export interface BuildingConfig {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  basePrice: number;
+  pps: number;
+}
+
 export interface GameState {
   packages: number;
   packagesPerSecond: number;
