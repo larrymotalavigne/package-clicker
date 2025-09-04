@@ -1,0 +1,80 @@
+repos:
+  # ESLint for TypeScript and JavaScript linting
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v8.57.0
+    hooks:
+      - id: eslint
+        files: \.(js|ts)$
+        types: [file]
+        args: [--fix]
+        additional_dependencies:
+          - '@angular-eslint/eslint-plugin@^18.0.0'
+          - '@angular-eslint/template-parser@^18.0.0'
+          - '@typescript-eslint/eslint-plugin@^7.0.0'
+          - '@typescript-eslint/parser@^7.0.0'
+          - 'eslint@^8.57.0'
+
+  # Prettier for code formatting
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v4.0.0-alpha.8
+    hooks:
+      - id: prettier
+        files: \.(js|ts|json|md|html|css|scss)$
+        args: [--write]
+
+  # Standard pre-commit hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: \.md$
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: check-added-large-files
+        args: ['--maxkb=1024']
+      - id: mixed-line-ending
+        args: ['--fix=lf']
+
+  # TypeScript type checking
+  - repo: local
+    hooks:
+      - id: tsc-check
+        name: TypeScript Compiler Check
+        entry: npx tsc --noEmit
+        language: system
+        files: \.(ts)$
+        pass_filenames: false
+
+  # Angular-specific checks
+  - repo: local
+    hooks:
+      - id: angular-lint
+        name: Angular Linting
+        entry: npx ng lint
+        language: system
+        files: \.(ts|html)$
+        pass_filenames: false
+
+  # Test execution (optional, can be slow)
+  - repo: local
+    hooks:
+      - id: unit-tests
+        name: Unit Tests
+        entry: npm run test:unit
+        language: system
+        pass_filenames: false
+        stages: [push]
+        verbose: true
+
+  # Security audit
+  - repo: local
+    hooks:
+      - id: npm-audit
+        name: NPM Security Audit
+        entry: npm audit --audit-level=moderate
+        language: system
+        pass_filenames: false
+        stages: [push]

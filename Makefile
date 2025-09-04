@@ -56,6 +56,7 @@ start: ## Start development server
 	npm run start
 
 dev: start ## Alias for start command
+run: start ## Alias for start command
 
 ##@ Testing
 
