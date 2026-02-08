@@ -1,9 +1,9 @@
-import { 
-  Component, 
-  Input, 
-  Output, 
-  EventEmitter, 
-  ChangeDetectionStrategy, 
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  ChangeDetectionStrategy,
   OnInit,
   OnDestroy,
   ElementRef,
@@ -11,7 +11,6 @@ import {
   signal,
   computed
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { BuildingConfig, Building } from '../../models/game.models';
 import { BuildingCardComponent } from '../building-card/building-card.component';
 
@@ -26,36 +25,37 @@ export interface VirtualItem {
 @Component({
   selector: 'app-virtual-buildings-list',
   standalone: true,
-  imports: [CommonModule, BuildingCardComponent],
+  imports: [BuildingCardComponent],
   template: `
-    <div 
-      #scrollContainer 
+    <div
+      #scrollContainer
       class="virtual-scroll-container"
       [style.height.px]="containerHeight"
       (scroll)="onScroll()"
       [style.overflow-y]="'auto'"
     >
-      <div 
+      <div
         class="virtual-scroll-content"
         [style.height.px]="totalHeight()"
         [style.position]="'relative'"
       >
-        <div
-          *ngFor="let item of visibleItems(); trackBy: trackByIndex"
-          class="virtual-item"
-          [style.position]="'absolute'"
-          [style.top.px]="item.top"
-          [style.width]="'100%'"
-          [style.height.px]="item.height"
-        >
-          <app-building-card
-            [building]="item.data"
-            [buildingData]="item.buildingData"
-            [affordable]="getCanAfford(item.data.id)"
-            [formattedPrice]="formatPrice(item.data.id)"
-            (buildingClick)="onBuyBuilding($event)"
-          ></app-building-card>
-        </div>
+        @for (item of visibleItems(); track item.index) {
+          <div
+            class="virtual-item"
+            [style.position]="'absolute'"
+            [style.top.px]="item.top"
+            [style.width]="'100%'"
+            [style.height.px]="item.height"
+          >
+            <app-building-card
+              [building]="item.data"
+              [buildingData]="item.buildingData"
+              [affordable]="getCanAfford(item.data.id)"
+              [formattedPrice]="formatPrice(item.data.id)"
+              (buildingClick)="onBuyBuilding($event)"
+            ></app-building-card>
+          </div>
+        }
       </div>
     </div>
   `,
@@ -65,16 +65,16 @@ export interface VirtualItem {
       border-radius: 8px;
       background: #f9f9f9;
     }
-    
+
     .virtual-scroll-content {
       min-height: 100%;
     }
-    
+
     .virtual-item {
       padding: 4px;
       box-sizing: border-box;
     }
-    
+
     @media (max-width: 768px) {
       .virtual-item {
         padding: 2px;
@@ -89,22 +89,22 @@ export class VirtualBuildingsListComponent implements OnInit, OnDestroy {
   @Input() containerHeight: number = 400;
   @Input() itemHeight: number = 120;
   @Input() overscan: number = 3; // Number of extra items to render for smooth scrolling
-  
+
   @Output() buyBuilding = new EventEmitter<string>();
-  
+
   @ViewChild('scrollContainer', { static: true }) scrollContainer!: ElementRef<HTMLDivElement>;
-  
+
   private scrollTop = signal(0);
   private resizeObserver?: ResizeObserver;
-  
+
   // Computed signals for virtual scrolling
   readonly totalHeight = computed(() => this.buildingConfigs.length * this.itemHeight);
-  readonly visibleStartIndex = computed(() => 
+  readonly visibleStartIndex = computed(() =>
     Math.max(0, Math.floor(this.scrollTop() / this.itemHeight) - this.overscan)
   );
-  readonly visibleEndIndex = computed(() => 
+  readonly visibleEndIndex = computed(() =>
     Math.min(
-      this.buildingConfigs.length - 1, 
+      this.buildingConfigs.length - 1,
       Math.ceil((this.scrollTop() + this.containerHeight) / this.itemHeight) + this.overscan
     )
   );
@@ -112,12 +112,12 @@ export class VirtualBuildingsListComponent implements OnInit, OnDestroy {
     const start = this.visibleStartIndex();
     const end = this.visibleEndIndex();
     const items: VirtualItem[] = [];
-    
+
     for (let i = start; i <= end; i++) {
       if (i >= 0 && i < this.buildingConfigs.length) {
         const config = this.buildingConfigs[i];
         const building = this.buildingData[config.id];
-        
+
         items.push({
           index: i,
           data: config,
@@ -127,7 +127,7 @@ export class VirtualBuildingsListComponent implements OnInit, OnDestroy {
         });
       }
     }
-    
+
     return items;
   });
 
@@ -148,7 +148,7 @@ export class VirtualBuildingsListComponent implements OnInit, OnDestroy {
           this.containerHeight = entry.contentRect.height;
         }
       });
-      
+
       this.resizeObserver.observe(this.scrollContainer.nativeElement);
     }
   }

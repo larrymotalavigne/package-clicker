@@ -1,44 +1,139 @@
+<!-- News Ticker -->
+<app-news-ticker [context]="newsContext()"></app-news-ticker>
+
 <div id="game-container">
-    <!-- Left Panel - Package and Stats -->
-    <div id="left-panel">
-        <div id="header">
-            <h1>Package Clicker</h1>
-            <div id="stats">
-                <div id="package-counter">
-                    <span id="package-count">{{ formatNumber(gameState.packages) }}</span> packages
-                </div>
-                <div id="packages-per-second">
-                    per second: <span id="pps">{{ formatNumber(gameState.packagesPerSecond) }}</span>
-                </div>
-            </div>
+  <!-- Left Panel -->
+  <div id="left-panel">
+    <div id="header">
+      <h1>Package Clicker</h1>
+      <div id="stats">
+        <div id="package-counter">
+          <span id="package-count">{{ formatNumber(gameState().packages) }}</span>
+          <span class="label">packages</span>
         </div>
-        
-        <div id="main-game-area">
-            <div id="package-container">
-                <div id="big-package" (click)="clickPackage()">
-                    <div class="package-icon">📦</div>
-                </div>
-                <div id="click-numbers"></div>
-            </div>
-            
+        <div id="pps-display">
+          per second: <span id="pps">{{ formatNumber(effectivePps()) }}</span>
         </div>
+      </div>
     </div>
-    
-    
-    <!-- Right Panel - Store -->
-    <div id="right-panel">
-        <div id="store">
-            <h2>Package Processing Upgrades</h2>
-            <div id="store-items">
-                <app-building-card
-                    *ngFor="let building of getBuildingConfigs()"
-                    [building]="building"
-                    [buildingData]="getBuildingData(building.id)"
-                    [affordable]="canAfford(building.id)"
-                    [formattedPrice]="formatNumber(getBuildingPrice(building.id))"
-                    (buildingClick)="buyBuilding($event)">
-                </app-building-card>
-            </div>
+
+    <app-buff-display
+      [buffs]="gameState().activeBuffs"
+    ></app-buff-display>
+
+    <div id="main-game-area">
+      <div id="package-container" (click)="clickPackage($event)">
+        <!-- CSS-only 3D cardboard box -->
+        <div id="big-package">
+          <div class="box-3d">
+            <div class="box-top"></div>
+            <div class="box-front"></div>
+            <div class="box-right"></div>
+          </div>
         </div>
+        <app-particle-effects [enabled]="gameState().settings.particleEffects"></app-particle-effects>
+        <app-wrinkler
+          [wrinklers]="wrinklers()"
+          (pop)="popWrinkler($event)"
+        ></app-wrinkler>
+        <app-golden-package
+          [visible]="goldenVisible()"
+          [x]="goldenPosition().x"
+          [y]="goldenPosition().y"
+          (goldenClick)="clickGolden()"
+        ></app-golden-package>
+      </div>
     </div>
+
+    <app-milk-bar [percentage]="milkPercent()"></app-milk-bar>
+
+    <!-- Bottom bar -->
+    <div id="bottom-bar">
+      <button class="bar-btn" (click)="showStats = true">Stats</button>
+      <button class="bar-btn" (click)="showOptions = true">Options</button>
+      @if (gameState().prestige.level > 0 || prestigePendingGain() > 0) {
+        <button
+          class="bar-btn prestige-btn"
+          (click)="showPrestige = true"
+        >
+          Ascend
+          @if (prestigePendingGain() > 0) {
+            <span class="prestige-badge">
+              +{{ prestigePendingGain() }}
+            </span>
+          }
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div id="right-panel">
+    <div id="store-header">Buildings</div>
+
+    <app-upgrade-panel
+      [upgrades]="availableUpgrades()"
+      [packages]="gameState().packages"
+      (purchase)="purchaseUpgrade($event)"
+    ></app-upgrade-panel>
+
+    <div id="store-items">
+      @for (building of getBuildingConfigs(); track building.id) {
+        <app-building-card
+          [building]="building"
+          [buildingData]="getBuildingData(building.id)"
+          [affordable]="canAfford(building.id)"
+          [formattedPrice]="formatNumber(getBuildingPrice(building.id))"
+          (buildingClick)="buyBuilding($event)"
+        ></app-building-card>
+      }
+    </div>
+  </div>
 </div>
+
+<!-- Achievement Popup -->
+@if (achievementPopup) {
+  <div class="achievement-toast">
+    {{ achievementPopup }}
+  </div>
+}
+
+<!-- Panels -->
+@if (showStats) {
+  <app-stats-panel
+    [state]="gameState()"
+    [perClick]="effectiveClick()"
+    [achievementProgress]="achievementProgress()"
+    [unlockedCount]="achievementService.unlockedCount()"
+    [totalCount]="achievementService.totalCount()"
+    [completionPct]="achievementService.completionPercentage()"
+    [buildingStats]="buildingStats()"
+    [fmt]="formatNumber.bind(this)"
+    (closePanel)="showStats = false"
+  ></app-stats-panel>
+}
+
+@if (showOptions) {
+  <app-options-panel
+    [settings]="gameState().settings"
+    (closePanel)="showOptions = false"
+    (save)="handleSave()"
+    (exportSave)="handleExport()"
+    (importSave)="handleImport($event)"
+    (wipeSave)="handleWipe()"
+    (settingChange)="handleSettingChange($event)"
+  ></app-options-panel>
+}
+
+@if (showPrestige) {
+  <app-prestige-screen
+    [prestige]="gameState().prestige"
+    [pendingGain]="prestigePendingGain()"
+    [upgrades]="prestigeService.heavenlyUpgrades"
+    (closeScreen)="showPrestige = false"
+    (ascend)="ascend()"
+    (purchaseUpgrade)="purchaseHeavenly($event)"
+  ></app-prestige-screen>
+}
+
+<app-tooltip></app-tooltip>
