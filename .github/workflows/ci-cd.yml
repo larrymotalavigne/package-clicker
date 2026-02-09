@@ -145,15 +145,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Copy docker-compose files to UNRAID
+      - name: Copy production docker-compose to UNRAID
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.UNRAID_SSH_HOST }}
           port: 2345
           username: ${{ secrets.UNRAID_SSH_USER }}
           key: ${{ secrets.UNRAID_SSH_KEY }}
-          source: "docker-compose.yml"
+          source: "docker-compose.prod.yml"
           target: "/srv/packageclicker/"
+          strip_components: 0
 
       - name: Deploy with Docker Compose via SSH
         uses: appleboy/ssh-action@v1.0.3
@@ -175,18 +176,13 @@ jobs:
             echo "Logging in to GitHub Container Registry..."
             echo "$GITHUB_PAT" | docker login ghcr.io -u "$GHCR_OWNER" --password-stdin
 
-            # Pull latest image
-            echo "Pulling latest image..."
-            docker compose pull
-
-            # Force stop and remove any existing packageclicker containers
-            echo "Stopping existing containers..."
-            docker ps -a --filter "name=packageclicker" --format "{{.Names}}" | xargs -r docker stop || true
-            docker ps -a --filter "name=packageclicker" --format "{{.Names}}" | xargs -r docker rm || true
+            # Pull latest images
+            echo "Pulling latest images..."
+            docker compose -f docker-compose.prod.yml pull
 
             # Deploy new version
             echo "Deploying new version..."
-            docker compose up -d --remove-orphans
+            docker compose -f docker-compose.prod.yml up -d --remove-orphans
 
             # Wait for service to be ready
             echo "Waiting for service to be ready..."
@@ -199,7 +195,7 @@ jobs:
 
             # Show running containers
             echo "Running containers:"
-            docker compose ps
+            docker compose -f docker-compose.prod.yml ps
 
   health-check:
     name: Health Check
@@ -223,13 +219,18 @@ jobs:
 
             # Check if container is running
             echo "Checking if container is running..."
-            if docker ps | grep -q packageclicker; then
-              echo "✅ Container is running"
+            if docker ps --format '{{.Names}}' | grep -q '^packageclicker$'; then
+              CONTAINER_STATUS=$(docker inspect --format='{{.State.Status}}' packageclicker 2>/dev/null || echo "not_found")
+              echo "✅ Container is running (status: $CONTAINER_STATUS)"
             else
               echo "❌ Container is not running"
               docker logs packageclicker --tail 50
               exit 1
             fi
+
+            echo ""
+            echo "📊 Final container status:"
+            docker compose -f docker-compose.prod.yml ps
 
             echo ""
             echo "🎉 All health checks passed! Deployment successful!"

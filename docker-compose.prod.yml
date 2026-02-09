@@ -1,8 +1,5 @@
 services:
   packageclicker:
-    build:
-      context: .
-      dockerfile: Dockerfile
     image: ghcr.io/larrymotalavigne/packageclicker:latest
     container_name: packageclicker
     restart: unless-stopped
