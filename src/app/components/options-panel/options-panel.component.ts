@@ -5,20 +5,19 @@ import {
   EventEmitter,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { GameSettings } from '../../models/game.models';
 
 @Component({
   selector: 'app-options-panel',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="overlay" (click)="closePanel.emit()">
       <div class="panel" (click)="$event.stopPropagation()">
         <div class="panel-header">
           <h2>Options</h2>
-          <button class="close-btn" (click)="closePanel.emit()">x</button>
+          <button class="close-btn" (click)="closePanel.emit()" aria-label="Close options">x</button>
         </div>
 
         <div class="options-body">
@@ -61,6 +60,49 @@ import { GameSettings } from '../../models/game.models';
               Buff Timers
             </label>
           </div>
+
+          <div class="option-group">
+            <h3>Audio</h3>
+            <label class="toggle">
+              <input
+                type="checkbox"
+                [checked]="settings.soundEnabled"
+                (change)="toggleSetting('soundEnabled')"
+              />
+              Sound Effects
+            </label>
+          </div>
+
+          <div class="option-group">
+            <h3>Theme</h3>
+            <div class="theme-buttons">
+              <button
+                [class.active]="settings.theme === 'dark'"
+                (click)="setTheme('dark')"
+              >
+                Dark
+              </button>
+              <button
+                [class.active]="settings.theme === 'light'"
+                (click)="setTheme('light')"
+              >
+                Light
+              </button>
+            </div>
+          </div>
+
+          <div class="option-group">
+            <h3>Keyboard Shortcuts</h3>
+            <div class="shortcuts">
+              <div class="shortcut"><kbd>Space</kbd> Click package</div>
+              <div class="shortcut"><kbd>1-0</kbd> Buy building</div>
+              <div class="shortcut"><kbd>S</kbd> Stats</div>
+              <div class="shortcut"><kbd>O</kbd> Options</div>
+              <div class="shortcut"><kbd>C</kbd> Challenges</div>
+              <div class="shortcut"><kbd>L</kbd> Lore</div>
+              <div class="shortcut"><kbd>Esc</kbd> Close panel</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -83,6 +125,8 @@ import { GameSettings } from '../../models/game.models';
         border-radius: 12px;
         width: 90%;
         max-width: 400px;
+        max-height: 85vh;
+        overflow-y: auto;
         color: #e0e0e0;
         animation: panelSlideIn 0.3s ease-out;
       }
@@ -169,6 +213,52 @@ import { GameSettings } from '../../models/game.models';
       .toggle input {
         accent-color: #ffd700;
       }
+      .theme-buttons {
+        display: flex;
+        gap: 8px;
+      }
+      .theme-buttons button {
+        padding: 8px 20px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 6px;
+        color: #e0e0e0;
+        cursor: pointer;
+        font-size: 0.85em;
+        font-family: inherit;
+        transition: all 0.15s;
+      }
+      .theme-buttons button:hover {
+        background: rgba(255, 255, 255, 0.14);
+      }
+      .theme-buttons button.active {
+        background: rgba(255, 215, 0, 0.15);
+        border-color: rgba(255, 215, 0, 0.4);
+        color: #ffd700;
+      }
+      .shortcuts {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .shortcut {
+        font-size: 0.8em;
+        color: rgba(255, 255, 255, 0.5);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      kbd {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 4px;
+        padding: 2px 6px;
+        font-family: monospace;
+        font-size: 0.85em;
+        color: rgba(255, 255, 255, 0.7);
+        min-width: 28px;
+        text-align: center;
+      }
     `,
   ],
 })
@@ -182,7 +272,12 @@ export class OptionsPanelComponent {
   @Output() settingChange = new EventEmitter<Partial<GameSettings>>();
 
   toggleSetting(key: keyof GameSettings): void {
+    if (key === 'theme') return;
     this.settingChange.emit({ [key]: !this.settings[key] });
+  }
+
+  setTheme(theme: 'dark' | 'light'): void {
+    this.settingChange.emit({ theme });
   }
 
   onImport(): void {

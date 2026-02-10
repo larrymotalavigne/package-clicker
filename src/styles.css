@@ -17,6 +17,33 @@ app-root {
   height: 100vh;
 }
 
+/* ── Light Theme ── */
+[data-theme="light"] {
+  background: #f0f0f5;
+  color: #2a2a3e;
+}
+
+[data-theme="light"] app-root {
+  --bg-primary: #f0f0f5;
+  --bg-panel-start: #e8e8f0;
+  --bg-panel-end: #f0f0f5;
+  --bg-right-start: #e0e0eb;
+  --bg-right-end: #eaeaf2;
+  --bg-header-glow: rgba(180,140,0,0.08);
+  --bg-bottom-bar: rgba(0,0,0,0.04);
+  --border-subtle: rgba(0,0,0,0.08);
+  --border-light: rgba(0,0,0,0.12);
+  --text-primary: #2a2a3e;
+  --text-secondary: rgba(0,0,0,0.55);
+  --text-tertiary: rgba(0,0,0,0.4);
+  --text-gold: #b8860b;
+  --text-gold-glow: rgba(180,134,11,0.15);
+  --btn-bg: rgba(0,0,0,0.04);
+  --btn-hover-bg: rgba(0,0,0,0.08);
+  --btn-border: rgba(0,0,0,0.12);
+  --scrollbar-thumb: rgba(0,0,0,0.15);
+}
+
 /* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 6px;
@@ -35,6 +62,14 @@ app-root {
   background: rgba(255, 255, 255, 0.2);
 }
 
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
 /* Ambient floating particles */
 @keyframes floatUp {
   0% {
@@ -50,5 +85,24 @@ app-root {
   100% {
     transform: translateY(-100vh) translateX(20px);
     opacity: 0;
+  }
+}
+
+/* ── Focus styles for accessibility ── */
+:focus-visible {
+  outline: 2px solid #ffd700;
+  outline-offset: 2px;
+}
+
+[data-theme="light"] :focus-visible {
+  outline-color: #b8860b;
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

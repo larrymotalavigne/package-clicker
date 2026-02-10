@@ -5,6 +5,8 @@ import {
   PrestigeState,
   GameSettings,
   ActiveEvent,
+  ActiveChallenge,
+  RareLoot,
 } from '../models/game.models';
 import { BUILDING_CONFIGS } from '../config/buildings.config';
 import { BuildingType, isBuildingType } from '../types/building-types';
@@ -152,6 +154,60 @@ export class GameStateService {
     }));
   }
 
+  addExpressPoints(amount: number): void {
+    this._gameState.update((s) => ({
+      ...s,
+      expressPoints: s.expressPoints + amount,
+      totalExpressPointsEarned: s.totalExpressPointsEarned + amount,
+    }));
+  }
+
+  spendExpressPoints(amount: number): boolean {
+    const s = this._gameState();
+    if (s.expressPoints < amount) return false;
+    this._gameState.update((st) => ({
+      ...st,
+      expressPoints: st.expressPoints - amount,
+    }));
+    return true;
+  }
+
+  addRareLoot(loot: RareLoot): void {
+    this._gameState.update((s) => ({
+      ...s,
+      rareLoot: [...s.rareLoot, loot],
+    }));
+  }
+
+  updateChallenge(challenge: ActiveChallenge | null): void {
+    this._gameState.update((s) => ({
+      ...s,
+      activeChallenge: challenge,
+    }));
+  }
+
+  completeChallenge(id: string): void {
+    this._gameState.update((s) => ({
+      ...s,
+      activeChallenge: null,
+      completedChallenges: [...s.completedChallenges, id],
+    }));
+  }
+
+  unlockLore(ids: string[]): void {
+    this._gameState.update((s) => ({
+      ...s,
+      loreUnlocked: [...s.loreUnlocked, ...ids],
+    }));
+  }
+
+  updateLastSaveTime(): void {
+    this._gameState.update((s) => ({
+      ...s,
+      lastSaveTime: Date.now(),
+    }));
+  }
+
   setFullState(state: GameState): void {
     this._gameState.set(state);
   }
@@ -172,6 +228,12 @@ export class GameStateService {
       totalPlayTime: current.totalPlayTime,
       lastTickTime: Date.now(),
       totalEventsExperienced: current.totalEventsExperienced,
+      expressPoints: current.expressPoints,
+      totalExpressPointsEarned: current.totalExpressPointsEarned,
+      rareLoot: current.rareLoot,
+      completedChallenges: current.completedChallenges,
+      loreUnlocked: current.loreUnlocked,
+      lastSaveTime: Date.now(),
     });
   }
 
@@ -207,6 +269,8 @@ export class GameStateService {
         particleEffects: true,
         shortNumbers: true,
         showBuffTimers: true,
+        soundEnabled: false,
+        theme: 'dark',
       },
       totalBuildingsEver: 0,
       totalPlayTime: 0,
@@ -214,6 +278,13 @@ export class GameStateService {
       activeBuffs: [],
       activeEvents: [],
       totalEventsExperienced: 0,
+      expressPoints: 0,
+      totalExpressPointsEarned: 0,
+      rareLoot: [],
+      activeChallenge: null,
+      completedChallenges: [],
+      loreUnlocked: [],
+      lastSaveTime: Date.now(),
     };
   }
 
@@ -272,6 +343,13 @@ export class GameStateService {
     merged.lastTickTime = merged.lastTickTime || Date.now();
     merged.activeEvents = [];
     merged.totalEventsExperienced = merged.totalEventsExperienced || 0;
+    merged.expressPoints = merged.expressPoints || 0;
+    merged.totalExpressPointsEarned = merged.totalExpressPointsEarned || 0;
+    merged.rareLoot = merged.rareLoot || [];
+    merged.activeChallenge = null;
+    merged.completedChallenges = merged.completedChallenges || [];
+    merged.loreUnlocked = merged.loreUnlocked || [];
+    merged.lastSaveTime = merged.lastSaveTime || Date.now();
 
     return merged;
   }

@@ -160,6 +160,12 @@ export class AchievementService {
         return gs.prestige.level;
       case 'events':
         return gs.totalEventsExperienced;
+      case 'challenges':
+        return gs.completedChallenges.length;
+      case 'express_points':
+        return gs.totalExpressPointsEarned;
+      case 'lore':
+        return gs.loreUnlocked.length;
       default: {
         const b = gs.buildings[ach.type as keyof typeof gs.buildings];
         return b ? b.count : 0;

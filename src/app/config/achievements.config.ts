@@ -113,6 +113,54 @@ function eventAch(
   };
 }
 
+function challengeAch(
+  id: string,
+  name: string,
+  desc: string,
+  req: number
+): Achievement {
+  return {
+    id,
+    name,
+    description: desc,
+    requirement: req,
+    type: 'challenges',
+    category: 'Challenges',
+  };
+}
+
+function expressAch(
+  id: string,
+  name: string,
+  desc: string,
+  req: number
+): Achievement {
+  return {
+    id,
+    name,
+    description: desc,
+    requirement: req,
+    type: 'express_points',
+    category: 'Express Points',
+  };
+}
+
+function loreAch(
+  id: string,
+  name: string,
+  desc: string,
+  req: number
+): Achievement {
+  return {
+    id,
+    name,
+    description: desc,
+    requirement: req,
+    type: 'lore',
+    category: 'Lore',
+  };
+}
+
 const BUILDING_NAMES: Record<string, string> = {
   cursor: 'Delivery Truck',
   grandma: 'Sorting Facility',
@@ -124,6 +172,9 @@ const BUILDING_NAMES: Record<string, string> = {
   airport: 'International Airport',
   spaceport: 'Space Delivery Port',
   ceo: 'CEO',
+  satellite: 'Satellite Network',
+  timemachine: 'Time Machine',
+  multiverse: 'Multiverse Portal',
 };
 
 const BUILDING_IDS = [
@@ -137,6 +188,9 @@ const BUILDING_IDS = [
   'airport',
   'spaceport',
   'ceo',
+  'satellite',
+  'timemachine',
+  'multiverse',
 ];
 
 const MILESTONES = [1, 10, 25, 50, 100, 150, 200];
@@ -213,4 +267,22 @@ export const ACHIEVEMENT_DEFINITIONS: Achievement[] = [
   eventAch('event_10', 'Station Agent', 'Experience 10 events', 10),
   eventAch('event_25', 'Kaamelott Veteran', 'Experience 25 events', 25),
   eventAch('event_50', 'C\'est Pas Faux', 'Experience 50 events. Not bad.', 50),
+
+  // Challenges (4)
+  challengeAch('chal_1', 'First Challenge', 'Complete your first challenge', 1),
+  challengeAch('chal_5', 'Challenger', 'Complete 5 challenges', 5),
+  challengeAch('chal_10', 'Champion', 'Complete 10 challenges', 10),
+  challengeAch('chal_25', 'Legend', 'Complete 25 challenges', 25),
+
+  // Express Points (4)
+  expressAch('ep_10', 'Express Novice', 'Earn 10 Express Points', 10),
+  expressAch('ep_100', 'Express Pro', 'Earn 100 Express Points', 100),
+  expressAch('ep_500', 'Express Elite', 'Earn 500 Express Points', 500),
+  expressAch('ep_1000', 'Express Master', 'Earn 1,000 Express Points', 1000),
+
+  // Lore (4)
+  loreAch('lore_3', 'Curious Reader', 'Unlock 3 lore entries', 3),
+  loreAch('lore_8', 'Historian', 'Unlock 8 lore entries', 8),
+  loreAch('lore_12', 'Archivist', 'Unlock 12 lore entries', 12),
+  loreAch('lore_16', 'Omniscient', 'Unlock all lore entries', 16),
 ];

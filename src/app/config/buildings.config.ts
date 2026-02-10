@@ -12,7 +12,10 @@ const BUILDING_DATA = [
   { id: 'warehouse', basePrice: 20000000, pps: 44000 },
   { id: 'airport', basePrice: 330000000, pps: 260000 },
   { id: 'spaceport', basePrice: 5100000000, pps: 1600000 },
-  { id: 'ceo', basePrice: 75000000000, pps: 10000000 }
+  { id: 'ceo', basePrice: 75000000000, pps: 10000000 },
+  { id: 'satellite', basePrice: 1000000000000, pps: 65000000 },
+  { id: 'timemachine', basePrice: 14000000000000, pps: 430000000 },
+  { id: 'multiverse', basePrice: 200000000000000, pps: 2900000000 }
 ];
 
 export const BUILDING_CONFIGS: BuildingConfig[] = BUILDING_DATA.map(data => {

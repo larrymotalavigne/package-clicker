@@ -54,6 +54,21 @@ export const BUILDING_DISPLAY_INFO: Record<string, BuildingDisplayInfo> = {
     name: 'Frederic W Smith (CEO)',
     description: 'The man who bet his last $5,000 in Vegas to save FedEx. True story.',
     icon: '\u{1F468}\u{200D}\u{1F4BC}'
+  },
+  satellite: {
+    name: 'Satellite Network',
+    description: 'Orbital tracking for every package on Earth. DEBRIEF now covers low-Earth orbit.',
+    icon: '\u{1F6F0}\u{FE0F}'
+  },
+  timemachine: {
+    name: 'Time Machine',
+    description: 'Delivers packages yesterday. K-API response time: -24 hours. "C\'est pas faux."',
+    icon: '\u{231B}'
+  },
+  multiverse: {
+    name: 'Multiverse Portal',
+    description: 'One package, infinite realities. Every universe gets a delivery. POD: all of them.',
+    icon: '\u{1F30C}'
   }
 };
 

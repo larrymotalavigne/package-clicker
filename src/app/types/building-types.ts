@@ -1,6 +1,6 @@
 // Dynamic building type system to replace hardcoded string literals
 
-export type BuildingType = 
+export type BuildingType =
   | 'cursor'
   | 'grandma'
   | 'farm'
@@ -10,13 +10,17 @@ export type BuildingType =
   | 'warehouse'
   | 'airport'
   | 'spaceport'
-  | 'ceo';
+  | 'ceo'
+  | 'satellite'
+  | 'timemachine'
+  | 'multiverse';
 
 // Type guard to check if a string is a valid building type
 export function isBuildingType(value: string): value is BuildingType {
   const validTypes: readonly string[] = [
-    'cursor', 'grandma', 'farm', 'mine', 'factory', 
-    'bank', 'warehouse', 'airport', 'spaceport', 'ceo'
+    'cursor', 'grandma', 'farm', 'mine', 'factory',
+    'bank', 'warehouse', 'airport', 'spaceport', 'ceo',
+    'satellite', 'timemachine', 'multiverse'
   ];
   return validTypes.includes(value);
 }
@@ -25,7 +29,8 @@ export function isBuildingType(value: string): value is BuildingType {
 export function getAllBuildingTypes(): readonly BuildingType[] {
   return [
     'cursor', 'grandma', 'farm', 'mine', 'factory',
-    'bank', 'warehouse', 'airport', 'spaceport', 'ceo'
+    'bank', 'warehouse', 'airport', 'spaceport', 'ceo',
+    'satellite', 'timemachine', 'multiverse'
   ] as const;
 }
 

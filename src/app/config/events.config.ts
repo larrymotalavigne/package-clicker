@@ -114,4 +114,72 @@ export const EVENT_DEFINITIONS: GameEvent[] = [
     effect: { type: 'production_mult', value: 3 },
     durationMs: 20_000,
   },
+
+  // Choice events
+  {
+    id: 'route_choice',
+    name: 'Route Decision',
+    description: 'Two routes available! The highway is safe, the shortcut is risky but rewarding.',
+    icon: '\u{1F6E3}\u{FE0F}',
+    type: 'neutral',
+    effect: { type: 'player_choice', value: 0 },
+    durationMs: 0,
+    choices: [
+      { label: 'Safe Highway (+20% prod, 30s)', effect: { type: 'production_mult', value: 1.2 }, durationMs: 30_000 },
+      { label: 'Risky Shortcut (+80% prod, 15s)', effect: { type: 'production_mult', value: 1.8 }, durationMs: 15_000 },
+    ],
+  },
+  {
+    id: 'investment_choice',
+    name: 'Investment Opportunity',
+    description: 'A mysterious investor offers you a deal. What will you choose?',
+    icon: '\u{1F4BC}',
+    type: 'neutral',
+    effect: { type: 'player_choice', value: 0 },
+    durationMs: 0,
+    choices: [
+      { label: 'Cheap buildings (-20%, 60s)', effect: { type: 'building_discount', value: 0.8 }, durationMs: 60_000 },
+      { label: 'Click power (+100%, 30s)', effect: { type: 'click_mult', value: 2 }, durationMs: 30_000 },
+    ],
+  },
+
+  // Express Point events
+  {
+    id: 'express_bonus',
+    name: 'Express Bonus',
+    description: 'Priority mail rush! Earn bonus Express Points! +5 EP!',
+    icon: '\u{1F48E}',
+    type: 'positive',
+    effect: { type: 'express_points', value: 5 },
+    durationMs: 0,
+  },
+  {
+    id: 'express_jackpot',
+    name: 'Express Jackpot',
+    description: 'VIP customer tips big! +15 Express Points!',
+    icon: '\u{1F48E}',
+    type: 'positive',
+    effect: { type: 'express_points', value: 15 },
+    durationMs: 0,
+  },
+
+  // Chain events
+  {
+    id: 'power_surge',
+    name: 'Power Surge',
+    description: 'Lightning strikes the hub! After a brief outage, everything runs at triple speed!',
+    icon: '\u{26A1}',
+    type: 'positive',
+    effect: { type: 'production_mult', value: 3 },
+    durationMs: 15_000,
+  },
+  {
+    id: 'viral_moment',
+    name: 'Viral Moment',
+    description: 'Your package delivery goes viral on social media! Click power 5x for 20 seconds!',
+    icon: '\u{1F4F1}',
+    type: 'positive',
+    effect: { type: 'click_mult', value: 5 },
+    durationMs: 20_000,
+  },
 ];

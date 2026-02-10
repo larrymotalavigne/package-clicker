@@ -8,6 +8,8 @@ import { GoldenPackageService } from './golden-package.service';
 import { PrestigeService } from './prestige.service';
 import { WrinklerService } from './wrinkler.service';
 import { EventService } from './event.service';
+import { SynergyService } from './synergy.service';
+import { RareLootService } from './rare-loot.service';
 import { BuildingType } from '../types/building-types';
 
 @Injectable({ providedIn: 'root' })
@@ -31,6 +33,8 @@ export class GameActionsService {
   private prestigeService = inject(PrestigeService);
   private wrinklerService = inject(WrinklerService);
   private eventService = inject(EventService);
+  private synergyService = inject(SynergyService);
+  private rareLootService = inject(RareLootService);
 
   clickPackage(): void {
     const now = Date.now();
@@ -86,7 +90,10 @@ export class GameActionsService {
       data.basePrice,
       data.count
     );
-    return Math.floor(base * this.eventService.getBuildingPriceMultiplier());
+    const eventMult = this.eventService.getBuildingPriceMultiplier();
+    const upgradeMult = this.upgradeService.getCostReduction();
+    const lootMult = this.rareLootService.getCostReduction();
+    return Math.floor(base * eventMult * upgradeMult * lootMult);
   }
 
   generatePassiveIncome(): void {
@@ -180,6 +187,7 @@ export class GameActionsService {
     base *= this.upgradeService.getClickMultiplier();
     base *= this.goldenPackageService.getClickMultiplier();
     base *= this.eventService.getClickMultiplier();
+    base *= this.rareLootService.getClickMultiplier();
 
     const ppsPercent = this.upgradeService.getClickPpsPercent();
     if (ppsPercent > 0) {
@@ -203,11 +211,10 @@ export class GameActionsService {
     for (const [id, building] of Object.entries(buildings)) {
       if (building.count <= 0) continue;
       const basePps = building.count * building.pps;
-      const mult = this.upgradeService.getBuildingMultiplier(
-        id as BuildingType
-      );
+      const mult = this.upgradeService.getBuildingMultiplier(id as BuildingType);
       const eventBoost = this.eventService.getBuildingBoostMultiplier(id);
-      total += basePps * mult * eventBoost;
+      const synergy = this.synergyService.getSynergyMultiplier(id as BuildingType);
+      total += basePps * mult * eventBoost * synergy;
     }
 
     total *= this.upgradeService.getGlobalMultiplier();
@@ -215,6 +222,7 @@ export class GameActionsService {
     total *= this.prestigeService.prestigeMultiplier();
     total *= this.prestigeService.heavenlyMultiplier();
     total *= this.eventService.getProductionMultiplier();
+    total *= this.rareLootService.getGlobalMultiplier();
 
     return total;
   }

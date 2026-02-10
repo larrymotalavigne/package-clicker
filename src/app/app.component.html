@@ -1,12 +1,17 @@
+<!-- Seasonal Banner -->
+@if (currentSeason) {
+  <app-seasonal-banner [season]="currentSeason"></app-seasonal-banner>
+}
+
 <!-- News Ticker -->
 <app-news-ticker [context]="newsContext()"></app-news-ticker>
 
-<div id="game-container">
+<div id="game-container" role="main">
   <!-- Left Panel -->
   <div id="left-panel">
     <div id="header">
       <h1>Package Clicker</h1>
-      <div id="stats">
+      <div id="stats" aria-live="polite">
         <div id="package-counter">
           <span id="package-count">{{ formatNumber(gameState().packages) }}</span>
           <span class="label">packages</span>
@@ -14,6 +19,12 @@
         <div id="pps-display">
           per second: <span id="pps">{{ formatNumber(effectivePps()) }}</span>
         </div>
+        @if (gameState().expressPoints > 0) {
+          <div class="ep-display">
+            <span class="ep-icon">⚡</span>
+            <span class="ep-count">{{ formatNumber(gameState().expressPoints) }} EP</span>
+          </div>
+        }
       </div>
     </div>
 
@@ -23,7 +34,7 @@
     ></app-buff-display>
 
     <div id="main-game-area">
-      <div id="package-container" (click)="clickPackage($event)">
+      <div id="package-container" (click)="clickPackage($event)" role="button" aria-label="Click to earn packages" tabindex="0">
         <!-- CSS-only 3D cardboard box -->
         <div id="big-package" [class.clicking]="isClicking">
           <div class="box-3d">
@@ -48,14 +59,20 @@
 
     <app-milk-bar [percentage]="milkPercent()"></app-milk-bar>
 
+    <app-progress-hints
+      [hints]="progressHints()"
+      [currentIndex]="hintIndex"
+    ></app-progress-hints>
+
     <!-- Bottom bar -->
-    <div id="bottom-bar">
-      <button class="bar-btn" (click)="showStats = true">Stats</button>
-      <button class="bar-btn" (click)="showOptions = true">Options</button>
+    <div id="bottom-bar" role="navigation" aria-label="Game actions">
+      <button class="bar-btn" (click)="showStats = true" aria-label="Open stats (S)">Stats</button>
+      <button class="bar-btn" (click)="showOptions = true" aria-label="Open options (O)">Options</button>
       @if (gameState().prestige.level > 0 || prestigePendingGain() > 0) {
         <button
           class="bar-btn prestige-btn"
           (click)="showPrestige = true"
+          aria-label="Open prestige screen"
         >
           Ascend
           @if (prestigePendingGain() > 0) {
@@ -63,6 +80,21 @@
               +{{ prestigePendingGain() }}
             </span>
           }
+        </button>
+      }
+      @if (gameState().completedChallenges.length > 0 || gameState().expressPoints >= 10) {
+        <button class="bar-btn challenge-btn" (click)="showChallenges = true" aria-label="Open challenges (C)">
+          Challenges
+        </button>
+      }
+      @if (gameState().loreUnlocked.length > 0) {
+        <button class="bar-btn lore-btn" (click)="showLore = true" aria-label="Open lore (L)">
+          Lore
+        </button>
+      }
+      @if (gameState().expressPoints >= 5) {
+        <button class="bar-btn minigame-btn" (click)="showMiniGame = true" aria-label="Play mini-game">
+          Mini-Game
         </button>
       }
     </div>
@@ -94,8 +126,23 @@
 
 <!-- Achievement Popup -->
 @if (achievementPopup) {
-  <div class="achievement-toast">
+  <div class="achievement-toast" role="alert">
     {{ achievementPopup }}
+  </div>
+}
+
+<!-- Loot Drop Toast -->
+@if (lastLootDrop(); as loot) {
+  <app-loot-display [loot]="loot"></app-loot-display>
+}
+
+<!-- Challenge Result -->
+@if (challengeResult(); as result) {
+  <div class="achievement-toast" [class.challenge-fail]="!result.success" role="alert">
+    {{ result.success ? '✅ Challenge Complete!' : '❌ Challenge Failed' }}
+    @if (result.reward) {
+      <span class="toast-reward">+{{ result.reward }} EP</span>
+    }
   </div>
 }
 
@@ -111,6 +158,16 @@
     (accept)="acceptEvent()"
     (dismiss)="dismissEvent()"
   ></app-event-popup>
+}
+
+<!-- Offline Earnings Popup -->
+@if (offlineEarnings() > 0) {
+  <app-offline-popup
+    [earnings]="offlineEarnings()"
+    [formattedEarnings]="formatNumber(offlineEarnings())"
+    [seconds]="offlineSeconds()"
+    (claim)="claimOffline()"
+  ></app-offline-popup>
 }
 
 <!-- Panels -->
@@ -149,6 +206,33 @@
     (ascend)="ascend()"
     (purchaseUpgrade)="purchaseHeavenly($event)"
   ></app-prestige-screen>
+}
+
+@if (showChallenges) {
+  <app-challenge-panel
+    [available]="challengeService.getAvailableChallenges()"
+    [active]="activeChallenge()"
+    [completedCount]="gameState().completedChallenges.length"
+    [totalCount]="challengeService.getAllChallenges().length"
+    [result]="challengeResult()"
+    (startChallenge)="startChallenge($event)"
+    (closePanel)="showChallenges = false"
+  ></app-challenge-panel>
+}
+
+@if (showLore) {
+  <app-lore-viewer
+    [entries]="loreService.unlockedLore()"
+    [total]="loreService.totalCount"
+    (closePanel)="showLore = false"
+  ></app-lore-viewer>
+}
+
+@if (showMiniGame) {
+  <app-mini-game
+    (complete)="completeMiniGame($event)"
+    (closeGame)="showMiniGame = false"
+  ></app-mini-game>
 }
 
 <app-tooltip></app-tooltip>

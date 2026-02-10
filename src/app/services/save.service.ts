@@ -197,6 +197,21 @@ export class SaveService {
     migrated.activeEvents = [];
     migrated.lastTickTime = Date.now();
 
+    // New fields migration
+    if (typeof gs['expressPoints'] === 'number')
+      migrated.expressPoints = gs['expressPoints'] as number;
+    if (typeof gs['totalExpressPointsEarned'] === 'number')
+      migrated.totalExpressPointsEarned = gs['totalExpressPointsEarned'] as number;
+    if (Array.isArray(gs['rareLoot']))
+      migrated.rareLoot = gs['rareLoot'] as GameState['rareLoot'];
+    migrated.activeChallenge = null;
+    if (Array.isArray(gs['completedChallenges']))
+      migrated.completedChallenges = gs['completedChallenges'] as string[];
+    if (Array.isArray(gs['loreUnlocked']))
+      migrated.loreUnlocked = gs['loreUnlocked'] as string[];
+    if (typeof gs['lastSaveTime'] === 'number')
+      migrated.lastSaveTime = gs['lastSaveTime'] as number;
+
     // Ensure prestige totalEarnedAllTime is at least totalPackagesEarned
     if (
       migrated.prestige.totalEarnedAllTime < migrated.totalPackagesEarned

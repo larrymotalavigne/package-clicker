@@ -23,6 +23,9 @@ export type AchievementType =
   | 'golden_clicks'
   | 'prestige'
   | 'events'
+  | 'challenges'
+  | 'express_points'
+  | 'lore'
   | BuildingType;
 
 export interface Achievement {
@@ -41,7 +44,12 @@ export interface UpgradeEffect {
     | 'building_multiplier'
     | 'click_multiplier'
     | 'global_multiplier'
-    | 'click_add_pps_percent';
+    | 'click_add_pps_percent'
+    | 'building_cost_reduction'
+    | 'golden_frequency'
+    | 'express_point_mult'
+    | 'synergy_multiplier'
+    | 'offline_mult';
   buildingType?: BuildingType;
   value: number;
 }
@@ -55,10 +63,11 @@ export interface UpgradeConfig {
   icon: string;
   effects: UpgradeEffect[];
   requirement: UpgradeRequirement;
+  currency?: 'packages' | 'express_points';
 }
 
 export interface UpgradeRequirement {
-  type: 'building_count' | 'total_packages' | 'upgrade_count' | 'clicks';
+  type: 'building_count' | 'total_packages' | 'upgrade_count' | 'clicks' | 'express_points' | 'challenge_count';
   buildingType?: BuildingType;
   value: number;
 }
@@ -109,6 +118,8 @@ export interface GameSettings {
   particleEffects: boolean;
   shortNumbers: boolean;
   showBuffTimers: boolean;
+  soundEnabled: boolean;
+  theme: 'dark' | 'light';
 }
 
 export interface EventEffect {
@@ -118,7 +129,9 @@ export interface EventEffect {
     | 'building_discount'
     | 'instant_packages'
     | 'lose_packages'
-    | 'building_boost';
+    | 'building_boost'
+    | 'express_points'
+    | 'player_choice';
   value: number;
   buildingType?: string;
 }
@@ -131,6 +144,14 @@ export interface GameEvent {
   type: 'positive' | 'negative' | 'neutral';
   effect: EventEffect;
   durationMs: number;
+  choices?: EventChoice[];
+  seasonal?: string;
+}
+
+export interface EventChoice {
+  label: string;
+  effect: EventEffect;
+  durationMs: number;
 }
 
 export interface ActiveEvent {
@@ -141,6 +162,96 @@ export interface ActiveEvent {
   effect: EventEffect;
   remainingMs: number;
   totalMs: number;
+}
+
+// Building synergies
+export interface BuildingSynergy {
+  source: BuildingType;
+  target: BuildingType;
+  bonusPerUnit: number;
+  description: string;
+}
+
+// Rare loot
+export type LootRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+
+export interface RareLoot {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  rarity: LootRarity;
+  effect: UpgradeEffect;
+  obtainedAt: number;
+}
+
+export interface RareLootConfig {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  rarity: LootRarity;
+  effect: UpgradeEffect;
+  dropWeight: number;
+}
+
+// Challenges
+export interface ChallengeConfig {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  type: 'speed_click' | 'no_click' | 'building_rush' | 'golden_hunt' | 'endurance';
+  durationMs: number;
+  target: number;
+  reward: ChallengeReward;
+}
+
+export interface ChallengeReward {
+  expressPoints: number;
+  lootId?: string;
+  multiplierBonus?: number;
+}
+
+export interface ActiveChallenge {
+  id: string;
+  type: string;
+  progress: number;
+  target: number;
+  remainingMs: number;
+  totalMs: number;
+}
+
+// Lore / Story
+export interface LoreEntry {
+  id: string;
+  title: string;
+  text: string;
+  icon: string;
+  requirement: LoreRequirement;
+}
+
+export interface LoreRequirement {
+  type: 'packages' | 'buildings' | 'prestige' | 'clicks' | 'events' | 'challenges' | 'pps';
+  value: number;
+  buildingType?: BuildingType;
+}
+
+// Mini-game
+export interface MiniGameResult {
+  score: number;
+  expressPointsEarned: number;
+  lootDropped?: RareLoot;
+}
+
+// Seasonal event
+export interface SeasonalTheme {
+  id: string;
+  name: string;
+  months: number[];
+  icon: string;
+  productionBonus: number;
+  specialEvent?: GameEvent;
 }
 
 export interface GameState {
@@ -162,4 +273,12 @@ export interface GameState {
   activeBuffs: ActiveBuff[];
   activeEvents: ActiveEvent[];
   totalEventsExperienced: number;
+  // New fields
+  expressPoints: number;
+  totalExpressPointsEarned: number;
+  rareLoot: RareLoot[];
+  activeChallenge: ActiveChallenge | null;
+  completedChallenges: string[];
+  loreUnlocked: string[];
+  lastSaveTime: number;
 }

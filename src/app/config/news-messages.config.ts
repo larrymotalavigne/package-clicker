@@ -104,6 +104,26 @@ const BUILDING_SPECIFIC: NewsMessage[] = [
     text: 'All 200 CEOs agree: packages are the future.',
     condition: (c) => (c.buildings['ceo'] ?? 0) >= 200,
   },
+  {
+    text: 'Your satellite network now has more orbital objects than SpaceX.',
+    condition: (c) => (c.buildings['satellite'] ?? 0) >= 10,
+  },
+  {
+    text: 'Time Machines are delivering packages to the past. Historians are confused.',
+    condition: (c) => (c.buildings['timemachine'] ?? 0) >= 1,
+  },
+  {
+    text: 'Your Multiverse Portals have made "local delivery" meaningless.',
+    condition: (c) => (c.buildings['multiverse'] ?? 0) >= 1,
+  },
+  {
+    text: '50 Time Machines running simultaneously. The timeline is mostly fine.',
+    condition: (c) => (c.buildings['timemachine'] ?? 0) >= 50,
+  },
+  {
+    text: 'Breaking: Multiverse logistics company delivers same package to infinite realities.',
+    condition: (c) => (c.buildings['multiverse'] ?? 0) >= 10,
+  },
 ];
 
 const MILESTONE_MESSAGES: NewsMessage[] = [

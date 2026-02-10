@@ -1,4 +1,4 @@
-import { TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { GameStateService } from './services/game-state.service';
 import { GameActionsService } from './services/game-actions.service';
@@ -11,6 +11,13 @@ import { PrestigeService } from './services/prestige.service';
 import { WrinklerService } from './services/wrinkler.service';
 import { TooltipService } from './services/tooltip.service';
 import { EventService } from './services/event.service';
+import { OfflineEarningsService } from './services/offline-earnings.service';
+import { SynergyService } from './services/synergy.service';
+import { ChallengeService } from './services/challenge.service';
+import { LoreService } from './services/lore.service';
+import { RareLootService } from './services/rare-loot.service';
+import { SoundService } from './services/sound.service';
+import { ThemeService } from './services/theme.service';
 import { signal, computed } from '@angular/core';
 
 function createMockGameState() {
@@ -29,6 +36,9 @@ function createMockGameState() {
       airport: { count: 0, basePrice: 330000000, pps: 44000 },
       spaceport: { count: 0, basePrice: 5100000000, pps: 260000 },
       ceo: { count: 0, basePrice: 75000000000, pps: 1600000 },
+      satellite: { count: 0, basePrice: 1000000000000, pps: 65000000 },
+      timemachine: { count: 0, basePrice: 14000000000000, pps: 430000000 },
+      multiverse: { count: 0, basePrice: 200000000000000, pps: 2900000000 },
     },
     achievements: [],
     totalPackagesClicked: 50,
@@ -47,6 +57,8 @@ function createMockGameState() {
       particleEffects: true,
       shortNumbers: true,
       showBuffTimers: true,
+      soundEnabled: false,
+      theme: 'dark' as const,
     },
     totalBuildingsEver: 0,
     totalPlayTime: 0,
@@ -54,6 +66,13 @@ function createMockGameState() {
     activeBuffs: [],
     activeEvents: [],
     totalEventsExperienced: 0,
+    expressPoints: 0,
+    totalExpressPointsEarned: 0,
+    rareLoot: [],
+    activeChallenge: null,
+    completedChallenges: [] as string[],
+    loreUnlocked: [] as string[],
+    lastSaveTime: Date.now(),
   };
 }
 
@@ -70,6 +89,12 @@ describe('AppComponent', () => {
   let prestigeService: any;
   let wrinklerService: any;
   let eventService: any;
+  let offlineService: any;
+  let challengeService: any;
+  let loreService: any;
+  let rareLootService: any;
+  let soundService: any;
+  let themeService: any;
 
   const mockState = createMockGameState();
   const gameStateSignal = signal(mockState);
@@ -96,6 +121,16 @@ describe('AppComponent', () => {
       resetState: jest.fn(),
       resetForAscension: jest.fn(),
       getDefaultGameState: jest.fn().mockReturnValue(mockState),
+      updateLastSaveTime: jest.fn(),
+      addExpressPoints: jest.fn(),
+      spendExpressPoints: jest.fn(),
+      addRareLoot: jest.fn(),
+      updateChallenge: jest.fn(),
+      completeChallenge: jest.fn(),
+      unlockLore: jest.fn(),
+      updateActiveEvents: jest.fn(),
+      addActiveEvent: jest.fn(),
+      incrementEventsExperienced: jest.fn(),
     };
 
     gameActionsService = {
@@ -152,6 +187,9 @@ describe('AppComponent', () => {
       getBuildingMultiplier: jest.fn().mockReturnValue(1),
       getGlobalMultiplier: jest.fn().mockReturnValue(1),
       getClickPpsPercent: jest.fn().mockReturnValue(0),
+      getUpgradeEffects: jest.fn().mockReturnValue([]),
+      getCostReduction: jest.fn().mockReturnValue(0),
+      getGoldenFrequencyMult: jest.fn().mockReturnValue(1),
     };
 
     goldenPackageService = {
@@ -194,6 +232,60 @@ describe('AppComponent', () => {
       getBuildingBoostMultiplier: jest.fn().mockReturnValue(1),
     };
 
+    offlineService = {
+      offlineEarnings: signal(0),
+      offlineSeconds: signal(0),
+      checkOfflineEarnings: jest.fn(),
+      claimOfflineEarnings: jest.fn(),
+    };
+
+    challengeService = {
+      activeChallenge: computed(() => null),
+      completedChallenges: computed(() => []),
+      challengeResult: signal(null),
+      getAvailableChallenges: jest.fn().mockReturnValue([]),
+      getAllChallenges: jest.fn().mockReturnValue([]),
+      startChallenge: jest.fn(),
+      recordClick: jest.fn(),
+      recordBuildingPurchase: jest.fn(),
+      recordGoldenClick: jest.fn(),
+      tickChallenge: jest.fn(),
+    };
+
+    loreService = {
+      unlockedLore: computed(() => []),
+      unlockedCount: computed(() => 0),
+      totalCount: 0,
+      checkLoreUnlocks: jest.fn().mockReturnValue([]),
+    };
+
+    rareLootService = {
+      lastDrop: signal(null),
+      rollForLoot: jest.fn().mockReturnValue(null),
+      getGlobalMultiplier: jest.fn().mockReturnValue(1),
+      getClickMultiplier: jest.fn().mockReturnValue(1),
+      getCostReduction: jest.fn().mockReturnValue(0),
+      getGoldenFrequencyMult: jest.fn().mockReturnValue(1),
+    };
+
+    soundService = {
+      playClick: jest.fn(),
+      playPurchase: jest.fn(),
+      playUpgrade: jest.fn(),
+      playAchievement: jest.fn(),
+      playGolden: jest.fn(),
+      playEvent: jest.fn(),
+      playLootDrop: jest.fn(),
+      playChallengeComplete: jest.fn(),
+      playChallengeFail: jest.fn(),
+    };
+
+    themeService = {
+      init: jest.fn(),
+      toggle: jest.fn(),
+      applyTheme: jest.fn(),
+    };
+
     await TestBed.configureTestingModule({
       imports: [AppComponent],
       providers: [
@@ -208,6 +300,13 @@ describe('AppComponent', () => {
         { provide: WrinklerService, useValue: wrinklerService },
         { provide: EventService, useValue: eventService },
         { provide: TooltipService, useValue: { show: jest.fn(), hide: jest.fn(), visible: signal(false), data: signal(null) } },
+        { provide: OfflineEarningsService, useValue: offlineService },
+        { provide: SynergyService, useValue: { getSynergyMultiplier: jest.fn().mockReturnValue(1), getSynergiesForBuilding: jest.fn().mockReturnValue([]) } },
+        { provide: ChallengeService, useValue: challengeService },
+        { provide: LoreService, useValue: loreService },
+        { provide: RareLootService, useValue: rareLootService },
+        { provide: SoundService, useValue: soundService },
+        { provide: ThemeService, useValue: themeService },
       ],
     }).compileComponents();
 
@@ -244,6 +343,16 @@ describe('AppComponent', () => {
         mockState.achievements
       );
     });
+
+    it('should initialize theme on init', () => {
+      component.ngOnInit();
+      expect(themeService.init).toHaveBeenCalled();
+    });
+
+    it('should check offline earnings on init', () => {
+      component.ngOnInit();
+      expect(offlineService.checkOfflineEarnings).toHaveBeenCalled();
+    });
   });
 
   describe('Component Cleanup', () => {
@@ -263,6 +372,12 @@ describe('AppComponent', () => {
       component.ngOnInit();
       component.ngOnDestroy();
       expect(saveService.saveGameState).toHaveBeenCalled();
+    });
+
+    it('should update last save time on destroy', () => {
+      component.ngOnInit();
+      component.ngOnDestroy();
+      expect(gameStateService.updateLastSaveTime).toHaveBeenCalled();
     });
   });
 
@@ -290,9 +405,24 @@ describe('AppComponent', () => {
       expect(gameActionsService.clickPackage).toHaveBeenCalled();
     });
 
+    it('should play click sound on click', () => {
+      const event = new MouseEvent('click', { clientX: 100, clientY: 100 });
+      Object.defineProperty(event, 'currentTarget', {
+        value: { getBoundingClientRect: () => ({ left: 0, top: 0, width: 200, height: 200 }) },
+      });
+      component.clickPackage(event);
+      expect(soundService.playClick).toHaveBeenCalled();
+    });
+
     it('should call buyBuilding on GameActionsService', () => {
       component.buyBuilding('cursor');
       expect(gameActionsService.buyBuilding).toHaveBeenCalledWith('cursor');
+    });
+
+    it('should play purchase sound on successful buy', () => {
+      gameActionsService.buyBuilding.mockReturnValue(true);
+      component.buyBuilding('cursor');
+      expect(soundService.playPurchase).toHaveBeenCalled();
     });
 
     it('should handle buying different building types', () => {
@@ -310,9 +440,16 @@ describe('AppComponent', () => {
     });
 
     it('should purchase upgrade and recalculate PPS', () => {
+      upgradeService.purchaseUpgrade.mockReturnValue(true);
       component.purchaseUpgrade('cursor_1');
       expect(upgradeService.purchaseUpgrade).toHaveBeenCalledWith('cursor_1');
       expect(gameActionsService.recalculatePps).toHaveBeenCalled();
+    });
+
+    it('should play upgrade sound on successful purchase', () => {
+      upgradeService.purchaseUpgrade.mockReturnValue(true);
+      component.purchaseUpgrade('cursor_1');
+      expect(soundService.playUpgrade).toHaveBeenCalled();
     });
   });
 
@@ -344,6 +481,24 @@ describe('AppComponent', () => {
       goldenPackageService.click.mockReturnValue(null);
       component.clickGolden();
       expect(component.achievementPopup).toBeNull();
+    });
+
+    it('should play golden sound on golden click', () => {
+      goldenPackageService.click.mockReturnValue({
+        name: 'Frenzy',
+        type: 'frenzy',
+      });
+      component.clickGolden();
+      expect(soundService.playGolden).toHaveBeenCalled();
+    });
+
+    it('should add express points on golden click', () => {
+      goldenPackageService.click.mockReturnValue({
+        name: 'Frenzy',
+        type: 'frenzy',
+      });
+      component.clickGolden();
+      expect(gameStateService.addExpressPoints).toHaveBeenCalled();
     });
   });
 
@@ -425,6 +580,11 @@ describe('AppComponent', () => {
         particleEffects: false,
       });
     });
+
+    it('should apply theme when theme setting changes', () => {
+      component.handleSettingChange({ theme: 'light' });
+      expect(themeService.applyTheme).toHaveBeenCalledWith('light');
+    });
   });
 
   describe('Reset Game', () => {
@@ -438,6 +598,58 @@ describe('AppComponent', () => {
       jest.spyOn(window, 'confirm').mockReturnValue(false);
       component.resetGame();
       expect(gameActionsService.resetGame).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Challenges', () => {
+    beforeEach(() => {
+      component.ngOnInit();
+    });
+
+    it('should start a challenge', () => {
+      component.startChallenge('speed_click_1');
+      expect(challengeService.startChallenge).toHaveBeenCalledWith('speed_click_1');
+    });
+  });
+
+  describe('Mini-Game', () => {
+    beforeEach(() => {
+      component.ngOnInit();
+    });
+
+    it('should complete mini-game and add express points', () => {
+      component.showMiniGame = true;
+      component.completeMiniGame({ score: 20, expressPointsEarned: 4 });
+      expect(gameStateService.addExpressPoints).toHaveBeenCalledWith(4);
+      expect(component.showMiniGame).toBe(false);
+    });
+  });
+
+  describe('Events', () => {
+    beforeEach(() => {
+      component.ngOnInit();
+    });
+
+    it('should accept events with sound', () => {
+      component.acceptEvent();
+      expect(soundService.playEvent).toHaveBeenCalled();
+      expect(eventService.acceptEvent).toHaveBeenCalled();
+    });
+
+    it('should dismiss events', () => {
+      component.dismissEvent();
+      expect(eventService.dismissEvent).toHaveBeenCalled();
+    });
+  });
+
+  describe('Offline Earnings', () => {
+    beforeEach(() => {
+      component.ngOnInit();
+    });
+
+    it('should claim offline earnings', () => {
+      component.claimOffline();
+      expect(offlineService.claimOfflineEarnings).toHaveBeenCalled();
     });
   });
 });

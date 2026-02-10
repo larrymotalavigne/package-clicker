@@ -6,6 +6,7 @@ import {
   ViewChild,
   computed,
   inject,
+  HostListener,
 } from '@angular/core';
 import { GameStateService } from './services/game-state.service';
 import { GameActionsService } from './services/game-actions.service';
@@ -18,7 +19,15 @@ import { PrestigeService } from './services/prestige.service';
 import { WrinklerService } from './services/wrinkler.service';
 import { TooltipService } from './services/tooltip.service';
 import { EventService } from './services/event.service';
-import { GameSettings } from './models/game.models';
+import { OfflineEarningsService } from './services/offline-earnings.service';
+
+import { ChallengeService } from './services/challenge.service';
+import { LoreService } from './services/lore.service';
+import { RareLootService } from './services/rare-loot.service';
+import { SoundService } from './services/sound.service';
+import { ThemeService } from './services/theme.service';
+import { GameSettings, MiniGameResult, SeasonalTheme } from './models/game.models';
+import { getCurrentSeason } from './config/seasonal.config';
 import { BuildingCardComponent } from './components/building-card/building-card.component';
 import { UpgradePanelComponent } from './components/upgrade-panel/upgrade-panel.component';
 import { ParticleEffectsComponent } from './components/particle-effects/particle-effects.component';
@@ -32,6 +41,13 @@ import { OptionsPanelComponent } from './components/options-panel/options-panel.
 import { PrestigeScreenComponent } from './components/prestige-screen/prestige-screen.component';
 import { WrinklerComponent } from './components/wrinkler/wrinkler.component';
 import { EventPopupComponent } from './components/event-popup/event-popup.component';
+import { OfflinePopupComponent } from './components/offline-popup/offline-popup.component';
+import { ChallengePanelComponent } from './components/challenge-panel/challenge-panel.component';
+import { LoreViewerComponent } from './components/lore-viewer/lore-viewer.component';
+import { LootDisplayComponent } from './components/loot-display/loot-display.component';
+import { ProgressHintsComponent, ProgressHint } from './components/progress-hints/progress-hints.component';
+import { SeasonalBannerComponent } from './components/seasonal-banner/seasonal-banner.component';
+import { MiniGameComponent } from './components/mini-game/mini-game.component';
 import { NewsContext } from './config/news-messages.config';
 
 @Component({
@@ -51,6 +67,13 @@ import { NewsContext } from './config/news-messages.config';
     PrestigeScreenComponent,
     WrinklerComponent,
     EventPopupComponent,
+    OfflinePopupComponent,
+    ChallengePanelComponent,
+    LoreViewerComponent,
+    LootDisplayComponent,
+    ProgressHintsComponent,
+    SeasonalBannerComponent,
+    MiniGameComponent,
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
@@ -70,6 +93,12 @@ export class AppComponent implements OnInit, OnDestroy {
   private wrinklerService = inject(WrinklerService);
   tooltipService = inject(TooltipService);
   eventService = inject(EventService);
+  offlineService = inject(OfflineEarningsService);
+  challengeService = inject(ChallengeService);
+  loreService = inject(LoreService);
+  rareLootService = inject(RareLootService);
+  soundService = inject(SoundService);
+  themeService = inject(ThemeService);
 
   gameState = this.gameStateService.gameState;
   packagesPerSecond = this.gameStateService.packagesPerSecond;
@@ -80,22 +109,30 @@ export class AppComponent implements OnInit, OnDestroy {
   showStats = false;
   showOptions = false;
   showPrestige = false;
+  showChallenges = false;
+  showLore = false;
+  showMiniGame = false;
   achievementPopup: string | null = null;
   isClicking = false;
   screenFlashClass = '';
 
   readonly pendingEvent = this.eventService.pendingEvent;
   readonly activeEvents = this.eventService.activeEvents;
-
   readonly availableUpgrades = this.upgradeService.availableUpgrades;
+  readonly offlineEarnings = this.offlineService.offlineEarnings;
+  readonly offlineSeconds = this.offlineService.offlineSeconds;
+  readonly lastLootDrop = this.rareLootService.lastDrop;
+  readonly challengeResult = this.challengeService.challengeResult;
+  readonly activeChallenge = this.challengeService.activeChallenge;
+  readonly currentSeason: SeasonalTheme | undefined = getCurrentSeason();
 
-  readonly milkPercent = computed(
-    () => this.achievementService.completionPercentage()
-  );
+  readonly milkPercent = computed(() => this.achievementService.completionPercentage());
 
   readonly effectivePps = computed(() => {
     const state = this.gameStateService.gameState();
-    return this.gameActionsService.getEffectivePps(state);
+    let pps = this.gameActionsService.getEffectivePps(state);
+    if (this.currentSeason) pps *= (1 + this.currentSeason.productionBonus);
+    return pps;
   });
 
   readonly effectiveClick = computed(() => {
@@ -123,8 +160,7 @@ export class AppComponent implements OnInit, OnDestroy {
     const configs = this.configService.getBuildingConfigs();
     const state = this.gameState();
     return configs.map((c) => {
-      const data =
-        state.buildings[c.id as keyof typeof state.buildings];
+      const data = state.buildings[c.id as keyof typeof state.buildings];
       return {
         name: c.name,
         count: data?.count ?? 0,
@@ -134,31 +170,55 @@ export class AppComponent implements OnInit, OnDestroy {
   });
 
   readonly achievementProgress = computed(() => {
-    return this.achievementService.getAchievementProgress(
-      this.gameState()
-    );
+    return this.achievementService.getAchievementProgress(this.gameState());
   });
+
+  readonly progressHints = computed((): ProgressHint[] => {
+    const state = this.gameState();
+    const hints: ProgressHint[] = [];
+    const configs = this.configService.getBuildingConfigs();
+    for (const c of configs) {
+      const data = state.buildings[c.id as keyof typeof state.buildings];
+      if (!data || data.count === 0) continue;
+      const milestones = [10, 25, 50, 100, 150, 200];
+      for (const m of milestones) {
+        if (data.count < m) {
+          hints.push({
+            text: `${c.name}: ${data.count}/${m}`,
+            progress: (data.count / m) * 100,
+          });
+          break;
+        }
+      }
+    }
+    return hints.slice(0, 3);
+  });
+
+  hintIndex = 0;
 
   private gameInterval!: ReturnType<typeof setInterval>;
   private saveInterval!: ReturnType<typeof setInterval>;
   private buffInterval!: ReturnType<typeof setInterval>;
   private ppsRecalcInterval!: ReturnType<typeof setInterval>;
+  private hintInterval!: ReturnType<typeof setInterval>;
+  private loreInterval!: ReturnType<typeof setInterval>;
 
   constructor() {
     const saved = this.gameState();
-    this.achievementService.setUnlockedAchievements(
-      saved.achievements
-    );
+    this.achievementService.setUnlockedAchievements(saved.achievements);
   }
 
   ngOnInit(): void {
+    this.themeService.init();
     this.gameActionsService.recalculatePps();
+    this.offlineService.checkOfflineEarnings();
 
     this.gameInterval = setInterval(() => {
       this.gameActionsService.generatePassiveIncome();
     }, this.configService.getGameLoopInterval());
 
     this.saveInterval = setInterval(() => {
+      this.gameStateService.updateLastSaveTime();
       this.saveService.saveGameState(this.gameState());
     }, this.configService.getAutoSaveInterval());
 
@@ -166,11 +226,24 @@ export class AppComponent implements OnInit, OnDestroy {
       this.goldenPackageService.tickBuffs(100);
       this.gameStateService.updatePlayTime(100);
       this.eventService.tickEvents(100);
+      this.challengeService.tickChallenge(100);
     }, 100);
 
     this.ppsRecalcInterval = setInterval(() => {
       this.gameActionsService.recalculatePps();
     }, 1000);
+
+    this.hintInterval = setInterval(() => {
+      this.hintIndex++;
+    }, 5000);
+
+    this.loreInterval = setInterval(() => {
+      const newLore = this.loreService.checkLoreUnlocks();
+      if (newLore.length > 0) {
+        this.achievementPopup = 'New chapter unlocked!';
+        setTimeout(() => (this.achievementPopup = null), 3000);
+      }
+    }, 5000);
 
     this.goldenPackageService.start();
     this.eventService.start();
@@ -181,46 +254,84 @@ export class AppComponent implements OnInit, OnDestroy {
     clearInterval(this.saveInterval);
     clearInterval(this.buffInterval);
     clearInterval(this.ppsRecalcInterval);
+    clearInterval(this.hintInterval);
+    clearInterval(this.loreInterval);
     this.goldenPackageService.stop();
     this.eventService.stop();
+    this.gameStateService.updateLastSaveTime();
     this.saveService.saveGameState(this.gameState());
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  onKeydown(event: KeyboardEvent): void {
+    if (event.target instanceof HTMLInputElement) return;
+    if (event.target instanceof HTMLTextAreaElement) return;
+
+    switch (event.key) {
+      case ' ':
+        event.preventDefault();
+        this.gameActionsService.clickPackage();
+        this.soundService.playClick();
+        this.challengeService.recordClick();
+        break;
+      case '1': case '2': case '3': case '4': case '5':
+      case '6': case '7': case '8': case '9': case '0': {
+        const idx = event.key === '0' ? 9 : parseInt(event.key, 10) - 1;
+        const configs = this.configService.getBuildingConfigs();
+        if (idx < configs.length) this.buyBuilding(configs[idx].id);
+        break;
+      }
+      case 's': this.showStats = !this.showStats; break;
+      case 'o': this.showOptions = !this.showOptions; break;
+      case 'c': this.showChallenges = !this.showChallenges; break;
+      case 'l': this.showLore = !this.showLore; break;
+      case 'Escape':
+        this.showStats = false;
+        this.showOptions = false;
+        this.showPrestige = false;
+        this.showChallenges = false;
+        this.showLore = false;
+        break;
+    }
   }
 
   clickPackage(event: MouseEvent): void {
     this.gameActionsService.clickPackage();
+    this.soundService.playClick();
+    this.challengeService.recordClick();
 
     this.isClicking = true;
     setTimeout(() => (this.isClicking = false), 150);
 
-    if (
-      this.particles &&
-      this.gameState().settings.particleEffects
-    ) {
-      const rect = (
-        event.currentTarget as HTMLElement
-      ).getBoundingClientRect();
+    if (this.particles && this.gameState().settings.particleEffects) {
+      const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
-      this.particles.spawn(
-        x,
-        y,
-        '+' + this.formatNumber(this.effectiveClick())
-      );
+      this.particles.spawn(x, y, '+' + this.formatNumber(this.effectiveClick()));
     }
   }
 
   buyBuilding(type: string): void {
-    this.gameActionsService.buyBuilding(type);
+    const bought = this.gameActionsService.buyBuilding(type);
+    if (bought) {
+      this.soundService.playPurchase();
+      this.challengeService.recordBuildingPurchase();
+    }
   }
 
   purchaseUpgrade(id: string): void {
-    this.upgradeService.purchaseUpgrade(id);
-    this.gameActionsService.recalculatePps();
+    const bought = this.upgradeService.purchaseUpgrade(id);
+    if (bought) {
+      this.soundService.playUpgrade();
+      this.gameActionsService.recalculatePps();
+    }
   }
 
   clickGolden(): void {
     const buff = this.goldenPackageService.click();
     if (buff) {
+      this.soundService.playGolden();
+      this.challengeService.recordGoldenClick();
       this.achievementPopup = buff.name;
       setTimeout(() => (this.achievementPopup = null), 3000);
 
@@ -232,6 +343,16 @@ export class AppComponent implements OnInit, OnDestroy {
         this.screenFlashClass = 'flash-lucky';
       }
       setTimeout(() => (this.screenFlashClass = ''), 500);
+
+      // Chance for loot drop on golden click
+      if (Math.random() < 0.15) {
+        const loot = this.rareLootService.rollForLoot();
+        if (loot) this.soundService.playLootDrop();
+      }
+
+      // Express points from golden clicks
+      const epAmount = Math.floor(1 + Math.random() * 3);
+      this.gameStateService.addExpressPoints(epAmount);
     }
   }
 
@@ -243,6 +364,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.prestigeService.ascend();
     this.achievementService.resetAchievements();
     this.showPrestige = false;
+    this.gameStateService.addExpressPoints(10 * this.prestigeService.pendingGain());
   }
 
   purchaseHeavenly(id: string): void {
@@ -250,11 +372,29 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   acceptEvent(): void {
+    this.soundService.playEvent();
     this.eventService.acceptEvent();
   }
 
   dismissEvent(): void {
     this.eventService.dismissEvent();
+  }
+
+  claimOffline(): void {
+    this.offlineService.claimOfflineEarnings();
+  }
+
+  startChallenge(id: string): void {
+    this.challengeService.startChallenge(id);
+    this.showChallenges = false;
+  }
+
+  completeMiniGame(result: MiniGameResult): void {
+    this.gameStateService.addExpressPoints(result.expressPointsEarned);
+    this.showMiniGame = false;
+    if (result.expressPointsEarned > 0) {
+      this.soundService.playChallengeComplete();
+    }
   }
 
   formatNumber(num: number): string {
@@ -279,6 +419,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   handleSave(): void {
+    this.gameStateService.updateLastSaveTime();
     this.saveService.saveGameState(this.gameState());
   }
 
@@ -308,14 +449,13 @@ export class AppComponent implements OnInit, OnDestroy {
 
   handleSettingChange(settings: Partial<GameSettings>): void {
     this.gameStateService.updateSettings(settings);
+    if (settings.theme) {
+      this.themeService.applyTheme(settings.theme);
+    }
   }
 
   resetGame(): void {
-    if (
-      confirm(
-        'Are you sure you want to reset? This cannot be undone!'
-      )
-    ) {
+    if (confirm('Are you sure you want to reset? This cannot be undone!')) {
       this.gameActionsService.resetGame();
     }
   }
