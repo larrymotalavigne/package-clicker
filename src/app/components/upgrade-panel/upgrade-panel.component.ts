@@ -6,9 +6,11 @@ import {
   ChangeDetectionStrategy,
   inject,
 } from '@angular/core';
-import { UpgradeConfig } from '../../models/game.models';
+import { UpgradeConfig, UpgradeEffect } from '../../models/game.models';
 import { TooltipService } from '../../services/tooltip.service';
 import { ConfigService } from '../../services/config.service';
+import { GameStateService } from '../../services/game-state.service';
+import { UpgradeService } from '../../services/upgrade.service';
 
 @Component({
   selector: 'app-upgrade-panel',
@@ -118,6 +120,8 @@ import { ConfigService } from '../../services/config.service';
 export class UpgradePanelComponent {
   private tooltipService = inject(TooltipService);
   private configService = inject(ConfigService);
+  private gameStateService = inject(GameStateService);
+  private upgradeService = inject(UpgradeService);
 
   @Input() upgrades: UpgradeConfig[] = [];
   @Input() packages: number = 0;
@@ -129,13 +133,76 @@ export class UpgradePanelComponent {
     const rect = (event.target as HTMLElement).getBoundingClientRect();
     const affordable = this.packages >= u.price;
     const costLabel = affordable ? 'Cost' : 'Cost (cannot afford)';
+    const effectLine = this.formatEffects(u.effects);
+    const currencyLabel = u.currency === 'express_points' ? ' EP' : '';
+    const desc = `${u.description}\n${effectLine}\n${costLabel}: ${this.configService.formatNumber(u.price)}${currencyLabel}`;
     this.tooltipService.show({
       title: `${u.icon} ${u.name}`,
-      description: `${u.description}\n${costLabel}: ${this.configService.formatNumber(u.price)}`,
+      description: desc,
       extra: u.flavorText,
       x: Math.min(rect.left, window.innerWidth - 300),
       y: rect.bottom + 8,
     });
+  }
+
+  private formatEffects(effects: UpgradeEffect[]): string {
+    const state = this.gameStateService.gameState();
+    const parts: string[] = [];
+    for (const e of effects) {
+      switch (e.type) {
+        case 'building_multiplier': {
+          if (!e.buildingType) break;
+          const b = state.buildings[e.buildingType];
+          if (b && b.count > 0) {
+            const currentMult = this.upgradeService
+              .getBuildingMultiplier(e.buildingType);
+            const currentPps = b.count * b.pps * currentMult;
+            const gain = currentPps * (e.value - 1);
+            parts.push(
+              `+${this.configService.formatNumber(gain)} PPS`
+            );
+          } else {
+            parts.push(`x${e.value} building output`);
+          }
+          break;
+        }
+        case 'click_multiplier':
+          parts.push(`x${e.value} click power`);
+          break;
+        case 'global_multiplier':
+          parts.push(`x${e.value} all production`);
+          break;
+        case 'click_add_pps_percent':
+          parts.push(`+${e.value}% of PPS per click`);
+          break;
+        case 'building_cost_reduction': {
+          const pct = Math.round((1 - e.value) * 100);
+          parts.push(`-${pct}% building costs`);
+          break;
+        }
+        case 'golden_frequency': {
+          const pct = Math.round((1 - e.value) * 100);
+          parts.push(`+${pct}% golden packages`);
+          break;
+        }
+        case 'synergy_multiplier': {
+          const pct = Math.round((e.value - 1) * 100);
+          parts.push(`+${pct}% synergy bonus`);
+          break;
+        }
+        case 'offline_mult': {
+          const pct = Math.round(e.value * 100);
+          parts.push(`${pct}% offline production`);
+          break;
+        }
+        case 'express_point_mult':
+          parts.push(`x${e.value} Express Points`);
+          break;
+      }
+    }
+    return parts.length > 0
+      ? `Effect: ${parts.join(', ')}`
+      : '';
   }
 
   moveTooltip(event: MouseEvent): void {

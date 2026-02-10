@@ -96,17 +96,28 @@ import { AchievementProgress } from '../../services/achievement.service';
                     class="ach-item"
                     [class.unlocked]="a.isUnlocked"
                     [class.ach-hidden]="a.achievement.hidden && !a.isUnlocked"
-                    [title]="
-                      a.achievement.hidden && !a.isUnlocked
-                        ? '???: Keep searching...'
-                        : a.achievement.name + ': ' + a.achievement.description
-                    "
                   >
                     @if (a.achievement.hidden && !a.isUnlocked) {
                       <div class="ach-dot ach-mystery">?</div>
                     } @else {
                       <div class="ach-dot"></div>
                     }
+                    <div class="ach-tooltip">
+                      @if (a.achievement.hidden && !a.isUnlocked) {
+                        <strong>???</strong><br>Keep searching...
+                      } @else {
+                        <strong>{{ a.achievement.name }}</strong>
+                        @if (a.isUnlocked) {
+                          <span class="ach-unlocked-badge">\u2713</span>
+                        }
+                        <br>{{ a.achievement.description }}
+                        @if (!a.isUnlocked) {
+                          <div class="ach-progress-bar">
+                            <div class="ach-progress-fill" [style.width.%]="a.progress"></div>
+                          </div>
+                        }
+                      }
+                    </div>
                   </div>
                 }
                 <div class="ach-summary">
@@ -230,6 +241,56 @@ import { AchievementProgress } from '../../services/achievement.service';
         display: flex;
         align-items: center;
         justify-content: center;
+        position: relative;
+        cursor: default;
+      }
+      .ach-tooltip {
+        display: none;
+        position: absolute;
+        bottom: calc(100% + 8px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: #0d0d20;
+        border: 1px solid rgba(255, 215, 0, 0.25);
+        border-radius: 6px;
+        padding: 8px 12px;
+        font-size: 0.75em;
+        color: #e0e0e0;
+        white-space: nowrap;
+        z-index: 10;
+        pointer-events: none;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+        line-height: 1.4;
+      }
+      .ach-tooltip::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 5px solid transparent;
+        border-top-color: rgba(255, 215, 0, 0.25);
+      }
+      .ach-item:hover .ach-tooltip {
+        display: block;
+      }
+      .ach-unlocked-badge {
+        color: #4caf50;
+        margin-left: 4px;
+        font-weight: 700;
+      }
+      .ach-progress-bar {
+        margin-top: 4px;
+        height: 3px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      .ach-progress-fill {
+        height: 100%;
+        background: #ffd700;
+        border-radius: 2px;
+        transition: width 0.3s;
       }
       .ach-dot {
         width: 10px;
@@ -242,7 +303,13 @@ import { AchievementProgress } from '../../services/achievement.service';
         box-shadow: 0 0 4px rgba(255, 215, 0, 0.5);
       }
       .ach-hidden {
-        opacity: 0.4;
+        opacity: 0.5;
+      }
+      .ach-hidden .ach-tooltip {
+        border-color: rgba(128, 0, 255, 0.3);
+      }
+      .ach-hidden .ach-tooltip::after {
+        border-top-color: rgba(128, 0, 255, 0.3);
       }
       .ach-mystery {
         font-size: 7px;
