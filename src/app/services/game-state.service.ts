@@ -7,6 +7,7 @@ import {
   ActiveEvent,
   ActiveChallenge,
   RareLoot,
+  EasterEggsState,
 } from '../models/game.models';
 import { BUILDING_CONFIGS } from '../config/buildings.config';
 import { BuildingType, isBuildingType } from '../types/building-types';
@@ -208,6 +209,13 @@ export class GameStateService {
     }));
   }
 
+  updateEasterEggs(updates: Partial<EasterEggsState>): void {
+    this._gameState.update((s) => ({
+      ...s,
+      easterEggs: { ...s.easterEggs, ...updates },
+    }));
+  }
+
   setFullState(state: GameState): void {
     this._gameState.set(state);
   }
@@ -234,6 +242,7 @@ export class GameStateService {
       completedChallenges: current.completedChallenges,
       loreUnlocked: current.loreUnlocked,
       lastSaveTime: Date.now(),
+      easterEggs: current.easterEggs,
     });
   }
 
@@ -285,6 +294,10 @@ export class GameStateService {
       completedChallenges: [],
       loreUnlocked: [],
       lastSaveTime: Date.now(),
+      easterEggs: {
+        konamiUsed: false,
+        rapidClickTimestamps: [],
+      },
     };
   }
 
@@ -350,6 +363,10 @@ export class GameStateService {
     merged.completedChallenges = merged.completedChallenges || [];
     merged.loreUnlocked = merged.loreUnlocked || [];
     merged.lastSaveTime = merged.lastSaveTime || Date.now();
+    merged.easterEggs = {
+      ...def.easterEggs,
+      ...(merged.easterEggs || {}),
+    };
 
     return merged;
   }

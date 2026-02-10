@@ -1,6 +1,6 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { GameStateService } from './game-state.service';
-import { EVENT_DEFINITIONS } from '../config/events.config';
+import { EVENT_DEFINITIONS, ABSURD_EXCUSES } from '../config/events.config';
 import { GameEvent, ActiveEvent } from '../models/game.models';
 
 @Injectable({ providedIn: 'root' })
@@ -172,7 +172,16 @@ export class EventService {
   private spawnEvent(): void {
     if (!this.running) return;
 
-    const event = this.pickRandomEvent();
+    let event = this.pickRandomEvent();
+    if (event.type === 'negative') {
+      const excuse = ABSURD_EXCUSES[
+        Math.floor(Math.random() * ABSURD_EXCUSES.length)
+      ];
+      event = {
+        ...event,
+        description: event.description + ' ' + excuse,
+      };
+    }
     this.pendingEvent.set(event);
 
     this.dismissTimer = setTimeout(() => {

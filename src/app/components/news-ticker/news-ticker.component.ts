@@ -9,6 +9,8 @@ import {
 import { CommonModule } from '@angular/common';
 import {
   ALL_NEWS_MESSAGES,
+  FORTUNE_COOKIES,
+  HAIKUS,
   NewsContext,
 } from '../../config/news-messages.config';
 
@@ -67,6 +69,7 @@ export class NewsTickerComponent implements OnInit, OnDestroy {
 
   readonly currentMessage = signal('Welcome to Package Clicker!');
   private interval: ReturnType<typeof setInterval> | null = null;
+  private tickCount = 0;
 
   ngOnInit(): void {
     this.interval = setInterval(() => this.pickMessage(), 10000);
@@ -77,6 +80,15 @@ export class NewsTickerComponent implements OnInit, OnDestroy {
   }
 
   private pickMessage(): void {
+    this.tickCount++;
+
+    if (this.tickCount % 5 === 0) {
+      const pool = [...FORTUNE_COOKIES, ...HAIKUS];
+      const idx = Math.floor(Math.random() * pool.length);
+      this.currentMessage.set(pool[idx].text);
+      return;
+    }
+
     const eligible = ALL_NEWS_MESSAGES.filter(
       (m) => !m.condition || m.condition(this.context)
     );

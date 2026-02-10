@@ -73,6 +73,10 @@ function createMockGameState() {
     completedChallenges: [] as string[],
     loreUnlocked: [] as string[],
     lastSaveTime: Date.now(),
+    easterEggs: {
+      konamiUsed: false,
+      rapidClickTimestamps: [],
+    },
   };
 }
 
@@ -131,6 +135,7 @@ describe('AppComponent', () => {
       updateActiveEvents: jest.fn(),
       addActiveEvent: jest.fn(),
       incrementEventsExperienced: jest.fn(),
+      updateEasterEggs: jest.fn(),
     };
 
     gameActionsService = {
@@ -143,6 +148,7 @@ describe('AppComponent', () => {
       resetGame: jest.fn(),
       getEffectivePps: jest.fn().mockReturnValue(5),
       getEffectiveClickValue: jest.fn().mockReturnValue(1),
+      streakMultiplier: 1,
     };
 
     configService = {

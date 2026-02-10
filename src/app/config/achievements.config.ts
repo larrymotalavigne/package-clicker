@@ -285,4 +285,14 @@ export const ACHIEVEMENT_DEFINITIONS: Achievement[] = [
   loreAch('lore_8', 'Historian', 'Unlock 8 lore entries', 8),
   loreAch('lore_12', 'Archivist', 'Unlock 12 lore entries', 12),
   loreAch('lore_16', 'Omniscient', 'Unlock all lore entries', 16),
+
+  // Hidden / Secret (8)
+  { id: 'secret_konami', name: 'The Purple Promise', description: 'Enter the ancient code.', requirement: 1, type: 'secret' as Achievement['type'], category: 'Secret', hidden: true },
+  { id: 'secret_speed_demon', name: 'Speed Demon', description: 'Click 20 times in 3 seconds.', requirement: 1, type: 'secret' as Achievement['type'], category: 'Secret', hidden: true },
+  { id: 'secret_night_owl', name: 'Night Owl', description: 'Play between midnight and 4 AM.', requirement: 1, type: 'secret' as Achievement['type'], category: 'Secret', hidden: true },
+  { id: 'secret_full_house', name: 'Full House', description: 'Own at least 1 of every building type.', requirement: 1, type: 'secret' as Achievement['type'], category: 'Secret', hidden: true },
+  { id: 'secret_watcher', name: 'The Watcher', description: 'Have 10 wrinklers simultaneously.', requirement: 10, type: 'secret' as Achievement['type'], category: 'Secret', hidden: true },
+  { id: 'secret_combo_meal', name: 'Combo Meal', description: 'Have Frenzy and Click Frenzy active at once.', requirement: 1, type: 'secret' as Achievement['type'], category: 'Secret', hidden: true },
+  { id: 'secret_long_game', name: 'The Long Game', description: 'Play for 24 cumulative hours.', requirement: 86400000, type: 'secret' as Achievement['type'], category: 'Secret', hidden: true },
+  { id: 'secret_completionist', name: 'Completionist', description: 'Unlock all non-hidden achievements.', requirement: 1, type: 'secret' as Achievement['type'], category: 'Secret', hidden: true },
 ];

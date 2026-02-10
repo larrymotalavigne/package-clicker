@@ -95,13 +95,18 @@ import { AchievementProgress } from '../../services/achievement.service';
                   <div
                     class="ach-item"
                     [class.unlocked]="a.isUnlocked"
+                    [class.ach-hidden]="a.achievement.hidden && !a.isUnlocked"
                     [title]="
-                      a.achievement.name +
-                      ': ' +
-                      a.achievement.description
+                      a.achievement.hidden && !a.isUnlocked
+                        ? '???: Keep searching...'
+                        : a.achievement.name + ': ' + a.achievement.description
                     "
                   >
-                    <div class="ach-dot"></div>
+                    @if (a.achievement.hidden && !a.isUnlocked) {
+                      <div class="ach-dot ach-mystery">?</div>
+                    } @else {
+                      <div class="ach-dot"></div>
+                    }
                   </div>
                 }
                 <div class="ach-summary">
@@ -235,6 +240,18 @@ import { AchievementProgress } from '../../services/achievement.service';
       .ach-item.unlocked .ach-dot {
         background: #ffd700;
         box-shadow: 0 0 4px rgba(255, 215, 0, 0.5);
+      }
+      .ach-hidden {
+        opacity: 0.4;
+      }
+      .ach-mystery {
+        font-size: 7px;
+        color: rgba(255, 255, 255, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(128, 0, 255, 0.15);
+        border: 1px solid rgba(128, 0, 255, 0.2);
       }
       .ach-summary {
         width: 100%;

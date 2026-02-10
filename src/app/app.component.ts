@@ -6,6 +6,7 @@ import {
   ViewChild,
   computed,
   inject,
+  signal,
   HostListener,
 } from '@angular/core';
 import { GameStateService } from './services/game-state.service';
@@ -116,6 +117,20 @@ export class AppComponent implements OnInit, OnDestroy {
   isClicking = false;
   screenFlashClass = '';
 
+  // Konami code
+  private readonly konamiSequence = [
+    'ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown',
+    'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight',
+    'b', 'a',
+  ];
+  private konamiBuffer: string[] = [];
+
+  // Click streak
+  private clickStreak = 0;
+  private lastStreakTime = 0;
+  private streakTimeout: ReturnType<typeof setTimeout> | null = null;
+  readonly streakDisplay = signal('');
+
   readonly pendingEvent = this.eventService.pendingEvent;
   readonly activeEvents = this.eventService.activeEvents;
   readonly availableUpgrades = this.upgradeService.availableUpgrades;
@@ -212,6 +227,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.themeService.init();
     this.gameActionsService.recalculatePps();
     this.offlineService.checkOfflineEarnings();
+    this.logConsoleGreeting();
 
     this.gameInterval = setInterval(() => {
       this.gameActionsService.generatePassiveIncome();
@@ -267,6 +283,16 @@ export class AppComponent implements OnInit, OnDestroy {
     if (event.target instanceof HTMLInputElement) return;
     if (event.target instanceof HTMLTextAreaElement) return;
 
+    this.konamiBuffer.push(event.key);
+    if (this.konamiBuffer.length > 10) {
+      this.konamiBuffer.shift();
+    }
+    if (this.konamiBuffer.length === 10 &&
+        this.konamiBuffer.every((k, i) => k === this.konamiSequence[i])) {
+      this.activateKonamiCode();
+      this.konamiBuffer = [];
+    }
+
     switch (event.key) {
       case ' ':
         event.preventDefault();
@@ -296,6 +322,8 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   clickPackage(event: MouseEvent): void {
+    this.updateClickStreak();
+    this.trackRapidClicks();
     this.gameActionsService.clickPackage();
     this.soundService.playClick();
     this.challengeService.recordClick();
@@ -452,6 +480,122 @@ export class AppComponent implements OnInit, OnDestroy {
     if (settings.theme) {
       this.themeService.applyTheme(settings.theme);
     }
+  }
+
+  private activateKonamiCode(): void {
+    if (this.gameState().easterEggs?.konamiUsed) return;
+
+    document.body.classList.add('barrel-roll');
+    setTimeout(() => document.body.classList.remove('barrel-roll'), 1500);
+
+    this.screenFlashClass = 'flash-konami';
+    setTimeout(() => (this.screenFlashClass = ''), 500);
+
+    const buff = {
+      id: 'konami_frenzy',
+      name: 'The Purple Promise',
+      type: 'frenzy' as const,
+      multiplier: 10,
+      remainingMs: 30000,
+      totalMs: 30000,
+    };
+    const buffs = [...this.gameState().activeBuffs, buff];
+    this.gameStateService.updateActiveBuffs(buffs);
+
+    this.gameStateService.updateEasterEggs({ konamiUsed: true });
+    this.soundService.playGolden();
+
+    this.achievementPopup = 'The Purple Promise Activated!';
+    setTimeout(() => (this.achievementPopup = null), 3000);
+  }
+
+  private updateClickStreak(): void {
+    const now = Date.now();
+    if (now - this.lastStreakTime < 2000) {
+      this.clickStreak++;
+    } else {
+      this.clickStreak = 1;
+    }
+    this.lastStreakTime = now;
+
+    if (this.streakTimeout) clearTimeout(this.streakTimeout);
+    this.streakTimeout = setTimeout(() => {
+      this.clickStreak = 0;
+      this.streakDisplay.set('');
+      this.gameActionsService.streakMultiplier = 1;
+    }, 2000);
+
+    this.applyStreakBonus();
+  }
+
+  private applyStreakBonus(): void {
+    if (this.clickStreak >= 50) {
+      this.streakDisplay.set('x50!');
+      this.setStreakMultiplier(5, 5000);
+      this.screenFlashClass = 'flash-konami';
+      setTimeout(() => (this.screenFlashClass = ''), 500);
+    } else if (this.clickStreak >= 20) {
+      this.streakDisplay.set('x20!');
+      this.setStreakMultiplier(3, 3000);
+      this.soundService.playChallengeComplete();
+    } else if (this.clickStreak >= 10) {
+      this.streakDisplay.set('x10!');
+      this.setStreakMultiplier(2, 3000);
+    } else if (this.clickStreak >= 5) {
+      this.streakDisplay.set('x5!');
+      this.setStreakMultiplier(1.5, 3000);
+    } else {
+      this.streakDisplay.set('');
+    }
+  }
+
+  private setStreakMultiplier(mult: number, ms: number): void {
+    this.gameActionsService.streakMultiplier = mult;
+    setTimeout(() => {
+      this.gameActionsService.streakMultiplier = 1;
+    }, ms);
+  }
+
+  private trackRapidClicks(): void {
+    const now = Date.now();
+    const eggs = this.gameState().easterEggs ?? {
+      konamiUsed: false,
+      rapidClickTimestamps: [],
+    };
+    const timestamps = [...eggs.rapidClickTimestamps, now]
+      .slice(-20);
+    this.gameStateService.updateEasterEggs({
+      rapidClickTimestamps: timestamps,
+    });
+  }
+
+  private logConsoleGreeting(): void {
+    const days = [
+      'Sunday Funday!',
+      'Ugh, Monday.',
+      'Taco Tuesday!',
+      'Hump Day!',
+      'Almost Friday!',
+      'TGIF!',
+      'Weekend vibes!',
+    ];
+    const dayMsg = days[new Date().getDay()];
+    console.warn(
+      '%cPACKAGE CLICKER',
+      'color:#4D148C;font-size:2em;font-weight:bold;'
+    );
+    console.warn(
+      '%cThe world on time. One click at a time.',
+      'color:#FF6600;font-size:1em;'
+    );
+    console.warn(
+      '%cPsst... the ancient ones spoke of a code. Up, Up, Down, Down...',
+      'color:#888;font-style:italic;'
+    );
+    console.warn(
+      '%c' + dayMsg,
+      'color:#ffd700;font-size:0.9em;'
+    );
   }
 
   resetGame(): void {

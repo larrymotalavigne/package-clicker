@@ -237,6 +237,53 @@ const FEDEX_MILESTONE_MESSAGES: NewsMessage[] = [
   },
 ];
 
+export const FORTUNE_COOKIES: NewsMessage[] = [
+  { text: '\uD83E\uDD60 Confucius say: He who clicks fastest, delivers most.' },
+  { text: '\uD83E\uDD60 A package in the hand is worth two in the warehouse.' },
+  { text: '\uD83E\uDD60 Your next golden package will bring great fortune.' },
+  { text: '\uD83E\uDD60 Today is a good day to buy Sorting Facilities.' },
+  { text: '\uD83E\uDD60 Beware the wrinkler that eats in silence.' },
+  { text: '\uD83E\uDD60 Fortune favors the one with the most Delivery Trucks.' },
+  { text: '\uD83E\uDD60 In the future, you will click something important. Probably a package.' },
+  { text: '\uD83E\uDD60 A wise courier knows: all routes lead to more packages.' },
+  { text: '\uD83E\uDD60 The answer to your question is: buy more buildings.' },
+  { text: '\uD83E\uDD60 He who hesitates gets fewer packages per second.' },
+  { text: '\uD83E\uDD60 You will soon achieve something. Or not. Fortune cookies are vague.' },
+  { text: '\uD83E\uDD60 The best time to prestige was yesterday. The second best time is now.' },
+];
+
+export const HAIKUS: NewsMessage[] = [
+  { text: '\uD83C\uDF43 Packages stack high / Conveyor belts hum their song / Click and they are gone' },
+  { text: '\uD83C\uDF43 Golden shimmer waits / Patient clicker finds the prize / Seven times the flow' },
+  { text: '\uD83C\uDF43 Wrinklers gather round / Dark blobs eating all your work / Pop them for the gold' },
+  { text: '\uD83C\uDF43 Routes stretch out like threads / The algorithm weaves tight / Fewer stops, more peace' },
+  { text: '\uD83C\uDF43 Prestige calls to you / Reset and rise up once more / Stronger than before' },
+  { text: '\uD83C\uDF43 Midnight clicks ring out / The Night Owl knows the secret / Silence brings reward' },
+  { text: '\uD83C\uDF43 Buildings rise in rows / Each one faster than the last / Empire of cards' },
+  { text: '\uD83C\uDF43 One more click, they said / Hours later, dawn arrives / Was it worth it? Yes' },
+];
+
+const KONAMI_MESSAGES: NewsMessage[] = [
+  { text: 'BREAKING: Ancient FedEx code deciphered. The Purple Promise has been fulfilled.' },
+];
+
+const DAY_OF_WEEK_MESSAGES: NewsMessage[] = [
+  { text: 'Ugh, Monday. Even the packages look tired.', condition: () => new Date().getDay() === 1 },
+  { text: 'Monday motivation: You are only 1,000 clicks away from greatness.', condition: () => new Date().getDay() === 1 },
+  { text: 'Taco Tuesday at the sorting facility. Morale is up 200%.', condition: () => new Date().getDay() === 2 },
+  { text: 'Tuesday tip: Upgrades are more cost-effective than you think.', condition: () => new Date().getDay() === 2 },
+  { text: 'Hump day! Halfway to the weekend. Packages are optimistic.', condition: () => new Date().getDay() === 3 },
+  { text: 'Wednesday wisdom: Buy upgrades before buildings.', condition: () => new Date().getDay() === 3 },
+  { text: 'Almost Friday! The packages can feel it.', condition: () => new Date().getDay() === 4 },
+  { text: 'Thursday throwback: Remember your first click?', condition: () => new Date().getDay() === 4 },
+  { text: 'TGIF! The packages are ready to party.', condition: () => new Date().getDay() === 5 },
+  { text: 'Friday feeling: Golden packages seem extra shiny today.', condition: () => new Date().getDay() === 5 },
+  { text: 'Weekend shift! Double overtime for all facilities.', condition: () => new Date().getDay() === 6 },
+  { text: 'Saturday chill: Take it easy. Or click harder. Your choice.', condition: () => new Date().getDay() === 6 },
+  { text: 'Sunday rest... just kidding. Packages never sleep.', condition: () => new Date().getDay() === 0 },
+  { text: 'Sunday special: Wrinklers seem extra hungry today.', condition: () => new Date().getDay() === 0 },
+];
+
 export const ALL_NEWS_MESSAGES: NewsMessage[] = [
   ...GENERIC,
   ...BUILDING_SPECIFIC,
@@ -244,4 +291,8 @@ export const ALL_NEWS_MESSAGES: NewsMessage[] = [
   ...EVENT_MESSAGES,
   ...FEDEX_MESSAGES,
   ...FEDEX_MILESTONE_MESSAGES,
+  ...FORTUNE_COOKIES,
+  ...HAIKUS,
+  ...DAY_OF_WEEK_MESSAGES,
+  ...KONAMI_MESSAGES,
 ];

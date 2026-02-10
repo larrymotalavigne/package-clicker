@@ -26,6 +26,7 @@ export type AchievementType =
   | 'challenges'
   | 'express_points'
   | 'lore'
+  | 'secret'
   | BuildingType;
 
 export interface Achievement {
@@ -281,4 +282,10 @@ export interface GameState {
   completedChallenges: string[];
   loreUnlocked: string[];
   lastSaveTime: number;
+  easterEggs: EasterEggsState;
+}
+
+export interface EasterEggsState {
+  konamiUsed: boolean;
+  rapidClickTimestamps: number[];
 }

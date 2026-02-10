@@ -1,5 +1,20 @@
 import { GameEvent } from '../models/game.models';
 
+export const ABSURD_EXCUSES: string[] = [
+  'The driver says a flock of pigeons hijacked the truck.',
+  'IT blames cosmic rays. Again.',
+  'The packages gained sentience and refused to move.',
+  'A time traveler warned us not to deliver today.',
+  'The conveyor belt developed an existential crisis.',
+  'Someone sorted packages by vibes instead of zip code.',
+  'The K-API returned a 418: I\'m a teapot.',
+  'A wrinkler ate the entire manifest.',
+  'Mercury is in retrograde. Logistics don\'t work during retrograde.',
+  'The CEO\'s cat sat on the keyboard and canceled all routes.',
+  'An intern deployed to production. Again.',
+  'The packages are staging a union protest.',
+];
+
 export const EVENT_DEFINITIONS: GameEvent[] = [
   // Positive (60%)
   {

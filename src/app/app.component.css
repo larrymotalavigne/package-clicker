@@ -421,6 +421,30 @@
   to { opacity: 0; }
 }
 
+.flash-konami {
+  background: rgba(77, 20, 140, 0.4);
+}
+
+/* ── Streak Counter ── */
+.streak-counter {
+  position: absolute;
+  top: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.8em;
+  font-weight: 900;
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255,215,0,0.6), 0 0 20px rgba(255,165,0,0.4);
+  pointer-events: none;
+  animation: streakPulse 0.4s ease-out;
+  z-index: 10;
+}
+
+@keyframes streakPulse {
+  from { transform: translateX(-50%) scale(1.4); opacity: 0.5; }
+  to { transform: translateX(-50%) scale(1); opacity: 1; }
+}
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
   #game-container {

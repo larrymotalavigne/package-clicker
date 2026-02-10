@@ -43,6 +43,9 @@
             <div class="box-right"></div>
           </div>
         </div>
+        @if (streakDisplay()) {
+          <div class="streak-counter">{{ streakDisplay() }}</div>
+        }
         <app-particle-effects [enabled]="gameState().settings.particleEffects"></app-particle-effects>
         <app-wrinkler
           [wrinklers]="wrinklers()"

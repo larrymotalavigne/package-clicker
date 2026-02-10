@@ -98,6 +98,16 @@ app-root {
   outline-color: #b8860b;
 }
 
+/* ── Barrel Roll (Konami code) ── */
+body.barrel-roll {
+  animation: barrelRoll 1s ease-in-out;
+}
+
+@keyframes barrelRoll {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 /* ── Reduced motion ── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

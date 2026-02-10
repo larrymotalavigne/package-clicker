@@ -14,6 +14,7 @@ import { BuildingType } from '../types/building-types';
 
 @Injectable({ providedIn: 'root' })
 export class GameActionsService {
+  streakMultiplier = 1;
   private lastClickTime = 0;
   private pendingUpdates = {
     packages: null as number | null,
@@ -195,6 +196,7 @@ export class GameActionsService {
     }
 
     base *= this.prestigeService.prestigeMultiplier();
+    base *= this.streakMultiplier;
     return base;
   }
 

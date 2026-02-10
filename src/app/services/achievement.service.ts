@@ -166,10 +166,57 @@ export class AchievementService {
         return gs.totalExpressPointsEarned;
       case 'lore':
         return gs.loreUnlocked.length;
+      case 'secret':
+        return this.checkSecretProgress(ach, gs);
       default: {
         const b = gs.buildings[ach.type as keyof typeof gs.buildings];
         return b ? b.count : 0;
       }
+    }
+  }
+
+  private checkSecretProgress(
+    ach: Achievement,
+    gs: GameState
+  ): number {
+    switch (ach.id) {
+      case 'secret_konami':
+        return gs.easterEggs?.konamiUsed ? 1 : 0;
+      case 'secret_speed_demon': {
+        const ts = gs.easterEggs?.rapidClickTimestamps ?? [];
+        if (ts.length < 20) return 0;
+        const cutoff = ts[ts.length - 1] - 3000;
+        const recent = ts.filter((t) => t >= cutoff);
+        return recent.length >= 20 ? 1 : 0;
+      }
+      case 'secret_night_owl':
+        return new Date().getHours() < 4 ? 1 : 0;
+      case 'secret_full_house': {
+        const allOwned = Object.values(gs.buildings)
+          .every((b) => b.count > 0);
+        return allOwned ? 1 : 0;
+      }
+      case 'secret_watcher':
+        return gs.wrinklers.length;
+      case 'secret_combo_meal': {
+        const hasFrenzy = gs.activeBuffs
+          .some((b) => b.type === 'frenzy');
+        const hasClickFrenzy = gs.activeBuffs
+          .some((b) => b.type === 'click_frenzy');
+        return hasFrenzy && hasClickFrenzy ? 1 : 0;
+      }
+      case 'secret_long_game':
+        return gs.totalPlayTime;
+      case 'secret_completionist': {
+        const allDefs = this._achievements();
+        const nonHidden = allDefs.filter((a) => !a.hidden);
+        const unlocked = this._unlockedAchievements();
+        const allNonHiddenDone = nonHidden
+          .every((a) => unlocked.has(a.id));
+        return allNonHiddenDone ? 1 : 0;
+      }
+      default:
+        return 0;
     }
   }
 
