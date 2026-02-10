@@ -129,8 +129,99 @@ const MILESTONE_MESSAGES: NewsMessage[] = [
   },
 ];
 
+const EVENT_MESSAGES: NewsMessage[] = [
+  {
+    text: 'Breaking: Random events now affect production! Stay alert for opportunities.',
+    condition: () => true,
+  },
+  {
+    text: 'Package Rush incoming! Production is doubled across all facilities!',
+    condition: () => true,
+  },
+  {
+    text: 'Supply chain experts warn: disruptions could increase costs temporarily.',
+    condition: () => true,
+  },
+  {
+    text: 'Express Delivery mode activated! Clicks are worth more than ever!',
+    condition: () => true,
+  },
+  {
+    text: 'Tax season: Government rebates boosting package counts everywhere.',
+    condition: () => true,
+  },
+  {
+    text: 'Market analysts predict shifting demand across building sectors.',
+    condition: () => true,
+  },
+];
+
+const FEDEX_MESSAGES: NewsMessage[] = [
+  // FedEx classics
+  { text: 'FedEx: When it absolutely, positively has to be clicked overnight.' },
+  { text: 'The world on time. Except Tuesdays. Tuesdays are weird.' },
+  { text: 'Internal memo: "Please stop marking packages as POD before they are actually delivered."' },
+  { text: 'DEBRIEF station agent reports: all trips compliant. For once.' },
+  { text: 'Non-compliant trip detected on route 42. Driver claims "the packages clicked themselves."' },
+  { text: 'Breaking: Fred Smith seen clicking packages manually. "Old habits," he says.' },
+  { text: 'Scan code VAN registered. Package is on the van. The van is on a plane. The plane is in space.' },
+  { text: 'FedEx tracking update: Your package is currently in a state of quantum superposition.' },
+  { text: 'DEX 07 — Customer not available. Customer was clicking packages and could not be disturbed.' },
+  { text: 'Station agent quoted: "I have debriefed 47 trips today. Send help. And packages."' },
+  { text: 'FedEx Purple Promise: We will absolutely deliver your packages. Probably. Almost certainly.' },
+  { text: 'BREAKING: FedEx driver achieves 100% POD rate. Promoted to CEO on the spot.' },
+  { text: 'Supply chain update: The K-API is returning 200 OK. Celebrate while it lasts.' },
+  { text: 'IT department confirms: the API is working. "It can be broken or not working but that is fine."' },
+  { text: 'Overheard at the sorting facility: "Where the magic really happens!"' },
+  { text: 'New hire orientation: "Congrats! You are joining a team of clickers from all over the world!"' },
+  { text: 'FedEx Ground, FedEx Express, FedEx Freight... FedEx Clicker. Coming soon.' },
+  { text: 'Reminder: Every package has a tracking number. Every click has a purpose.' },
+  { text: 'FedEx Europe division reports record throughput. The Kaamelott Team takes full credit.' },
+  { text: 'Internal ticket: "K-API response time exceeds 3 seconds." Resolution: "Click faster."' },
+  { text: 'DEV environment status: broken. But that is fine.' },
+  { text: 'The DEBRIEF system shows 0 non-compliant trips. This is either a miracle or a bug.' },
+  // Kaamelott crossovers
+  { text: '"C\'est pas faux." — Ancient logistics proverb on package delivery.' },
+  { text: '"On en a gros!" — Package warehouse workers, upon seeing the daily shipment volume.' },
+  { text: 'The Kaamelott Team sends their regards. And packages. Mostly packages.' },
+  { text: 'Legend says the Holy Grail was actually just a really well-packaged delivery.' },
+  { text: '"Faut pas respirer la compote, ca fait tousser." — Safety tip from the sorting facility.' },
+  { text: 'King Arthur would have delivered the grail faster with a FedEx account.' },
+  { text: '"C\'est pas un probleme de logistique, c\'est un probleme de clics!" — Station agent, probably.' },
+];
+
+const FEDEX_MILESTONE_MESSAGES: NewsMessage[] = [
+  {
+    text: 'FedEx HQ calling: You have been promoted from Courier to Senior Package Clicker.',
+    condition: (c) => c.packages >= 1e5,
+  },
+  {
+    text: 'Fred Smith sends a memo: "Who is this person clicking all our packages?!"',
+    condition: (c) => c.packages >= 1e8,
+  },
+  {
+    text: 'The Kaamelott Team has named a server after you. It crashes daily. It is an honor.',
+    condition: (c) => c.packages >= 1e10,
+  },
+  {
+    text: 'DEBRIEF alert: Your click-per-second rate exceeds the API rate limit. Impressive.',
+    condition: (c) => c.pps >= 1000,
+  },
+  {
+    text: 'Your delivery trucks outnumber actual FedEx vehicles. Legal is concerned.',
+    condition: (c) => (c.buildings['cursor'] ?? 0) >= 100,
+  },
+  {
+    text: 'Your FedEx Store franchise has more locations than Starbucks. Coffee not included.',
+    condition: (c) => (c.buildings['bank'] ?? 0) >= 50,
+  },
+];
+
 export const ALL_NEWS_MESSAGES: NewsMessage[] = [
   ...GENERIC,
   ...BUILDING_SPECIFIC,
   ...MILESTONE_MESSAGES,
+  ...EVENT_MESSAGES,
+  ...FEDEX_MESSAGES,
+  ...FEDEX_MILESTONE_MESSAGES,
 ];

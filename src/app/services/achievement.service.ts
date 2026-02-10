@@ -158,6 +158,8 @@ export class AchievementService {
         return gs.goldenPackageClicks;
       case 'prestige':
         return gs.prestige.level;
+      case 'events':
+        return gs.totalEventsExperienced;
       default: {
         const b = gs.buildings[ach.type as keyof typeof gs.buildings];
         return b ? b.count : 0;

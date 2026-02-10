@@ -189,9 +189,12 @@ export class SaveService {
       migrated.totalPlayTime = gs['totalPlayTime'] as number;
     if (Array.isArray(gs['activeBuffs']))
       migrated.activeBuffs = gs['activeBuffs'] as GameState['activeBuffs'];
+    if (typeof gs['totalEventsExperienced'] === 'number')
+      migrated.totalEventsExperienced = gs['totalEventsExperienced'] as number;
 
     // Always reset ephemeral state
     migrated.wrinklers = [];
+    migrated.activeEvents = [];
     migrated.lastTickTime = Date.now();
 
     // Ensure prestige totalEarnedAllTime is at least totalPackagesEarned

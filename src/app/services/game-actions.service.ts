@@ -7,6 +7,7 @@ import { UpgradeService } from './upgrade.service';
 import { GoldenPackageService } from './golden-package.service';
 import { PrestigeService } from './prestige.service';
 import { WrinklerService } from './wrinkler.service';
+import { EventService } from './event.service';
 import { BuildingType } from '../types/building-types';
 
 @Injectable({ providedIn: 'root' })
@@ -29,6 +30,7 @@ export class GameActionsService {
   private goldenPackageService = inject(GoldenPackageService);
   private prestigeService = inject(PrestigeService);
   private wrinklerService = inject(WrinklerService);
+  private eventService = inject(EventService);
 
   clickPackage(): void {
     const now = Date.now();
@@ -80,10 +82,11 @@ export class GameActionsService {
     const state = this.gameStateService.gameState();
     const data =
       state.buildings[buildingType as keyof typeof state.buildings];
-    return this.configService.calculateBuildingPrice(
+    const base = this.configService.calculateBuildingPrice(
       data.basePrice,
       data.count
     );
+    return Math.floor(base * this.eventService.getBuildingPriceMultiplier());
   }
 
   generatePassiveIncome(): void {
@@ -176,6 +179,7 @@ export class GameActionsService {
     let base = state.packagesPerClick;
     base *= this.upgradeService.getClickMultiplier();
     base *= this.goldenPackageService.getClickMultiplier();
+    base *= this.eventService.getClickMultiplier();
 
     const ppsPercent = this.upgradeService.getClickPpsPercent();
     if (ppsPercent > 0) {
@@ -202,13 +206,15 @@ export class GameActionsService {
       const mult = this.upgradeService.getBuildingMultiplier(
         id as BuildingType
       );
-      total += basePps * mult;
+      const eventBoost = this.eventService.getBuildingBoostMultiplier(id);
+      total += basePps * mult * eventBoost;
     }
 
     total *= this.upgradeService.getGlobalMultiplier();
     total *= this.goldenPackageService.getProductionMultiplier();
     total *= this.prestigeService.prestigeMultiplier();
     total *= this.prestigeService.heavenlyMultiplier();
+    total *= this.eventService.getProductionMultiplier();
 
     return total;
   }

@@ -1,4 +1,11 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  OnChanges,
+  SimpleChanges,
+} from '@angular/core';
 import { BuildingConfig, Building } from '../../models/game.models';
 
 @Component({
@@ -10,6 +17,7 @@ import { BuildingConfig, Building } from '../../models/game.models';
       class="building-row"
       [class.affordable]="affordable"
       [class.locked]="!affordable"
+      [class.just-bought]="justBought"
       (click)="onBuildingClick()"
     >
       <div class="building-icon">{{ building.icon }}</div>
@@ -18,7 +26,7 @@ import { BuildingConfig, Building } from '../../models/game.models';
         <div class="building-price">{{ formattedPrice }}</div>
       </div>
       @if (buildingData.count > 0) {
-        <div class="building-count">
+        <div class="building-count" [class.count-bounce]="justBought">
           {{ buildingData.count }}
         </div>
       }
@@ -35,6 +43,7 @@ import { BuildingConfig, Building } from '../../models/game.models';
         transition: background 0.15s;
         position: relative;
         min-height: 56px;
+        overflow: hidden;
       }
       .building-row:hover {
         background: rgba(255, 255, 255, 0.06);
@@ -44,6 +53,28 @@ import { BuildingConfig, Building } from '../../models/game.models';
       }
       .building-row.locked {
         opacity: 0.45;
+      }
+      .building-row.just-bought::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 215, 0, 0.15),
+          transparent
+        );
+        animation: purchaseFlash 0.4s ease-out forwards;
+      }
+      .building-row.affordable:hover {
+        background-image: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 215, 0, 0.04),
+          transparent
+        );
+        background-size: 200% 100%;
+        animation: shimmer 1.5s linear infinite;
       }
       .building-icon {
         font-size: 1.6em;
@@ -80,16 +111,63 @@ import { BuildingConfig, Building } from '../../models/game.models';
         text-align: right;
         flex-shrink: 0;
       }
+      .building-count.count-bounce {
+        animation: countBounce 0.3s ease-out;
+      }
+      @keyframes countBounce {
+        0% {
+          transform: scale(1);
+        }
+        40% {
+          transform: scale(1.4);
+          color: rgba(255, 215, 0, 0.6);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      @keyframes purchaseFlash {
+        0% {
+          opacity: 1;
+          transform: translateX(-100%);
+        }
+        100% {
+          opacity: 0;
+          transform: translateX(100%);
+        }
+      }
+      @keyframes shimmer {
+        0% {
+          background-position: -200% 0;
+        }
+        100% {
+          background-position: 200% 0;
+        }
+      }
     `,
   ],
 })
-export class BuildingCardComponent {
+export class BuildingCardComponent implements OnChanges {
   @Input() building!: BuildingConfig;
   @Input() buildingData!: Building;
   @Input() affordable: boolean = false;
   @Input() formattedPrice: string = '';
 
   @Output() buildingClick = new EventEmitter<string>();
+
+  justBought = false;
+  private lastCount = 0;
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['buildingData']) {
+      const newCount = this.buildingData?.count ?? 0;
+      if (this.lastCount > 0 && newCount > this.lastCount) {
+        this.justBought = true;
+        setTimeout(() => (this.justBought = false), 400);
+      }
+      this.lastCount = newCount;
+    }
+  }
 
   onBuildingClick(): void {
     this.buildingClick.emit(this.building.id);

@@ -97,6 +97,22 @@ function goldenAch(
   };
 }
 
+function eventAch(
+  id: string,
+  name: string,
+  desc: string,
+  req: number
+): Achievement {
+  return {
+    id,
+    name,
+    description: desc,
+    requirement: req,
+    type: 'events',
+    category: 'Events',
+  };
+}
+
 const BUILDING_NAMES: Record<string, string> = {
   cursor: 'Delivery Truck',
   grandma: 'Sorting Facility',
@@ -172,13 +188,13 @@ export const ACHIEVEMENT_DEFINITIONS: Achievement[] = [
   ...buildingAchievements(),
 
   // PPS milestones (7)
-  ppsAch('pps_1', 'Automation', 'Produce 1 package per second', 1),
-  ppsAch('pps_10', 'Assembly Line', 'Produce 10 packages per second', 10),
-  ppsAch('pps_100', 'Conveyor Belt', 'Produce 100 pps', 100),
-  ppsAch('pps_1k', 'Factory Floor', 'Produce 1,000 pps', 1e3),
-  ppsAch('pps_10k', 'Industrial Giant', 'Produce 10,000 pps', 1e4),
-  ppsAch('pps_100k', 'Shipping Titan', 'Produce 100,000 pps', 1e5),
-  ppsAch('pps_1m', 'Logistics God', 'Produce 1,000,000 pps', 1e6),
+  ppsAch('pps_1', 'First Scan', 'Produce 1 package per second', 1),
+  ppsAch('pps_10', 'Conveyor Belt', 'Produce 10 packages per second', 10),
+  ppsAch('pps_100', 'Memphis Hub', 'Produce 100 pps', 100),
+  ppsAch('pps_1k', 'FedEx Ground', 'Produce 1,000 pps', 1e3),
+  ppsAch('pps_10k', 'FedEx Express', 'Produce 10,000 pps', 1e4),
+  ppsAch('pps_100k', 'Purple Promise', 'Produce 100,000 pps', 1e5),
+  ppsAch('pps_1m', 'The World On Time', 'Produce 1,000,000 pps', 1e6),
 
   // Upgrade milestones (4)
   upgradeAch('upg_1', 'First Upgrade', 'Purchase your first upgrade', 1),
@@ -191,4 +207,10 @@ export const ACHIEVEMENT_DEFINITIONS: Achievement[] = [
   goldenAch('golden_7', 'Lucky Seven', 'Click 7 golden packages', 7),
   goldenAch('golden_27', 'Golden Touch', 'Click 27 golden packages', 27),
   goldenAch('golden_77', 'Midas', 'Click 77 golden packages', 77),
+
+  // Events (4)
+  eventAch('event_1', 'First DEBRIEF', 'Experience your first event', 1),
+  eventAch('event_10', 'Station Agent', 'Experience 10 events', 10),
+  eventAch('event_25', 'Kaamelott Veteran', 'Experience 25 events', 25),
+  eventAch('event_50', 'C\'est Pas Faux', 'Experience 50 events. Not bad.', 50),
 ];

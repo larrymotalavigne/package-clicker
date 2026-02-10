@@ -10,6 +10,7 @@ import { GoldenPackageService } from './services/golden-package.service';
 import { PrestigeService } from './services/prestige.service';
 import { WrinklerService } from './services/wrinkler.service';
 import { TooltipService } from './services/tooltip.service';
+import { EventService } from './services/event.service';
 import { signal, computed } from '@angular/core';
 
 function createMockGameState() {
@@ -51,6 +52,8 @@ function createMockGameState() {
     totalPlayTime: 0,
     lastTickTime: Date.now(),
     activeBuffs: [],
+    activeEvents: [],
+    totalEventsExperienced: 0,
   };
 }
 
@@ -66,6 +69,7 @@ describe('AppComponent', () => {
   let goldenPackageService: any;
   let prestigeService: any;
   let wrinklerService: any;
+  let eventService: any;
 
   const mockState = createMockGameState();
   const gameStateSignal = signal(mockState);
@@ -124,6 +128,8 @@ describe('AppComponent', () => {
 
     achievementService = {
       completionPercentage: signal(0),
+      unlockedCount: signal(0),
+      totalCount: signal(0),
       checkAchievements: jest.fn().mockReturnValue({ newlyUnlocked: [] }),
       getAchievementProgress: jest.fn().mockReturnValue([]),
       getAchievementStats: jest.fn().mockReturnValue({ progressPercentage: 0 }),
@@ -163,6 +169,7 @@ describe('AppComponent', () => {
       pendingGain: computed(() => 0),
       prestigeMultiplier: computed(() => 1),
       heavenlyMultiplier: computed(() => 1),
+      heavenlyUpgrades: [],
       ascend: jest.fn(),
       purchaseHeavenlyUpgrade: jest.fn(),
     };
@@ -171,6 +178,20 @@ describe('AppComponent', () => {
       wrinklers: signal([]),
       tick: jest.fn().mockReturnValue(0),
       pop: jest.fn(),
+    };
+
+    eventService = {
+      pendingEvent: signal(null),
+      activeEvents: computed(() => []),
+      start: jest.fn(),
+      stop: jest.fn(),
+      acceptEvent: jest.fn(),
+      dismissEvent: jest.fn(),
+      tickEvents: jest.fn(),
+      getProductionMultiplier: jest.fn().mockReturnValue(1),
+      getClickMultiplier: jest.fn().mockReturnValue(1),
+      getBuildingPriceMultiplier: jest.fn().mockReturnValue(1),
+      getBuildingBoostMultiplier: jest.fn().mockReturnValue(1),
     };
 
     await TestBed.configureTestingModule({
@@ -185,6 +206,7 @@ describe('AppComponent', () => {
         { provide: GoldenPackageService, useValue: goldenPackageService },
         { provide: PrestigeService, useValue: prestigeService },
         { provide: WrinklerService, useValue: wrinklerService },
+        { provide: EventService, useValue: eventService },
         { provide: TooltipService, useValue: { show: jest.fn(), hide: jest.fn(), visible: signal(false), data: signal(null) } },
       ],
     }).compileComponents();
@@ -212,6 +234,11 @@ describe('AppComponent', () => {
       expect(goldenPackageService.start).toHaveBeenCalled();
     });
 
+    it('should start event service on init', () => {
+      component.ngOnInit();
+      expect(eventService.start).toHaveBeenCalled();
+    });
+
     it('should set up achievement state in constructor', () => {
       expect(achievementService.setUnlockedAchievements).toHaveBeenCalledWith(
         mockState.achievements
@@ -224,6 +251,12 @@ describe('AppComponent', () => {
       component.ngOnInit();
       component.ngOnDestroy();
       expect(goldenPackageService.stop).toHaveBeenCalled();
+    });
+
+    it('should stop event service on destroy', () => {
+      component.ngOnInit();
+      component.ngOnDestroy();
+      expect(eventService.stop).toHaveBeenCalled();
     });
 
     it('should save game state on destroy', () => {
@@ -297,13 +330,14 @@ describe('AppComponent', () => {
       expect(goldenPackageService.click).toHaveBeenCalled();
     });
 
-    it('should show achievement popup on golden click', () => {
+    it('should show achievement popup and screen flash on golden click', () => {
       goldenPackageService.click.mockReturnValue({
         name: 'Frenzy',
         type: 'frenzy',
       });
       component.clickGolden();
       expect(component.achievementPopup).toBe('Frenzy');
+      expect(component.screenFlashClass).toBe('flash-frenzy');
     });
 
     it('should handle null return from golden click', () => {

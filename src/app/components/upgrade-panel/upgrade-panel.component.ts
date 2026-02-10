@@ -21,6 +21,7 @@ import { UpgradeConfig } from '../../models/game.models';
             <div
               class="upgrade-icon"
               [class.affordable]="packages >= u.price"
+              [class.purchased-flash]="flashId === u.id"
               [title]="u.name + ' - ' + u.description + ' (' + u.price + ')'"
               (click)="onPurchase(u)"
             >
@@ -72,6 +73,24 @@ import { UpgradeConfig } from '../../models/game.models';
         background: rgba(124, 197, 118, 0.2);
         transform: scale(1.1);
       }
+      .upgrade-icon.purchased-flash {
+        animation: sparkle 0.3s ease-out;
+      }
+      @keyframes sparkle {
+        0% {
+          transform: scale(1);
+          filter: brightness(1);
+        }
+        50% {
+          transform: scale(1.2);
+          filter: brightness(1.5);
+        }
+        100% {
+          transform: scale(0.8);
+          filter: brightness(1);
+          opacity: 0;
+        }
+      }
     `,
   ],
 })
@@ -80,12 +99,16 @@ export class UpgradePanelComponent {
   @Input() packages: number = 0;
   @Output() purchase = new EventEmitter<string>();
 
+  flashId: string | null = null;
+
   trackUpgrade(_: number, u: UpgradeConfig): string {
     return u.id;
   }
 
   onPurchase(u: UpgradeConfig): void {
     if (this.packages >= u.price) {
+      this.flashId = u.id;
+      setTimeout(() => (this.flashId = null), 300);
       this.purchase.emit(u.id);
     }
   }

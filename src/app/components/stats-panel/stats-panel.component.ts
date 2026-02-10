@@ -126,6 +126,7 @@ import { AchievementProgress } from '../../services/achievement.service';
         display: flex;
         align-items: center;
         justify-content: center;
+        animation: overlayFadeIn 0.2s ease-out;
       }
       .panel {
         background: #1a1a2e;
@@ -136,6 +137,21 @@ import { AchievementProgress } from '../../services/achievement.service';
         max-height: 80vh;
         overflow-y: auto;
         color: #e0e0e0;
+        animation: panelSlideIn 0.3s ease-out;
+      }
+      @keyframes overlayFadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      @keyframes panelSlideIn {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
       .panel-header {
         display: flex;

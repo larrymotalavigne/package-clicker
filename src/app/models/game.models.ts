@@ -22,6 +22,7 @@ export type AchievementType =
   | 'upgrades'
   | 'golden_clicks'
   | 'prestige'
+  | 'events'
   | BuildingType;
 
 export interface Achievement {
@@ -110,6 +111,38 @@ export interface GameSettings {
   showBuffTimers: boolean;
 }
 
+export interface EventEffect {
+  type:
+    | 'production_mult'
+    | 'click_mult'
+    | 'building_discount'
+    | 'instant_packages'
+    | 'lose_packages'
+    | 'building_boost';
+  value: number;
+  buildingType?: string;
+}
+
+export interface GameEvent {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  type: 'positive' | 'negative' | 'neutral';
+  effect: EventEffect;
+  durationMs: number;
+}
+
+export interface ActiveEvent {
+  id: string;
+  name: string;
+  icon: string;
+  type: 'positive' | 'negative' | 'neutral';
+  effect: EventEffect;
+  remainingMs: number;
+  totalMs: number;
+}
+
 export interface GameState {
   packages: number;
   packagesPerSecond: number;
@@ -127,4 +160,6 @@ export interface GameState {
   totalPlayTime: number;
   lastTickTime: number;
   activeBuffs: ActiveBuff[];
+  activeEvents: ActiveEvent[];
+  totalEventsExperienced: number;
 }

@@ -97,8 +97,8 @@
   transition: transform 0.08s ease;
 }
 
-#big-package:active {
-  transform: scale(0.92);
+#big-package.clicking {
+  animation: boxSquash 0.15s ease-out;
 }
 
 .box-3d {
@@ -173,6 +173,13 @@
 @keyframes boxIdle {
   0%, 100% { transform: rotateX(-15deg) rotateY(-25deg); }
   50% { transform: rotateX(-18deg) rotateY(-22deg) translateY(-4px); }
+}
+
+@keyframes boxSquash {
+  0% { transform: scaleY(1) scaleX(1); }
+  30% { transform: scaleY(0.85) scaleX(1.1); }
+  60% { transform: scaleY(1.05) scaleX(0.97); }
+  100% { transform: scaleY(1) scaleX(1); }
 }
 
 /* ── Bottom Bar ── */
@@ -273,7 +280,7 @@
   font-weight: 600;
   font-size: 0.9em;
   z-index: 999;
-  animation: toastIn 0.3s ease-out, toastOut 0.3s ease-in 2.7s forwards;
+  animation: toastIn 0.3s ease-out, toastGlow 1s ease-in-out infinite, toastOut 0.3s ease-in 2.7s forwards;
   box-shadow: 0 4px 20px rgba(255,215,0,0.2);
 }
 
@@ -285,6 +292,37 @@
 @keyframes toastOut {
   from { opacity: 1; }
   to { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+}
+
+@keyframes toastGlow {
+  0%, 100% { box-shadow: 0 4px 20px rgba(255,215,0,0.2); }
+  50% { box-shadow: 0 4px 30px rgba(255,215,0,0.5), 0 0 15px rgba(255,215,0,0.3); }
+}
+
+/* ── Screen Flash ── */
+.screen-flash {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1200;
+  animation: screenFlash 0.5s ease-out forwards;
+}
+
+.flash-frenzy {
+  background: rgba(255, 165, 0, 0.3);
+}
+
+.flash-click-frenzy {
+  background: rgba(255, 0, 100, 0.3);
+}
+
+.flash-lucky {
+  background: rgba(0, 200, 100, 0.3);
+}
+
+@keyframes screenFlash {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 
 /* ── Responsive ── */

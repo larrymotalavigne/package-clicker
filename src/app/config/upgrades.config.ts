@@ -11,10 +11,10 @@ const BUILDING_META: {
     name: 'Delivery Truck',
     tiers: [
       { count: 1, price: 100, name: 'Reinforced Tires', flavor: 'Built to last the extra mile.' },
-      { count: 5, price: 500, name: 'GPS Navigation', flavor: 'Never lost, always delivering.' },
-      { count: 25, price: 10000, name: 'Turbo Engine', flavor: 'Faster than overnight.' },
-      { count: 50, price: 500000, name: 'Fleet Automation', flavor: 'They drive themselves now.' },
-      { count: 100, price: 50000000, name: 'Quantum Trucks', flavor: 'Delivers before you order.' },
+      { count: 5, price: 500, name: 'GPS Navigation', flavor: 'Never lost, always delivering. Unlike that one DEX 07.' },
+      { count: 25, price: 10000, name: 'Turbo Engine', flavor: 'Faster than FedEx Priority Overnight.' },
+      { count: 50, price: 500000, name: 'Fleet Automation', flavor: 'They drive themselves now. DEBRIEF still flags them.' },
+      { count: 100, price: 50000000, name: 'Quantum Trucks', flavor: 'Delivers before you order. POD pre-scanned.' },
     ],
   },
   {
@@ -22,7 +22,7 @@ const BUILDING_META: {
     name: 'Sorting Facility',
     tiers: [
       { count: 1, price: 1000, name: 'Conveyor Belts', flavor: 'Packages flow like rivers.' },
-      { count: 5, price: 5000, name: 'Barcode Scanners', flavor: 'Beep. Beep. Efficiency.' },
+      { count: 5, price: 5000, name: 'Barcode Scanners', flavor: 'Beep. Beep. VAN scan registered. Efficiency.' },
       { count: 25, price: 50000, name: 'Robotic Arms', flavor: 'Sorting at light speed.' },
       { count: 50, price: 5000000, name: 'AI Sorting', flavor: 'The machine knows where it goes.' },
       { count: 100, price: 500000000, name: 'Quantum Sorter', flavor: 'Sorted in all timelines.' },
@@ -88,7 +88,7 @@ const BUILDING_META: {
     name: 'International Airport',
     tiers: [
       { count: 1, price: 3300000000, name: 'Extra Runways', flavor: 'More flights, more packages.' },
-      { count: 5, price: 16500000000, name: 'Hub Status', flavor: 'The center of the network.' },
+      { count: 5, price: 16500000000, name: 'Hub Status', flavor: 'Memphis SuperHub status achieved. Fred Smith approves.' },
       { count: 25, price: 165000000000, name: 'Space Elevator', flavor: 'Why fly when you can ride?' },
       { count: 50, price: 16500000000000, name: 'Orbital Platform', flavor: 'Above the clouds.' },
       { count: 100, price: 1650000000000000, name: 'Warp Gate', flavor: 'Anywhere in an instant.' },
@@ -111,9 +111,9 @@ const BUILDING_META: {
     tiers: [
       { count: 1, price: 750000000000, name: 'Executive Suite', flavor: 'Corner office with a view.' },
       { count: 5, price: 3750000000000, name: 'Board of Directors', flavor: 'Synergy at the highest level.' },
-      { count: 25, price: 37500000000000, name: 'World Domination', flavor: 'Every company is now FedEx.' },
-      { count: 50, price: 3750000000000000, name: 'Time Travel Inc.', flavor: 'Delivered yesterday.' },
-      { count: 100, price: 375000000000000000, name: 'Omniscient CEO', flavor: 'Knows every package.' },
+      { count: 25, price: 37500000000000, name: 'World Domination', flavor: 'Every company is now FedEx. C\'est pas faux.' },
+      { count: 50, price: 3750000000000000, name: 'Time Travel Inc.', flavor: 'Delivered yesterday. K-API response time: -24 hours.' },
+      { count: 100, price: 375000000000000000, name: 'Omniscient CEO', flavor: 'Knows every package. Every scan. Every non-compliant trip.' },
     ],
   },
 ];

@@ -17,6 +17,7 @@ import { GoldenPackageService } from './services/golden-package.service';
 import { PrestigeService } from './services/prestige.service';
 import { WrinklerService } from './services/wrinkler.service';
 import { TooltipService } from './services/tooltip.service';
+import { EventService } from './services/event.service';
 import { GameSettings } from './models/game.models';
 import { BuildingCardComponent } from './components/building-card/building-card.component';
 import { UpgradePanelComponent } from './components/upgrade-panel/upgrade-panel.component';
@@ -30,6 +31,7 @@ import { StatsPanelComponent } from './components/stats-panel/stats-panel.compon
 import { OptionsPanelComponent } from './components/options-panel/options-panel.component';
 import { PrestigeScreenComponent } from './components/prestige-screen/prestige-screen.component';
 import { WrinklerComponent } from './components/wrinkler/wrinkler.component';
+import { EventPopupComponent } from './components/event-popup/event-popup.component';
 import { NewsContext } from './config/news-messages.config';
 
 @Component({
@@ -48,6 +50,7 @@ import { NewsContext } from './config/news-messages.config';
     OptionsPanelComponent,
     PrestigeScreenComponent,
     WrinklerComponent,
+    EventPopupComponent,
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
@@ -66,6 +69,7 @@ export class AppComponent implements OnInit, OnDestroy {
   prestigeService = inject(PrestigeService);
   private wrinklerService = inject(WrinklerService);
   tooltipService = inject(TooltipService);
+  eventService = inject(EventService);
 
   gameState = this.gameStateService.gameState;
   packagesPerSecond = this.gameStateService.packagesPerSecond;
@@ -77,6 +81,11 @@ export class AppComponent implements OnInit, OnDestroy {
   showOptions = false;
   showPrestige = false;
   achievementPopup: string | null = null;
+  isClicking = false;
+  screenFlashClass = '';
+
+  readonly pendingEvent = this.eventService.pendingEvent;
+  readonly activeEvents = this.eventService.activeEvents;
 
   readonly availableUpgrades = this.upgradeService.availableUpgrades;
 
@@ -156,6 +165,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.buffInterval = setInterval(() => {
       this.goldenPackageService.tickBuffs(100);
       this.gameStateService.updatePlayTime(100);
+      this.eventService.tickEvents(100);
     }, 100);
 
     this.ppsRecalcInterval = setInterval(() => {
@@ -163,6 +173,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }, 1000);
 
     this.goldenPackageService.start();
+    this.eventService.start();
   }
 
   ngOnDestroy(): void {
@@ -171,11 +182,16 @@ export class AppComponent implements OnInit, OnDestroy {
     clearInterval(this.buffInterval);
     clearInterval(this.ppsRecalcInterval);
     this.goldenPackageService.stop();
+    this.eventService.stop();
     this.saveService.saveGameState(this.gameState());
   }
 
   clickPackage(event: MouseEvent): void {
     this.gameActionsService.clickPackage();
+
+    this.isClicking = true;
+    setTimeout(() => (this.isClicking = false), 150);
+
     if (
       this.particles &&
       this.gameState().settings.particleEffects
@@ -207,6 +223,15 @@ export class AppComponent implements OnInit, OnDestroy {
     if (buff) {
       this.achievementPopup = buff.name;
       setTimeout(() => (this.achievementPopup = null), 3000);
+
+      if (buff.type === 'frenzy') {
+        this.screenFlashClass = 'flash-frenzy';
+      } else if (buff.type === 'click_frenzy') {
+        this.screenFlashClass = 'flash-click-frenzy';
+      } else {
+        this.screenFlashClass = 'flash-lucky';
+      }
+      setTimeout(() => (this.screenFlashClass = ''), 500);
     }
   }
 
@@ -222,6 +247,14 @@ export class AppComponent implements OnInit, OnDestroy {
 
   purchaseHeavenly(id: string): void {
     this.prestigeService.purchaseHeavenlyUpgrade(id);
+  }
+
+  acceptEvent(): void {
+    this.eventService.acceptEvent();
+  }
+
+  dismissEvent(): void {
+    this.eventService.dismissEvent();
   }
 
   formatNumber(num: number): string {

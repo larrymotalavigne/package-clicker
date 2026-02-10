@@ -4,6 +4,7 @@ import {
   Building,
   PrestigeState,
   GameSettings,
+  ActiveEvent,
 } from '../models/game.models';
 import { BUILDING_CONFIGS } from '../config/buildings.config';
 import { BuildingType, isBuildingType } from '../types/building-types';
@@ -133,6 +134,24 @@ export class GameStateService {
     }));
   }
 
+  updateActiveEvents(events: ActiveEvent[]): void {
+    this._gameState.update((s) => ({ ...s, activeEvents: events }));
+  }
+
+  addActiveEvent(event: ActiveEvent): void {
+    this._gameState.update((s) => ({
+      ...s,
+      activeEvents: [...s.activeEvents, event],
+    }));
+  }
+
+  incrementEventsExperienced(): void {
+    this._gameState.update((s) => ({
+      ...s,
+      totalEventsExperienced: s.totalEventsExperienced + 1,
+    }));
+  }
+
   setFullState(state: GameState): void {
     this._gameState.set(state);
   }
@@ -152,6 +171,7 @@ export class GameStateService {
       goldenPackageClicks: current.goldenPackageClicks,
       totalPlayTime: current.totalPlayTime,
       lastTickTime: Date.now(),
+      totalEventsExperienced: current.totalEventsExperienced,
     });
   }
 
@@ -192,6 +212,8 @@ export class GameStateService {
       totalPlayTime: 0,
       lastTickTime: Date.now(),
       activeBuffs: [],
+      activeEvents: [],
+      totalEventsExperienced: 0,
     };
   }
 
@@ -248,6 +270,8 @@ export class GameStateService {
     merged.totalBuildingsEver = merged.totalBuildingsEver || 0;
     merged.totalPlayTime = merged.totalPlayTime || 0;
     merged.lastTickTime = merged.lastTickTime || Date.now();
+    merged.activeEvents = [];
+    merged.totalEventsExperienced = merged.totalEventsExperienced || 0;
 
     return merged;
   }

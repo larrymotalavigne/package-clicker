@@ -19,12 +19,13 @@
 
     <app-buff-display
       [buffs]="gameState().activeBuffs"
+      [events]="activeEvents()"
     ></app-buff-display>
 
     <div id="main-game-area">
       <div id="package-container" (click)="clickPackage($event)">
         <!-- CSS-only 3D cardboard box -->
-        <div id="big-package">
+        <div id="big-package" [class.clicking]="isClicking">
           <div class="box-3d">
             <div class="box-top"></div>
             <div class="box-front"></div>
@@ -96,6 +97,20 @@
   <div class="achievement-toast">
     {{ achievementPopup }}
   </div>
+}
+
+<!-- Screen Flash -->
+@if (screenFlashClass) {
+  <div class="screen-flash" [class]="screenFlashClass"></div>
+}
+
+<!-- Event Popup -->
+@if (pendingEvent(); as event) {
+  <app-event-popup
+    [event]="event"
+    (accept)="acceptEvent()"
+    (dismiss)="dismissEvent()"
+  ></app-event-popup>
 }
 
 <!-- Panels -->

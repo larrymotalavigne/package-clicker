@@ -82,6 +82,7 @@ import { HeavenlyUpgradeConfig, PrestigeState } from '../../models/game.models';
         display: flex;
         align-items: center;
         justify-content: center;
+        animation: overlayFadeIn 0.2s ease-out;
       }
       .prestige-panel {
         background: linear-gradient(180deg, #0d0d2b, #1a1a3e);
@@ -93,6 +94,21 @@ import { HeavenlyUpgradeConfig, PrestigeState } from '../../models/game.models';
         overflow-y: auto;
         color: #e0e0e0;
         padding: 20px;
+        animation: prestigeZoomIn 0.4s ease-out;
+      }
+      @keyframes overlayFadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      @keyframes prestigeZoomIn {
+        from {
+          opacity: 0;
+          transform: scale(0.8);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
       }
       .prestige-header {
         display: flex;

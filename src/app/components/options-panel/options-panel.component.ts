@@ -75,6 +75,7 @@ import { GameSettings } from '../../models/game.models';
         display: flex;
         align-items: center;
         justify-content: center;
+        animation: overlayFadeIn 0.2s ease-out;
       }
       .panel {
         background: #1a1a2e;
@@ -83,6 +84,21 @@ import { GameSettings } from '../../models/game.models';
         width: 90%;
         max-width: 400px;
         color: #e0e0e0;
+        animation: panelSlideIn 0.3s ease-out;
+      }
+      @keyframes overlayFadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      @keyframes panelSlideIn {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
       .panel-header {
         display: flex;

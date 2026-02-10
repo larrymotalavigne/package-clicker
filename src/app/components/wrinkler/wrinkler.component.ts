@@ -16,9 +16,10 @@ import { Wrinkler } from '../../models/game.models';
     @for (w of wrinklers; track w.id) {
       <div
         class="wrinkler"
+        [class.popping]="poppingId === w.id"
         [style.--angle]="w.angle + 'deg'"
         [title]="'Eaten: ' + formatEaten(w.eaten) + ' (click to pop)'"
-        (click)="pop.emit(w.id)"
+        (click)="onPop(w.id)"
       >
         <div class="wrinkler-body"></div>
       </div>
@@ -40,6 +41,10 @@ import { Wrinkler } from '../../models/game.models';
         animation: wrinklerOrbit 20s linear infinite;
         transform-origin: 0 0;
         transform: rotate(var(--angle)) translateX(100px);
+      }
+      .wrinkler.popping {
+        animation: wrinklerPop 0.4s ease-out forwards;
+        pointer-events: none;
       }
       .wrinkler-body {
         width: 20px;
@@ -77,6 +82,20 @@ import { Wrinkler } from '../../models/game.models';
             translateX(100px);
         }
       }
+      @keyframes wrinklerPop {
+        0% {
+          transform: rotate(var(--angle)) translateX(100px) scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: rotate(var(--angle)) translateX(100px) scale(1.5);
+          opacity: 0.6;
+        }
+        100% {
+          transform: rotate(var(--angle)) translateX(100px) scale(2);
+          opacity: 0;
+        }
+      }
     `,
   ],
 })
@@ -84,8 +103,18 @@ export class WrinklerComponent {
   @Input() wrinklers: Wrinkler[] = [];
   @Output() pop = new EventEmitter<number>();
 
+  poppingId: number | null = null;
+
   trackWrinkler(_: number, w: Wrinkler): number {
     return w.id;
+  }
+
+  onPop(id: number): void {
+    this.poppingId = id;
+    setTimeout(() => {
+      this.poppingId = null;
+      this.pop.emit(id);
+    }, 400);
   }
 
   formatEaten(n: number): string {
