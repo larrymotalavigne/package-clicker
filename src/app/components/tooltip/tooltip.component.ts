@@ -46,6 +46,7 @@ import { TooltipService } from '../../services/tooltip.service';
         font-size: 0.8em;
         color: rgba(255, 255, 255, 0.7);
         line-height: 1.4;
+        white-space: pre-line;
       }
       .tooltip-extra {
         font-size: 0.75em;
