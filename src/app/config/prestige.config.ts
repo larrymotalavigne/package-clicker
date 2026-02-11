@@ -1,4 +1,15 @@
-import { HeavenlyUpgradeConfig } from '../models/game.models';
+import { HeavenlyUpgradeConfig, UpgradeEffect } from '../models/game.models';
+
+export interface CorporateUpgradeConfig {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  icon: string;
+  effects: UpgradeEffect[];
+  requires: string[];
+  position: { x: number; y: number };
+}
 
 export const HEAVENLY_UPGRADES: HeavenlyUpgradeConfig[] = [
   {
@@ -150,5 +161,159 @@ export const HEAVENLY_UPGRADES: HeavenlyUpgradeConfig[] = [
     effects: [{ type: 'global_multiplier', value: 2 }],
     requires: ['hv_start3'],
     position: { x: 0, y: 9 },
+  },
+];
+
+// Corporate tier: requires timesAscended >= 3
+export const CORPORATE_UPGRADES: CorporateUpgradeConfig[] = [
+  {
+    id: 'corp_stamp_speed',
+    name: 'Express Stamps',
+    description: 'Stamps generate 50% faster',
+    price: 5,
+    icon: '\uD83D\uDCEE',
+    effects: [{ type: 'global_multiplier', value: 1.0 }],
+    requires: [],
+    position: { x: 0, y: 0 },
+  },
+  {
+    id: 'corp_employee_xp',
+    name: 'Training Program',
+    description: 'Employees gain 50% more XP',
+    price: 5,
+    icon: '\uD83C\uDFC5',
+    effects: [{ type: 'global_multiplier', value: 1.0 }],
+    requires: [],
+    position: { x: 2, y: 0 },
+  },
+  {
+    id: 'corp_stock_insight',
+    name: 'Market Insight',
+    description: 'Stock volatility reduced by 20%',
+    price: 8,
+    icon: '\uD83D\uDCC8',
+    effects: [{ type: 'global_multiplier', value: 1.0 }],
+    requires: ['corp_stamp_speed'],
+    position: { x: -1, y: 1 },
+  },
+  {
+    id: 'corp_offline',
+    name: 'Night Shift',
+    description: '+25% offline earnings',
+    price: 8,
+    icon: '\uD83C\uDF19',
+    effects: [{ type: 'offline_mult', value: 1.25 }],
+    requires: ['corp_employee_xp'],
+    position: { x: 3, y: 1 },
+  },
+  {
+    id: 'corp_golden',
+    name: 'Golden Magnet',
+    description: '+15% golden package frequency',
+    price: 10,
+    icon: '\uD83E\uDDF2',
+    effects: [{ type: 'golden_frequency', value: 1.15 }],
+    requires: ['corp_stamp_speed'],
+    position: { x: 1, y: 1 },
+  },
+  {
+    id: 'corp_research',
+    name: 'R&D Division',
+    description: 'Research completes 25% faster',
+    price: 12,
+    icon: '\uD83D\uDD2C',
+    effects: [{ type: 'global_multiplier', value: 1.0 }],
+    requires: ['corp_stock_insight'],
+    position: { x: -1, y: 2 },
+  },
+  {
+    id: 'corp_fleet',
+    name: 'Fleet Expansion',
+    description: '+10% fleet route bonuses',
+    price: 12,
+    icon: '\uD83D\uDE9A',
+    effects: [{ type: 'global_multiplier', value: 1.1 }],
+    requires: ['corp_golden'],
+    position: { x: 1, y: 2 },
+  },
+  {
+    id: 'corp_ep_mult',
+    name: 'Express Premium',
+    description: '+20% Express Points earned',
+    price: 15,
+    icon: '\u26A1',
+    effects: [{ type: 'express_point_mult', value: 1.2 }],
+    requires: ['corp_offline'],
+    position: { x: 3, y: 2 },
+  },
+  {
+    id: 'corp_synergy',
+    name: 'Corporate Synergy',
+    description: '+15% all production',
+    price: 20,
+    icon: '\uD83D\uDD17',
+    effects: [{ type: 'global_multiplier', value: 1.15 }],
+    requires: ['corp_research', 'corp_fleet'],
+    position: { x: 0, y: 3 },
+  },
+  {
+    id: 'corp_click_power',
+    name: 'Executive Click',
+    description: '+30% clicking power',
+    price: 20,
+    icon: '\uD83D\uDC46',
+    effects: [{ type: 'click_multiplier', value: 1.3 }],
+    requires: ['corp_ep_mult'],
+    position: { x: 2, y: 3 },
+  },
+  {
+    id: 'corp_automation',
+    name: 'Smart Automation',
+    description: 'Automation rules run 50% faster',
+    price: 25,
+    icon: '\u2699',
+    effects: [{ type: 'global_multiplier', value: 1.0 }],
+    requires: ['corp_synergy'],
+    position: { x: 0, y: 4 },
+  },
+  {
+    id: 'corp_kingdom',
+    name: 'Kingdom Architect',
+    description: 'Kingdom cities produce 25% more EP',
+    price: 25,
+    icon: '\uD83C\uDFDB',
+    effects: [{ type: 'express_point_mult', value: 1.25 }],
+    requires: ['corp_click_power'],
+    position: { x: 2, y: 4 },
+  },
+  {
+    id: 'corp_mega_mult',
+    name: 'Mega Multiplier',
+    description: '+25% all production',
+    price: 50,
+    icon: '\uD83D\uDD25',
+    effects: [{ type: 'global_multiplier', value: 1.25 }],
+    requires: ['corp_automation', 'corp_kingdom'],
+    position: { x: 1, y: 5 },
+  },
+  {
+    id: 'corp_prestige_boost',
+    name: 'Prestige Amplifier',
+    description: 'Each prestige level gives +2% instead of +1%',
+    price: 75,
+    icon: '\u2B50',
+    effects: [{ type: 'global_multiplier', value: 1.0 }],
+    requires: ['corp_mega_mult'],
+    position: { x: 1, y: 6 },
+  },
+  {
+    id: 'corp_final',
+    name: 'Corporate Empire',
+    description: '+100% all production',
+    price: 100,
+    icon: '\uD83C\uDFE2',
+    effects: [{ type: 'global_multiplier', value: 2.0 }],
+    requires: ['corp_prestige_boost'],
+    position: { x: 1, y: 7 },
   },
 ];

@@ -27,6 +27,14 @@ export type AchievementType =
   | 'express_points'
   | 'lore'
   | 'contracts'
+  | 'daily'
+  | 'stocks'
+  | 'research'
+  | 'fleet'
+  | 'stamps'
+  | 'employees'
+  | 'kingdom'
+  | 'automation'
   | 'secret'
   | BuildingType;
 
@@ -103,6 +111,9 @@ export interface PrestigeState {
   totalEarnedAllTime: number;
   heavenlyUpgrades: string[];
   timesAscended: number;
+  corporateLevel: number;
+  corporatePoints: number;
+  corporateUpgrades: string[];
 }
 
 export interface HeavenlyUpgradeConfig {
@@ -280,6 +291,133 @@ export interface SeasonalTheme {
   specialEvent?: GameEvent;
 }
 
+// Daily Login Rewards
+export interface DailyRewardConfig {
+  day: number;
+  name: string;
+  icon: string;
+  reward: { type: 'ep' | 'packages' | 'buff'; value: number };
+}
+
+// Package Types
+export interface PackageTypeConfig {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+  valueMultiplier: number;
+  weight: number;
+}
+
+// Stock Market
+export interface StockPrice {
+  buildingId: string;
+  currentPrice: number;
+  previousPrice: number;
+  history: number[];
+  momentum: number;
+}
+
+// Research Tree
+export interface ResearchNode {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  branch: 'logistics' | 'engineering' | 'finance' | 'innovation';
+  cost: { ep: number; timeMs: number };
+  effects: UpgradeEffect[];
+  requires: string[];
+  position: { x: number; y: number };
+}
+
+export interface ActiveResearch {
+  nodeId: string;
+  remainingMs: number;
+  totalMs: number;
+}
+
+// Fleet Management
+export interface FleetRoute {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  requirement: { buildingType: string; count: number }[];
+  bonusMultiplier: number;
+}
+
+// Employee System
+export type EmployeeType =
+  | 'clicker'
+  | 'sorter'
+  | 'manager'
+  | 'accountant'
+  | 'scout'
+  | 'trainer';
+
+export interface Employee {
+  id: string;
+  type: EmployeeType;
+  name: string;
+  level: number;
+  xp: number;
+  assignment: string | null;
+}
+
+export interface EmployeeConfig {
+  type: EmployeeType;
+  name: string;
+  icon: string;
+  baseCost: number;
+  costMultiplier: number;
+  maxLevel: number;
+  effects: { type: string; valuePerLevel: number }[];
+}
+
+// Idle Kingdom
+export interface KingdomCity {
+  id: string;
+  name: string;
+  level: number;
+  epPerMinute: number;
+  unlocked: boolean;
+}
+
+export interface KingdomState {
+  cities: KingdomCity[];
+  totalEpGenerated: number;
+}
+
+// Leaderboard
+export interface LeaderboardEntry {
+  name: string;
+  score: number;
+  rank: number;
+  isPlayer: boolean;
+}
+
+// Weather
+export type WeatherType =
+  | 'clear'
+  | 'cloudy'
+  | 'rainy'
+  | 'storm'
+  | 'foggy'
+  | 'snow';
+
+// Great Delay
+export type GreatDelayStage = 0 | 1 | 2 | 3;
+
+// Automation
+export interface AutomationRule {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  epCost: number;
+}
+
 export interface GameState {
   packages: number;
   packagesPerSecond: number;
@@ -311,6 +449,33 @@ export interface GameState {
   totalContractsCompleted: number;
   lastSaveTime: number;
   easterEggs: EasterEggsState;
+  // Phase 1: Small features
+  dailyStreak: number;
+  lastLoginDate: string;
+  totalDaysPlayed: number;
+  packageTypeCounts: Record<string, number>;
+  autoBuyUnlocked: boolean;
+  autoBuyEnabled: boolean;
+  autoBuyInterval: number;
+  // Phase 2: Medium features
+  stockPortfolio: Record<string, number>;
+  stockProfitTotal: number;
+  completedResearch: string[];
+  activeResearch: ActiveResearch | null;
+  assignedRoutes: string[];
+  priorityStamps: number;
+  stampProgress: number;
+  buildingLevels: Record<string, number>;
+  employees: Employee[];
+  totalEmployeesHired: number;
+  // Phase 3: Large features
+  greatDelayStage: GreatDelayStage;
+  greatDelayPledged: boolean;
+  kingdom: KingdomState;
+  leaderboardSeed: number;
+  seasonHighScore: number;
+  unlockedAutomation: string[];
+  enabledAutomation: string[];
 }
 
 export interface EasterEggsState {

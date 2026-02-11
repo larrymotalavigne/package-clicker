@@ -26,6 +26,11 @@
           </div>
         }
       </div>
+      <app-weather-display [weather]="weatherCurrent()"></app-weather-display>
+      <app-stamp-display
+        [stamps]="priorityStampService.stamps()"
+        [progressPercent]="priorityStampService.getProgressPercent()"
+      ></app-stamp-display>
     </div>
 
     <app-buff-display
@@ -108,6 +113,41 @@
       @if (totalBuildings() >= 25) {
         <button class="bar-btn route-btn" (click)="showRoutePlanner = true" aria-label="Route planner (P)">
           Route Plan
+        </button>
+      }
+      @if (gameState().completedResearch.length > 0 || gameState().expressPoints >= 20) {
+        <button class="bar-btn research-btn" (click)="showResearch = true" aria-label="Research (H)">
+          Research
+        </button>
+      }
+      @if (totalBuildings() >= 20) {
+        <button class="bar-btn fleet-btn" (click)="showFleet = true" aria-label="Fleet (F)">
+          Fleet
+        </button>
+      }
+      @if (gameState().expressPoints >= 15 || gameState().totalEmployeesHired > 0) {
+        <button class="bar-btn employee-btn" (click)="showEmployees = true" aria-label="Employees (E)">
+          Employees
+        </button>
+      }
+      @if (gameState().prestige.level >= 1 || gameState().unlockedAutomation.length > 0) {
+        <button class="bar-btn automation-btn" (click)="showAutomation = true" aria-label="Automation (A)">
+          Automation
+        </button>
+      }
+      @if (totalBuildings() >= 30) {
+        <button class="bar-btn stock-btn" (click)="showStockMarket = true" aria-label="Stock Market (M)">
+          Market
+        </button>
+      }
+      @if (gameState().expressPoints >= 50 || gameState().kingdom.cities.length > 0) {
+        <button class="bar-btn kingdom-btn" (click)="showKingdom = true" aria-label="Kingdom (K)">
+          Kingdom
+        </button>
+      }
+      @if (gameState().totalPackagesEarned >= 1e9) {
+        <button class="bar-btn leaderboard-btn" (click)="showLeaderboard = true" aria-label="Leaderboard (B)">
+          Leaderboard
         </button>
       }
     </div>
@@ -276,6 +316,96 @@
     (complete)="completeRoutePlanner($event)"
     (closeGame)="showRoutePlanner = false"
   ></app-route-planner>
+}
+
+<!-- Daily Reward Popup -->
+@if (dailyPopupVisible()) {
+  <app-daily-reward-popup
+    [visible]="dailyPopupVisible()"
+    [currentDay]="dailyCurrentDay()"
+    [rewards]="dailyRewardService.getRewards()"
+    [streak]="dailyStreak()"
+    (claim)="claimDailyReward()"
+  ></app-daily-reward-popup>
+}
+
+@if (showResearch) {
+  <app-research-panel
+    [nodes]="researchNodes"
+    [completed]="researchService.completedResearch()"
+    [active]="researchService.activeResearch()"
+    [expressPoints]="gameState().expressPoints"
+    (startResearch)="startResearch($event)"
+    (closePanel)="showResearch = false"
+  ></app-research-panel>
+}
+
+@if (showFleet) {
+  <app-fleet-panel
+    [routes]="fleetService.getAvailableRoutes()"
+    [assignedRoutes]="fleetService.assignedRoutes()"
+    [buildings]="gameState().buildings"
+    [fmt]="formatNumber.bind(this)"
+    (assignRoute)="assignFleetRoute($event)"
+    (unassignRoute)="unassignFleetRoute($event)"
+    (closePanel)="showFleet = false"
+  ></app-fleet-panel>
+}
+
+@if (showEmployees) {
+  <app-employee-panel
+    [employees]="employeeService.employees()"
+    [expressPoints]="gameState().expressPoints"
+    [configs]="employeeService.getAllConfigs()"
+    [fmt]="formatNumber.bind(this)"
+    (hireEmployee)="hireEmployee($event)"
+    (closePanel)="showEmployees = false"
+  ></app-employee-panel>
+}
+
+@if (showAutomation) {
+  <app-automation-panel
+    [rules]="automationService.getAllRules()"
+    [unlocked]="automationService.unlockedRules()"
+    [enabled]="automationService.enabledRules()"
+    [expressPoints]="gameState().expressPoints"
+    (unlockRule)="unlockAutomationRule($event)"
+    (toggleRule)="toggleAutomationRule($event)"
+    (closePanel)="showAutomation = false"
+  ></app-automation-panel>
+}
+
+@if (showStockMarket) {
+  <app-stock-market
+    [prices]="stockMarketService.prices()"
+    [portfolio]="gameState().stockPortfolio"
+    [packages]="gameState().packages"
+    [fmt]="formatNumber.bind(this)"
+    (buyStock)="buyStock($event)"
+    (sellStock)="sellStock($event)"
+    (closePanel)="showStockMarket = false"
+  ></app-stock-market>
+}
+
+@if (showKingdom) {
+  <app-idle-kingdom
+    [cities]="idleKingdomService.kingdom().cities"
+    [totalEpPerMin]="idleKingdomService.totalEpPerMinute()"
+    [expressPoints]="gameState().expressPoints"
+    [fmt]="formatNumber.bind(this)"
+    (upgradeCity)="upgradeKingdomCity($event)"
+    (closePanel)="showKingdom = false"
+  ></app-idle-kingdom>
+}
+
+@if (showLeaderboard) {
+  <app-leaderboard
+    [entries]="leaderboardService.entries()"
+    [playerRank]="leaderboardService.playerRank()"
+    [seasonTimer]="leaderboardService.seasonTimer()"
+    [fmt]="formatNumber.bind(this)"
+    (closePanel)="showLeaderboard = false"
+  ></app-leaderboard>
 }
 
 <app-tooltip></app-tooltip>

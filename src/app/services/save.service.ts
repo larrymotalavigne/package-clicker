@@ -212,6 +212,76 @@ export class SaveService {
     if (typeof gs['lastSaveTime'] === 'number')
       migrated.lastSaveTime = gs['lastSaveTime'] as number;
 
+    // Contracts
+    if (Array.isArray(gs['completedContractIds']))
+      migrated.completedContractIds = gs['completedContractIds'] as string[];
+    if (typeof gs['totalContractsCompleted'] === 'number')
+      migrated.totalContractsCompleted = gs['totalContractsCompleted'] as number;
+
+    // Phase 1: Small features
+    if (typeof gs['dailyStreak'] === 'number')
+      migrated.dailyStreak = gs['dailyStreak'] as number;
+    if (typeof gs['lastLoginDate'] === 'string')
+      migrated.lastLoginDate = gs['lastLoginDate'] as string;
+    if (typeof gs['totalDaysPlayed'] === 'number')
+      migrated.totalDaysPlayed = gs['totalDaysPlayed'] as number;
+    if (gs['packageTypeCounts'] && typeof gs['packageTypeCounts'] === 'object')
+      migrated.packageTypeCounts = gs['packageTypeCounts'] as Record<string, number>;
+    if (typeof gs['autoBuyUnlocked'] === 'boolean')
+      migrated.autoBuyUnlocked = gs['autoBuyUnlocked'] as boolean;
+    if (typeof gs['autoBuyEnabled'] === 'boolean')
+      migrated.autoBuyEnabled = gs['autoBuyEnabled'] as boolean;
+    if (typeof gs['autoBuyInterval'] === 'number')
+      migrated.autoBuyInterval = gs['autoBuyInterval'] as number;
+
+    // Phase 2: Medium features
+    if (gs['stockPortfolio'] && typeof gs['stockPortfolio'] === 'object')
+      migrated.stockPortfolio = gs['stockPortfolio'] as Record<string, number>;
+    if (typeof gs['stockProfitTotal'] === 'number')
+      migrated.stockProfitTotal = gs['stockProfitTotal'] as number;
+    if (Array.isArray(gs['completedResearch']))
+      migrated.completedResearch = gs['completedResearch'] as string[];
+    migrated.activeResearch = null;
+    if (Array.isArray(gs['assignedRoutes']))
+      migrated.assignedRoutes = gs['assignedRoutes'] as string[];
+    if (typeof gs['priorityStamps'] === 'number')
+      migrated.priorityStamps = gs['priorityStamps'] as number;
+    if (typeof gs['stampProgress'] === 'number')
+      migrated.stampProgress = gs['stampProgress'] as number;
+    if (gs['buildingLevels'] && typeof gs['buildingLevels'] === 'object')
+      migrated.buildingLevels = gs['buildingLevels'] as Record<string, number>;
+    if (Array.isArray(gs['employees']))
+      migrated.employees = gs['employees'] as GameState['employees'];
+    if (typeof gs['totalEmployeesHired'] === 'number')
+      migrated.totalEmployeesHired = gs['totalEmployeesHired'] as number;
+
+    // Phase 3: Large features
+    if (typeof gs['greatDelayStage'] === 'number')
+      migrated.greatDelayStage = gs['greatDelayStage'] as GameState['greatDelayStage'];
+    if (typeof gs['greatDelayPledged'] === 'boolean')
+      migrated.greatDelayPledged = gs['greatDelayPledged'] as boolean;
+    if (gs['kingdom'] && typeof gs['kingdom'] === 'object')
+      migrated.kingdom = gs['kingdom'] as GameState['kingdom'];
+    if (typeof gs['leaderboardSeed'] === 'number')
+      migrated.leaderboardSeed = gs['leaderboardSeed'] as number;
+    if (typeof gs['seasonHighScore'] === 'number')
+      migrated.seasonHighScore = gs['seasonHighScore'] as number;
+    if (Array.isArray(gs['unlockedAutomation']))
+      migrated.unlockedAutomation = gs['unlockedAutomation'] as string[];
+    if (Array.isArray(gs['enabledAutomation']))
+      migrated.enabledAutomation = gs['enabledAutomation'] as string[];
+
+    // Prestige corporate fields
+    const prestObj = gs['prestige'] as Record<string, unknown> | undefined;
+    if (prestObj) {
+      if (typeof prestObj['corporateLevel'] === 'number')
+        migrated.prestige.corporateLevel = prestObj['corporateLevel'] as number;
+      if (typeof prestObj['corporatePoints'] === 'number')
+        migrated.prestige.corporatePoints = prestObj['corporatePoints'] as number;
+      if (Array.isArray(prestObj['corporateUpgrades']))
+        migrated.prestige.corporateUpgrades = prestObj['corporateUpgrades'] as string[];
+    }
+
     // Ensure prestige totalEarnedAllTime is at least totalPackagesEarned
     if (
       migrated.prestige.totalEarnedAllTime < migrated.totalPackagesEarned

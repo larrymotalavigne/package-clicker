@@ -28,6 +28,20 @@ import { RareLootService } from './services/rare-loot.service';
 import { SoundService } from './services/sound.service';
 import { ThemeService } from './services/theme.service';
 import { ContractService } from './services/contract.service';
+import { AutoBuyService } from './services/auto-buy.service';
+import { AutomationService } from './services/automation.service';
+import { DailyRewardService } from './services/daily-reward.service';
+import { EmployeeService } from './services/employee.service';
+import { FleetService } from './services/fleet.service';
+import { GreatDelayService } from './services/great-delay.service';
+import { IdleKingdomService } from './services/idle-kingdom.service';
+import { LeaderboardService } from './services/leaderboard.service';
+import { PackageTypeService } from './services/package-type.service';
+import { PriorityStampService } from './services/priority-stamp.service';
+import { ResearchService } from './services/research.service';
+import { StatsHistoryService } from './services/stats-history.service';
+import { StockMarketService } from './services/stock-market.service';
+import { WeatherService } from './services/weather.service';
 import { GameSettings, MiniGameResult, RoutePlannerResult, SeasonalTheme } from './models/game.models';
 import { getCurrentSeason } from './config/seasonal.config';
 import { BuildingCardComponent } from './components/building-card/building-card.component';
@@ -52,6 +66,17 @@ import { SeasonalBannerComponent } from './components/seasonal-banner/seasonal-b
 import { MiniGameComponent } from './components/mini-game/mini-game.component';
 import { ContractPanelComponent } from './components/contract-panel/contract-panel.component';
 import { RoutePlannerComponent } from './components/route-planner/route-planner.component';
+import { AutomationPanelComponent } from './components/automation-panel/automation-panel.component';
+import { DailyRewardPopupComponent } from './components/daily-reward-popup/daily-reward-popup.component';
+import { EmployeePanelComponent } from './components/employee-panel/employee-panel.component';
+import { FleetPanelComponent } from './components/fleet-panel/fleet-panel.component';
+import { IdleKingdomComponent } from './components/idle-kingdom/idle-kingdom.component';
+import { LeaderboardComponent } from './components/leaderboard/leaderboard.component';
+import { ResearchPanelComponent } from './components/research-panel/research-panel.component';
+import { StampDisplayComponent } from './components/stamp-display/stamp-display.component';
+import { StockMarketComponent } from './components/stock-market/stock-market.component';
+import { WeatherDisplayComponent } from './components/weather-display/weather-display.component';
+import { RESEARCH_NODES } from './config/research.config';
 import { NewsContext } from './config/news-messages.config';
 
 @Component({
@@ -80,6 +105,16 @@ import { NewsContext } from './config/news-messages.config';
     MiniGameComponent,
     ContractPanelComponent,
     RoutePlannerComponent,
+    AutomationPanelComponent,
+    DailyRewardPopupComponent,
+    EmployeePanelComponent,
+    FleetPanelComponent,
+    IdleKingdomComponent,
+    LeaderboardComponent,
+    ResearchPanelComponent,
+    StampDisplayComponent,
+    StockMarketComponent,
+    WeatherDisplayComponent,
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
@@ -106,6 +141,20 @@ export class AppComponent implements OnInit, OnDestroy {
   soundService = inject(SoundService);
   themeService = inject(ThemeService);
   contractService = inject(ContractService);
+  autoBuyService = inject(AutoBuyService);
+  automationService = inject(AutomationService);
+  dailyRewardService = inject(DailyRewardService);
+  employeeService = inject(EmployeeService);
+  fleetService = inject(FleetService);
+  greatDelayService = inject(GreatDelayService);
+  idleKingdomService = inject(IdleKingdomService);
+  leaderboardService = inject(LeaderboardService);
+  private packageTypeService = inject(PackageTypeService);
+  priorityStampService = inject(PriorityStampService);
+  researchService = inject(ResearchService);
+  private statsHistoryService = inject(StatsHistoryService);
+  stockMarketService = inject(StockMarketService);
+  weatherService = inject(WeatherService);
 
   gameState = this.gameStateService.gameState;
   packagesPerSecond = this.gameStateService.packagesPerSecond;
@@ -121,6 +170,13 @@ export class AppComponent implements OnInit, OnDestroy {
   showMiniGame = false;
   showContracts = false;
   showRoutePlanner = false;
+  showAutomation = false;
+  showEmployees = false;
+  showFleet = false;
+  showKingdom = false;
+  showLeaderboard = false;
+  showResearch = false;
+  showStockMarket = false;
   achievementPopup: string | null = null;
   isClicking = false;
   screenFlashClass = '';
@@ -149,6 +205,11 @@ export class AppComponent implements OnInit, OnDestroy {
   readonly contractResult = this.contractService.contractResult;
   readonly activeChallenge = this.challengeService.activeChallenge;
   readonly currentSeason: SeasonalTheme | undefined = getCurrentSeason();
+  readonly researchNodes = RESEARCH_NODES;
+  readonly dailyPopupVisible = this.dailyRewardService.showPopup;
+  readonly dailyCurrentDay = this.dailyRewardService.currentDay;
+  readonly dailyStreak = this.dailyRewardService.streak;
+  readonly weatherCurrent = this.weatherService.currentWeather;
 
   readonly totalBuildings = this.gameStateService.totalBuildings;
   readonly milkPercent = computed(() => this.achievementService.completionPercentage());
@@ -240,6 +301,12 @@ export class AppComponent implements OnInit, OnDestroy {
     this.logConsoleGreeting();
 
     this.contractService.refreshBoard();
+    this.dailyRewardService.checkLogin();
+    this.stockMarketService.init();
+    this.leaderboardService.init();
+    this.weatherService.start();
+    this.idleKingdomService.initCities();
+    this.greatDelayService.checkStageAdvance();
 
     this.gameInterval = setInterval(() => {
       this.gameActionsService.generatePassiveIncome();
@@ -256,10 +323,19 @@ export class AppComponent implements OnInit, OnDestroy {
       this.eventService.tickEvents(100);
       this.challengeService.tickChallenge(100);
       this.contractService.tickContracts(100);
+      this.autoBuyService.tick(100);
+      this.idleKingdomService.tick(100);
+      this.priorityStampService.tick(100);
+      this.researchService.tickResearch(100);
+      this.employeeService.tickEmployees(100);
+      this.leaderboardService.tickLeaderboard(100);
     }, 100);
 
     this.ppsRecalcInterval = setInterval(() => {
       this.gameActionsService.recalculatePps();
+      this.stockMarketService.tickPrices();
+      this.statsHistoryService.record(this.packagesPerSecond(), this.gameState().packages);
+      this.greatDelayService.checkStageAdvance();
     }, 1000);
 
     this.hintInterval = setInterval(() => {
@@ -287,6 +363,7 @@ export class AppComponent implements OnInit, OnDestroy {
     clearInterval(this.loreInterval);
     this.goldenPackageService.stop();
     this.eventService.stop();
+    this.weatherService.stop();
     this.gameStateService.updateLastSaveTime();
     this.saveService.saveGameState(this.gameState());
   }
@@ -326,6 +403,13 @@ export class AppComponent implements OnInit, OnDestroy {
       case 'l': this.showLore = !this.showLore; break;
       case 'r': this.showContracts = !this.showContracts; break;
       case 'p': this.showRoutePlanner = !this.showRoutePlanner; break;
+      case 'a': this.showAutomation = !this.showAutomation; break;
+      case 'e': this.showEmployees = !this.showEmployees; break;
+      case 'f': this.showFleet = !this.showFleet; break;
+      case 'k': this.showKingdom = !this.showKingdom; break;
+      case 'b': this.showLeaderboard = !this.showLeaderboard; break;
+      case 'h': this.showResearch = !this.showResearch; break;
+      case 'm': this.showStockMarket = !this.showStockMarket; break;
       case 'Escape':
         this.showStats = false;
         this.showOptions = false;
@@ -334,6 +418,13 @@ export class AppComponent implements OnInit, OnDestroy {
         this.showLore = false;
         this.showContracts = false;
         this.showRoutePlanner = false;
+        this.showAutomation = false;
+        this.showEmployees = false;
+        this.showFleet = false;
+        this.showKingdom = false;
+        this.showLeaderboard = false;
+        this.showResearch = false;
+        this.showStockMarket = false;
         break;
     }
   }
@@ -451,6 +542,47 @@ export class AppComponent implements OnInit, OnDestroy {
 
   refreshContractSlot(index: number): void {
     this.contractService.refreshSlot(index);
+  }
+
+  claimDailyReward(): void {
+    this.dailyRewardService.claimReward();
+  }
+
+  unlockAutomationRule(ruleId: string): void {
+    this.automationService.unlockRule(ruleId);
+  }
+
+  toggleAutomationRule(ruleId: string): void {
+    this.automationService.toggleRule(ruleId);
+  }
+
+  hireEmployee(type: string): void {
+    const hired = this.employeeService.hire(type as any);
+    if (hired) this.soundService.playPurchase();
+  }
+
+  assignFleetRoute(routeId: string): void {
+    this.fleetService.assignRoute(routeId);
+  }
+
+  unassignFleetRoute(routeId: string): void {
+    this.fleetService.unassignRoute(routeId);
+  }
+
+  upgradeKingdomCity(cityId: string): void {
+    this.idleKingdomService.upgradeCity(cityId);
+  }
+
+  startResearch(node: any): void {
+    this.researchService.startResearch(node);
+  }
+
+  buyStock(event: { buildingId: string; quantity: number }): void {
+    this.stockMarketService.buyStock(event.buildingId, event.quantity);
+  }
+
+  sellStock(event: { buildingId: string; quantity: number }): void {
+    this.stockMarketService.sellStock(event.buildingId, event.quantity);
   }
 
   completeRoutePlanner(result: RoutePlannerResult): void {

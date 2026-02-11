@@ -7,8 +7,12 @@ import {
   ActiveEvent,
   ActiveChallenge,
   ActiveContract,
+  ActiveResearch,
   RareLoot,
   EasterEggsState,
+  Employee,
+  KingdomState,
+  GreatDelayStage,
 } from '../models/game.models';
 import { BUILDING_CONFIGS } from '../config/buildings.config';
 import { BuildingType, isBuildingType } from '../types/building-types';
@@ -232,6 +236,121 @@ export class GameStateService {
     }));
   }
 
+  updateDailyLogin(streak: number, date: string, days: number): void {
+    this._gameState.update((s) => ({
+      ...s,
+      dailyStreak: streak,
+      lastLoginDate: date,
+      totalDaysPlayed: days,
+    }));
+  }
+
+  updatePackageTypeCounts(counts: Record<string, number>): void {
+    this._gameState.update((s) => ({
+      ...s,
+      packageTypeCounts: counts,
+    }));
+  }
+
+  updateAutoBuy(u: Partial<Pick<GameState, 'autoBuyUnlocked' | 'autoBuyEnabled' | 'autoBuyInterval'>>): void {
+    this._gameState.update((s) => ({ ...s, ...u }));
+  }
+
+  updateStockPortfolio(portfolio: Record<string, number>): void {
+    this._gameState.update((s) => ({
+      ...s,
+      stockPortfolio: portfolio,
+    }));
+  }
+
+  addStockProfit(amount: number): void {
+    this._gameState.update((s) => ({
+      ...s,
+      stockProfitTotal: s.stockProfitTotal + amount,
+    }));
+  }
+
+  updateResearch(research: ActiveResearch | null): void {
+    this._gameState.update((s) => ({
+      ...s,
+      activeResearch: research,
+    }));
+  }
+
+  completeResearch(nodeId: string): void {
+    this._gameState.update((s) => ({
+      ...s,
+      completedResearch: [...s.completedResearch, nodeId],
+      activeResearch: null,
+    }));
+  }
+
+  updateRoutes(routes: string[]): void {
+    this._gameState.update((s) => ({
+      ...s,
+      assignedRoutes: routes,
+    }));
+  }
+
+  updateStamps(stamps: number, progress: number): void {
+    this._gameState.update((s) => ({
+      ...s,
+      priorityStamps: stamps,
+      stampProgress: progress,
+    }));
+  }
+
+  updateBuildingLevel(buildingType: string, level: number): void {
+    this._gameState.update((s) => ({
+      ...s,
+      buildingLevels: { ...s.buildingLevels, [buildingType]: level },
+    }));
+  }
+
+  updateEmployees(employees: Employee[]): void {
+    this._gameState.update((s) => ({
+      ...s,
+      employees,
+    }));
+  }
+
+  incrementEmployeesHired(): void {
+    this._gameState.update((s) => ({
+      ...s,
+      totalEmployeesHired: s.totalEmployeesHired + 1,
+    }));
+  }
+
+  updateGreatDelay(stage: GreatDelayStage, pledged: boolean): void {
+    this._gameState.update((s) => ({
+      ...s,
+      greatDelayStage: stage,
+      greatDelayPledged: pledged,
+    }));
+  }
+
+  updateKingdom(kingdom: KingdomState): void {
+    this._gameState.update((s) => ({
+      ...s,
+      kingdom,
+    }));
+  }
+
+  updateAutomation(unlocked: string[], enabled: string[]): void {
+    this._gameState.update((s) => ({
+      ...s,
+      unlockedAutomation: unlocked,
+      enabledAutomation: enabled,
+    }));
+  }
+
+  updateSeasonHighScore(score: number): void {
+    this._gameState.update((s) => ({
+      ...s,
+      seasonHighScore: Math.max(s.seasonHighScore, score),
+    }));
+  }
+
   setFullState(state: GameState): void {
     this._gameState.set(state);
   }
@@ -261,6 +380,22 @@ export class GameStateService {
       totalContractsCompleted: current.totalContractsCompleted,
       lastSaveTime: Date.now(),
       easterEggs: current.easterEggs,
+      // Persistent across ascension
+      dailyStreak: current.dailyStreak,
+      lastLoginDate: current.lastLoginDate,
+      totalDaysPlayed: current.totalDaysPlayed,
+      completedResearch: current.completedResearch,
+      priorityStamps: current.priorityStamps,
+      stampProgress: current.stampProgress,
+      buildingLevels: current.buildingLevels,
+      employees: current.employees,
+      totalEmployeesHired: current.totalEmployeesHired,
+      kingdom: current.kingdom,
+      leaderboardSeed: current.leaderboardSeed,
+      seasonHighScore: current.seasonHighScore,
+      unlockedAutomation: current.unlockedAutomation,
+      enabledAutomation: current.enabledAutomation,
+      autoBuyUnlocked: current.autoBuyUnlocked,
     });
   }
 
@@ -289,6 +424,9 @@ export class GameStateService {
         totalEarnedAllTime: 0,
         heavenlyUpgrades: [],
         timesAscended: 0,
+        corporateLevel: 0,
+        corporatePoints: 0,
+        corporateUpgrades: [],
       },
       goldenPackageClicks: 0,
       wrinklers: [],
@@ -319,6 +457,33 @@ export class GameStateService {
         konamiUsed: false,
         rapidClickTimestamps: [],
       },
+      // Phase 1
+      dailyStreak: 0,
+      lastLoginDate: '',
+      totalDaysPlayed: 0,
+      packageTypeCounts: {},
+      autoBuyUnlocked: false,
+      autoBuyEnabled: false,
+      autoBuyInterval: 10000,
+      // Phase 2
+      stockPortfolio: {},
+      stockProfitTotal: 0,
+      completedResearch: [],
+      activeResearch: null,
+      assignedRoutes: [],
+      priorityStamps: 0,
+      stampProgress: 0,
+      buildingLevels: {},
+      employees: [],
+      totalEmployeesHired: 0,
+      // Phase 3
+      greatDelayStage: 0 as const,
+      greatDelayPledged: false,
+      kingdom: { cities: [], totalEpGenerated: 0 },
+      leaderboardSeed: Math.floor(Math.random() * 1e9),
+      seasonHighScore: 0,
+      unlockedAutomation: [],
+      enabledAutomation: [],
     };
   }
 
@@ -391,6 +556,41 @@ export class GameStateService {
       ...def.easterEggs,
       ...(merged.easterEggs || {}),
     };
+
+    // Phase 1: Small features
+    merged.dailyStreak = merged.dailyStreak || 0;
+    merged.lastLoginDate = merged.lastLoginDate || '';
+    merged.totalDaysPlayed = merged.totalDaysPlayed || 0;
+    merged.packageTypeCounts = merged.packageTypeCounts || {};
+    merged.autoBuyUnlocked = merged.autoBuyUnlocked || false;
+    merged.autoBuyEnabled = merged.autoBuyEnabled || false;
+    merged.autoBuyInterval = merged.autoBuyInterval || 10000;
+
+    // Phase 2: Medium features
+    merged.stockPortfolio = merged.stockPortfolio || {};
+    merged.stockProfitTotal = merged.stockProfitTotal || 0;
+    merged.completedResearch = merged.completedResearch || [];
+    merged.activeResearch = null;
+    merged.assignedRoutes = merged.assignedRoutes || [];
+    merged.priorityStamps = merged.priorityStamps || 0;
+    merged.stampProgress = merged.stampProgress || 0;
+    merged.buildingLevels = merged.buildingLevels || {};
+    merged.employees = merged.employees || [];
+    merged.totalEmployeesHired = merged.totalEmployeesHired || 0;
+
+    // Phase 3: Large features
+    merged.greatDelayStage = (merged.greatDelayStage || 0) as GameState['greatDelayStage'];
+    merged.greatDelayPledged = merged.greatDelayPledged || false;
+    merged.kingdom = merged.kingdom || { cities: [], totalEpGenerated: 0 };
+    merged.leaderboardSeed = merged.leaderboardSeed || Math.floor(Math.random() * 1e9);
+    merged.seasonHighScore = merged.seasonHighScore || 0;
+    merged.unlockedAutomation = merged.unlockedAutomation || [];
+    merged.enabledAutomation = merged.enabledAutomation || [];
+
+    // Ensure prestige has corporate fields
+    merged.prestige.corporateLevel = merged.prestige.corporateLevel || 0;
+    merged.prestige.corporatePoints = merged.prestige.corporatePoints || 0;
+    merged.prestige.corporateUpgrades = merged.prestige.corporateUpgrades || [];
 
     return merged;
   }

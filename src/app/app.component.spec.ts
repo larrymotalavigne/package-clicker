@@ -19,6 +19,20 @@ import { LoreService } from './services/lore.service';
 import { RareLootService } from './services/rare-loot.service';
 import { SoundService } from './services/sound.service';
 import { ThemeService } from './services/theme.service';
+import { AutoBuyService } from './services/auto-buy.service';
+import { AutomationService } from './services/automation.service';
+import { DailyRewardService } from './services/daily-reward.service';
+import { EmployeeService } from './services/employee.service';
+import { FleetService } from './services/fleet.service';
+import { GreatDelayService } from './services/great-delay.service';
+import { IdleKingdomService } from './services/idle-kingdom.service';
+import { LeaderboardService } from './services/leaderboard.service';
+import { PackageTypeService } from './services/package-type.service';
+import { PriorityStampService } from './services/priority-stamp.service';
+import { ResearchService } from './services/research.service';
+import { StatsHistoryService } from './services/stats-history.service';
+import { StockMarketService } from './services/stock-market.service';
+import { WeatherService } from './services/weather.service';
 import { signal, computed } from '@angular/core';
 
 function createMockGameState() {
@@ -51,6 +65,9 @@ function createMockGameState() {
       totalEarnedAllTime: 0,
       heavenlyUpgrades: [],
       timesAscended: 0,
+      corporateLevel: 0,
+      corporatePoints: 0,
+      corporateUpgrades: [],
     },
     goldenPackageClicks: 0,
     wrinklers: [],
@@ -81,6 +98,33 @@ function createMockGameState() {
       konamiUsed: false,
       rapidClickTimestamps: [],
     },
+    // Phase 1
+    dailyStreak: 0,
+    lastLoginDate: '',
+    totalDaysPlayed: 0,
+    packageTypeCounts: {},
+    autoBuyUnlocked: false,
+    autoBuyEnabled: false,
+    autoBuyInterval: 10000,
+    // Phase 2
+    stockPortfolio: {},
+    stockProfitTotal: 0,
+    completedResearch: [] as string[],
+    activeResearch: null,
+    assignedRoutes: [] as string[],
+    priorityStamps: 0,
+    stampProgress: 0,
+    buildingLevels: {},
+    employees: [] as any[],
+    totalEmployeesHired: 0,
+    // Phase 3
+    greatDelayStage: 0 as const,
+    greatDelayPledged: false,
+    kingdom: { cities: [], totalEpGenerated: 0 },
+    leaderboardSeed: 12345,
+    seasonHighScore: 0,
+    unlockedAutomation: [] as string[],
+    enabledAutomation: [] as string[],
   };
 }
 
@@ -143,6 +187,22 @@ describe('AppComponent', () => {
       addActiveEvent: jest.fn(),
       incrementEventsExperienced: jest.fn(),
       updateEasterEggs: jest.fn(),
+      updateDailyLogin: jest.fn(),
+      updatePackageTypeCounts: jest.fn(),
+      updateAutoBuy: jest.fn(),
+      updateStockPortfolio: jest.fn(),
+      addStockProfit: jest.fn(),
+      updateResearch: jest.fn(),
+      completeResearch: jest.fn(),
+      updateRoutes: jest.fn(),
+      updateStamps: jest.fn(),
+      updateBuildingLevel: jest.fn(),
+      updateEmployees: jest.fn(),
+      incrementEmployeesHired: jest.fn(),
+      updateGreatDelay: jest.fn(),
+      updateKingdom: jest.fn(),
+      updateAutomation: jest.fn(),
+      updateSeasonHighScore: jest.fn(),
     };
 
     gameActionsService = {
@@ -311,6 +371,160 @@ describe('AppComponent', () => {
       applyTheme: jest.fn(),
     };
 
+    const autoBuyService = {
+      unlock: jest.fn().mockReturnValue(false),
+      toggle: jest.fn(),
+      isUnlocked: jest.fn().mockReturnValue(false),
+      isEnabled: jest.fn().mockReturnValue(false),
+      tick: jest.fn(),
+    };
+
+    const automationService = {
+      unlockedRules: signal([] as string[]),
+      enabledRules: signal([] as string[]),
+      getAllRules: jest.fn().mockReturnValue([]),
+      allUnlocked: jest.fn().mockReturnValue(false),
+      isUnlocked: jest.fn().mockReturnValue(false),
+      isEnabled: jest.fn().mockReturnValue(false),
+      unlockRule: jest.fn().mockReturnValue(false),
+      toggleRule: jest.fn(),
+      shouldTick: jest.fn().mockReturnValue(false),
+      resetCounters: jest.fn(),
+    };
+
+    const dailyRewardService = {
+      showPopup: signal(false),
+      currentDay: signal(1),
+      streak: signal(0),
+      getRewards: jest.fn().mockReturnValue([]),
+      checkLogin: jest.fn(),
+      claimReward: jest.fn(),
+      getTodayString: jest.fn().mockReturnValue('2026-01-01'),
+    };
+
+    const employeeService = {
+      employees: signal([] as any[]),
+      totalHired: signal(0),
+      getConfig: jest.fn(),
+      getAllConfigs: jest.fn().mockReturnValue([]),
+      getTypeCount: jest.fn().mockReturnValue(0),
+      getHireCost: jest.fn().mockReturnValue(10),
+      hire: jest.fn().mockReturnValue(false),
+      tickEmployees: jest.fn(),
+      getTrainerBonus: jest.fn().mockReturnValue(1),
+      getSorterMultiplier: jest.fn().mockReturnValue(1),
+      getScoutMultiplier: jest.fn().mockReturnValue(1),
+      getAccountantMultiplier: jest.fn().mockReturnValue(1),
+      getManagerMultiplier: jest.fn().mockReturnValue(1),
+      hasAllTypes: jest.fn().mockReturnValue(false),
+    };
+
+    const fleetService = {
+      assignedRoutes: signal([] as string[]),
+      getAvailableRoutes: jest.fn().mockReturnValue([]),
+      isAssigned: jest.fn().mockReturnValue(false),
+      assignRoute: jest.fn(),
+      unassignRoute: jest.fn(),
+      getFleetMultiplier: jest.fn().mockReturnValue(1),
+    };
+
+    const greatDelayService = {
+      stage: signal(0 as const),
+      isPledged: signal(false),
+      stageConfig: signal({ name: 'Peace', wrinklerSpawnMult: 1, divertPercent: 5, returnPercent: 110, tintColor: '' }),
+      checkStageAdvance: jest.fn(),
+      pledgeOrder: jest.fn(),
+      getWrinklerSpawnMult: jest.fn().mockReturnValue(1),
+      getDivertPercent: jest.fn().mockReturnValue(5),
+      getReturnPercent: jest.fn().mockReturnValue(110),
+      getTintColor: jest.fn().mockReturnValue(''),
+      getRandomNews: jest.fn().mockReturnValue(null),
+    };
+
+    const idleKingdomService = {
+      kingdom: signal({ cities: [], totalEpGenerated: 0 }),
+      totalEpPerMinute: computed(() => 0),
+      initCities: jest.fn(),
+      tick: jest.fn(),
+      upgradeCity: jest.fn().mockReturnValue(false),
+      getUpgradeCost: jest.fn().mockReturnValue(100),
+      getTotalEpPerMinute: jest.fn().mockReturnValue(0),
+    };
+
+    const leaderboardService = {
+      entries: signal([] as any[]),
+      playerRank: signal(51),
+      seasonTimer: signal(0),
+      init: jest.fn(),
+      tickLeaderboard: jest.fn(),
+      isSeasonEnd: jest.fn().mockReturnValue(false),
+      resetSeason: jest.fn(),
+      getPlayerScore: jest.fn().mockReturnValue(0),
+    };
+
+    const packageTypeService = {
+      lastRolledType: signal(null),
+      rollPackageType: jest.fn().mockReturnValue({ id: 'standard', name: 'Standard', weight: 60, valueMultiplier: 1, icon: '' }),
+      getValueMultiplier: jest.fn().mockReturnValue(1),
+      hasAllTypes: jest.fn().mockReturnValue(false),
+    };
+
+    const priorityStampService = {
+      STAMP_INTERVAL: 3600000,
+      stamps: signal(0),
+      progress: signal(0),
+      tick: jest.fn(),
+      levelUpBuilding: jest.fn().mockReturnValue(false),
+      getBuildingLevel: jest.fn().mockReturnValue(0),
+      getBuildingLevelBonus: jest.fn().mockReturnValue(1),
+      getProgressPercent: jest.fn().mockReturnValue(0),
+    };
+
+    const researchService = {
+      activeResearch: signal(null),
+      completedResearch: signal([] as string[]),
+      isCompleted: jest.fn().mockReturnValue(false),
+      canStart: jest.fn().mockReturnValue(false),
+      startResearch: jest.fn().mockReturnValue(false),
+      tickResearch: jest.fn(),
+      getNodeById: jest.fn(),
+      getGlobalMultiplier: jest.fn().mockReturnValue(1),
+      getClickMultiplier: jest.fn().mockReturnValue(1),
+      getEpMultiplier: jest.fn().mockReturnValue(1),
+      getGoldenFreqMultiplier: jest.fn().mockReturnValue(1),
+      getOfflineMultiplier: jest.fn().mockReturnValue(1),
+    };
+
+    const statsHistoryService = {
+      ppsHistory: signal([] as number[]),
+      packagesHistory: signal([] as number[]),
+      record: jest.fn(),
+      getPpsHistory: jest.fn().mockReturnValue([]),
+      getPackagesHistory: jest.fn().mockReturnValue([]),
+      getMaxPps: jest.fn().mockReturnValue(0),
+      getMaxPackages: jest.fn().mockReturnValue(0),
+    };
+
+    const stockMarketService = {
+      prices: signal(new Map()),
+      portfolioValue: computed(() => 0),
+      init: jest.fn(),
+      tickPrices: jest.fn(),
+      buyStock: jest.fn().mockReturnValue(false),
+      sellStock: jest.fn().mockReturnValue(false),
+      getHoldings: jest.fn().mockReturnValue(0),
+      getPortfolioValue: jest.fn().mockReturnValue(0),
+    };
+
+    const weatherService = {
+      currentWeather: signal({ type: 'sunny', name: 'Sunny', icon: '', ppsMult: 1, clickMult: 1, goldenFreqMult: 1, description: '' }),
+      start: jest.fn(),
+      stop: jest.fn(),
+      getPpsMult: jest.fn().mockReturnValue(1),
+      getClickMult: jest.fn().mockReturnValue(1),
+      getGoldenFreqMult: jest.fn().mockReturnValue(1),
+    };
+
     await TestBed.configureTestingModule({
       imports: [AppComponent],
       providers: [
@@ -333,6 +547,20 @@ describe('AppComponent', () => {
         { provide: RareLootService, useValue: rareLootService },
         { provide: SoundService, useValue: soundService },
         { provide: ThemeService, useValue: themeService },
+        { provide: AutoBuyService, useValue: autoBuyService },
+        { provide: AutomationService, useValue: automationService },
+        { provide: DailyRewardService, useValue: dailyRewardService },
+        { provide: EmployeeService, useValue: employeeService },
+        { provide: FleetService, useValue: fleetService },
+        { provide: GreatDelayService, useValue: greatDelayService },
+        { provide: IdleKingdomService, useValue: idleKingdomService },
+        { provide: LeaderboardService, useValue: leaderboardService },
+        { provide: PackageTypeService, useValue: packageTypeService },
+        { provide: PriorityStampService, useValue: priorityStampService },
+        { provide: ResearchService, useValue: researchService },
+        { provide: StatsHistoryService, useValue: statsHistoryService },
+        { provide: StockMarketService, useValue: stockMarketService },
+        { provide: WeatherService, useValue: weatherService },
       ],
     }).compileComponents();
 
