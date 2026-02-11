@@ -26,6 +26,7 @@ export type AchievementType =
   | 'challenges'
   | 'express_points'
   | 'lore'
+  | 'contracts'
   | 'secret'
   | BuildingType;
 
@@ -238,6 +239,30 @@ export interface LoreRequirement {
   buildingType?: BuildingType;
 }
 
+// Delivery Contracts
+export interface ActiveContract {
+  configId: string;
+  type: string;
+  name: string;
+  icon: string;
+  description: string;
+  target: number;
+  progress: number;
+  accepted: boolean;
+  remainingMs: number;
+  totalMs: number;
+  reward: { expressPoints: number };
+}
+
+// Route Planner
+export interface RoutePlannerResult {
+  distance: number;
+  rating: 'excellent' | 'good' | 'ok';
+  buffMultiplier: number;
+  buffDurationMs: number;
+  expressPointsEarned: number;
+}
+
 // Mini-game
 export interface MiniGameResult {
   score: number;
@@ -281,6 +306,9 @@ export interface GameState {
   activeChallenge: ActiveChallenge | null;
   completedChallenges: string[];
   loreUnlocked: string[];
+  activeContracts: ActiveContract[];
+  completedContractIds: string[];
+  totalContractsCompleted: number;
   lastSaveTime: number;
   easterEggs: EasterEggsState;
 }
@@ -288,4 +316,5 @@ export interface GameState {
 export interface EasterEggsState {
   konamiUsed: boolean;
   rapidClickTimestamps: number[];
+  routeExcellent?: boolean;
 }

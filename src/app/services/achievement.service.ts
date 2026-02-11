@@ -166,6 +166,8 @@ export class AchievementService {
         return gs.totalExpressPointsEarned;
       case 'lore':
         return gs.loreUnlocked.length;
+      case 'contracts':
+        return gs.totalContractsCompleted;
       case 'secret':
         return this.checkSecretProgress(ach, gs);
       default: {
@@ -215,6 +217,8 @@ export class AchievementService {
           .every((a) => unlocked.has(a.id));
         return allNonHiddenDone ? 1 : 0;
       }
+      case 'secret_route_excellent':
+        return gs.easterEggs?.routeExcellent ? 1 : 0;
       default:
         return 0;
     }

@@ -27,7 +27,8 @@ import { LoreService } from './services/lore.service';
 import { RareLootService } from './services/rare-loot.service';
 import { SoundService } from './services/sound.service';
 import { ThemeService } from './services/theme.service';
-import { GameSettings, MiniGameResult, SeasonalTheme } from './models/game.models';
+import { ContractService } from './services/contract.service';
+import { GameSettings, MiniGameResult, RoutePlannerResult, SeasonalTheme } from './models/game.models';
 import { getCurrentSeason } from './config/seasonal.config';
 import { BuildingCardComponent } from './components/building-card/building-card.component';
 import { UpgradePanelComponent } from './components/upgrade-panel/upgrade-panel.component';
@@ -49,6 +50,8 @@ import { LootDisplayComponent } from './components/loot-display/loot-display.com
 import { ProgressHintsComponent, ProgressHint } from './components/progress-hints/progress-hints.component';
 import { SeasonalBannerComponent } from './components/seasonal-banner/seasonal-banner.component';
 import { MiniGameComponent } from './components/mini-game/mini-game.component';
+import { ContractPanelComponent } from './components/contract-panel/contract-panel.component';
+import { RoutePlannerComponent } from './components/route-planner/route-planner.component';
 import { NewsContext } from './config/news-messages.config';
 
 @Component({
@@ -75,6 +78,8 @@ import { NewsContext } from './config/news-messages.config';
     ProgressHintsComponent,
     SeasonalBannerComponent,
     MiniGameComponent,
+    ContractPanelComponent,
+    RoutePlannerComponent,
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
@@ -100,6 +105,7 @@ export class AppComponent implements OnInit, OnDestroy {
   rareLootService = inject(RareLootService);
   soundService = inject(SoundService);
   themeService = inject(ThemeService);
+  contractService = inject(ContractService);
 
   gameState = this.gameStateService.gameState;
   packagesPerSecond = this.gameStateService.packagesPerSecond;
@@ -113,6 +119,8 @@ export class AppComponent implements OnInit, OnDestroy {
   showChallenges = false;
   showLore = false;
   showMiniGame = false;
+  showContracts = false;
+  showRoutePlanner = false;
   achievementPopup: string | null = null;
   isClicking = false;
   screenFlashClass = '';
@@ -138,9 +146,11 @@ export class AppComponent implements OnInit, OnDestroy {
   readonly offlineSeconds = this.offlineService.offlineSeconds;
   readonly lastLootDrop = this.rareLootService.lastDrop;
   readonly challengeResult = this.challengeService.challengeResult;
+  readonly contractResult = this.contractService.contractResult;
   readonly activeChallenge = this.challengeService.activeChallenge;
   readonly currentSeason: SeasonalTheme | undefined = getCurrentSeason();
 
+  readonly totalBuildings = this.gameStateService.totalBuildings;
   readonly milkPercent = computed(() => this.achievementService.completionPercentage());
 
   readonly effectivePps = computed(() => {
@@ -229,6 +239,8 @@ export class AppComponent implements OnInit, OnDestroy {
     this.offlineService.checkOfflineEarnings();
     this.logConsoleGreeting();
 
+    this.contractService.refreshBoard();
+
     this.gameInterval = setInterval(() => {
       this.gameActionsService.generatePassiveIncome();
     }, this.configService.getGameLoopInterval());
@@ -243,6 +255,7 @@ export class AppComponent implements OnInit, OnDestroy {
       this.gameStateService.updatePlayTime(100);
       this.eventService.tickEvents(100);
       this.challengeService.tickChallenge(100);
+      this.contractService.tickContracts(100);
     }, 100);
 
     this.ppsRecalcInterval = setInterval(() => {
@@ -311,12 +324,16 @@ export class AppComponent implements OnInit, OnDestroy {
       case 'o': this.showOptions = !this.showOptions; break;
       case 'c': this.showChallenges = !this.showChallenges; break;
       case 'l': this.showLore = !this.showLore; break;
+      case 'r': this.showContracts = !this.showContracts; break;
+      case 'p': this.showRoutePlanner = !this.showRoutePlanner; break;
       case 'Escape':
         this.showStats = false;
         this.showOptions = false;
         this.showPrestige = false;
         this.showChallenges = false;
         this.showLore = false;
+        this.showContracts = false;
+        this.showRoutePlanner = false;
         break;
     }
   }
@@ -327,6 +344,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.gameActionsService.clickPackage();
     this.soundService.playClick();
     this.challengeService.recordClick();
+    this.contractService.recordAction('click_count', 1);
 
     this.isClicking = true;
     setTimeout(() => (this.isClicking = false), 150);
@@ -344,6 +362,7 @@ export class AppComponent implements OnInit, OnDestroy {
     if (bought) {
       this.soundService.playPurchase();
       this.challengeService.recordBuildingPurchase();
+      this.contractService.recordAction('buy_buildings', 1);
     }
   }
 
@@ -360,6 +379,7 @@ export class AppComponent implements OnInit, OnDestroy {
     if (buff) {
       this.soundService.playGolden();
       this.challengeService.recordGoldenClick();
+      this.contractService.recordAction('golden_clicks', 1);
       this.achievementPopup = buff.name;
       setTimeout(() => (this.achievementPopup = null), 3000);
 
@@ -422,6 +442,36 @@ export class AppComponent implements OnInit, OnDestroy {
     this.showMiniGame = false;
     if (result.expressPointsEarned > 0) {
       this.soundService.playChallengeComplete();
+    }
+  }
+
+  acceptContractSlot(index: number): void {
+    this.contractService.acceptContract(index);
+  }
+
+  refreshContractSlot(index: number): void {
+    this.contractService.refreshSlot(index);
+  }
+
+  completeRoutePlanner(result: RoutePlannerResult): void {
+    const buff = {
+      id: 'route_buff',
+      name: 'Efficient Routes',
+      type: 'frenzy' as const,
+      multiplier: result.buffMultiplier,
+      remainingMs: result.buffDurationMs,
+      totalMs: result.buffDurationMs,
+    };
+    const buffs = [...this.gameState().activeBuffs, buff];
+    this.gameStateService.updateActiveBuffs(buffs);
+    this.gameStateService.addExpressPoints(result.expressPointsEarned);
+    this.showRoutePlanner = false;
+
+    this.achievementPopup = `Route ${result.rating}! +${result.expressPointsEarned} EP`;
+    setTimeout(() => (this.achievementPopup = null), 3000);
+
+    if (result.rating === 'excellent') {
+      this.gameStateService.updateEasterEggs({ routeExcellent: true });
     }
   }
 

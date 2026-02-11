@@ -14,6 +14,7 @@ import { EventService } from './services/event.service';
 import { OfflineEarningsService } from './services/offline-earnings.service';
 import { SynergyService } from './services/synergy.service';
 import { ChallengeService } from './services/challenge.service';
+import { ContractService } from './services/contract.service';
 import { LoreService } from './services/lore.service';
 import { RareLootService } from './services/rare-loot.service';
 import { SoundService } from './services/sound.service';
@@ -72,6 +73,9 @@ function createMockGameState() {
     activeChallenge: null,
     completedChallenges: [] as string[],
     loreUnlocked: [] as string[],
+    activeContracts: [] as any[],
+    completedContractIds: [] as string[],
+    totalContractsCompleted: 0,
     lastSaveTime: Date.now(),
     easterEggs: {
       konamiUsed: false,
@@ -95,6 +99,7 @@ describe('AppComponent', () => {
   let eventService: any;
   let offlineService: any;
   let challengeService: any;
+  let contractService: any;
   let loreService: any;
   let rareLootService: any;
   let soundService: any;
@@ -132,6 +137,8 @@ describe('AppComponent', () => {
       updateChallenge: jest.fn(),
       completeChallenge: jest.fn(),
       unlockLore: jest.fn(),
+      updateContracts: jest.fn(),
+      completeContract: jest.fn(),
       updateActiveEvents: jest.fn(),
       addActiveEvent: jest.fn(),
       incrementEventsExperienced: jest.fn(),
@@ -258,6 +265,18 @@ describe('AppComponent', () => {
       tickChallenge: jest.fn(),
     };
 
+    contractService = {
+      activeContracts: computed(() => []),
+      completedContractCount: computed(() => 0),
+      boardRefreshTimer: signal(600000),
+      contractResult: signal(null),
+      refreshBoard: jest.fn(),
+      acceptContract: jest.fn(),
+      refreshSlot: jest.fn(),
+      tickContracts: jest.fn(),
+      recordAction: jest.fn(),
+    };
+
     loreService = {
       unlockedLore: computed(() => []),
       unlockedCount: computed(() => 0),
@@ -309,6 +328,7 @@ describe('AppComponent', () => {
         { provide: OfflineEarningsService, useValue: offlineService },
         { provide: SynergyService, useValue: { getSynergyMultiplier: jest.fn().mockReturnValue(1), getSynergiesForBuilding: jest.fn().mockReturnValue([]) } },
         { provide: ChallengeService, useValue: challengeService },
+        { provide: ContractService, useValue: contractService },
         { provide: LoreService, useValue: loreService },
         { provide: RareLootService, useValue: rareLootService },
         { provide: SoundService, useValue: soundService },

@@ -100,6 +100,16 @@
           Mini-Game
         </button>
       }
+      @if (totalBuildings() >= 10) {
+        <button class="bar-btn contract-btn" (click)="showContracts = true" aria-label="Open contracts (R)">
+          Contracts
+        </button>
+      }
+      @if (totalBuildings() >= 25) {
+        <button class="bar-btn route-btn" (click)="showRoutePlanner = true" aria-label="Route planner (P)">
+          Route Plan
+        </button>
+      }
     </div>
   </div>
 
@@ -145,6 +155,16 @@
     {{ result.success ? '✅ Challenge Complete!' : '❌ Challenge Failed' }}
     @if (result.reward) {
       <span class="toast-reward">+{{ result.reward }} EP</span>
+    }
+  </div>
+}
+
+<!-- Contract Result -->
+@if (contractResult(); as cResult) {
+  <div class="achievement-toast" [class.challenge-fail]="!cResult.success" role="alert">
+    {{ cResult.success ? '✅ Contract Complete!' : '❌ Contract Expired' }}
+    @if (cResult.reward) {
+      <span class="toast-reward">+{{ cResult.reward }} EP</span>
     }
   </div>
 }
@@ -236,6 +256,26 @@
     (complete)="completeMiniGame($event)"
     (closeGame)="showMiniGame = false"
   ></app-mini-game>
+}
+
+@if (showContracts) {
+  <app-contract-panel
+    [contracts]="contractService.activeContracts()"
+    [refreshTimer]="contractService.boardRefreshTimer()"
+    [expressPoints]="gameState().expressPoints"
+    [completedCount]="contractService.completedContractCount()"
+    [fmt]="formatNumber.bind(this)"
+    (closePanel)="showContracts = false"
+    (acceptContract)="acceptContractSlot($event)"
+    (refreshSlot)="refreshContractSlot($event)"
+  ></app-contract-panel>
+}
+
+@if (showRoutePlanner) {
+  <app-route-planner
+    (complete)="completeRoutePlanner($event)"
+    (closeGame)="showRoutePlanner = false"
+  ></app-route-planner>
 }
 
 <app-tooltip></app-tooltip>

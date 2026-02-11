@@ -6,6 +6,7 @@ import {
   GameSettings,
   ActiveEvent,
   ActiveChallenge,
+  ActiveContract,
   RareLoot,
   EasterEggsState,
 } from '../models/game.models';
@@ -202,6 +203,21 @@ export class GameStateService {
     }));
   }
 
+  updateContracts(contracts: ActiveContract[]): void {
+    this._gameState.update((s) => ({
+      ...s,
+      activeContracts: contracts,
+    }));
+  }
+
+  completeContract(id: string): void {
+    this._gameState.update((s) => ({
+      ...s,
+      completedContractIds: [...s.completedContractIds, id],
+      totalContractsCompleted: s.totalContractsCompleted + 1,
+    }));
+  }
+
   updateLastSaveTime(): void {
     this._gameState.update((s) => ({
       ...s,
@@ -241,6 +257,8 @@ export class GameStateService {
       rareLoot: current.rareLoot,
       completedChallenges: current.completedChallenges,
       loreUnlocked: current.loreUnlocked,
+      completedContractIds: current.completedContractIds,
+      totalContractsCompleted: current.totalContractsCompleted,
       lastSaveTime: Date.now(),
       easterEggs: current.easterEggs,
     });
@@ -293,6 +311,9 @@ export class GameStateService {
       activeChallenge: null,
       completedChallenges: [],
       loreUnlocked: [],
+      activeContracts: [],
+      completedContractIds: [],
+      totalContractsCompleted: 0,
       lastSaveTime: Date.now(),
       easterEggs: {
         konamiUsed: false,
@@ -362,6 +383,9 @@ export class GameStateService {
     merged.activeChallenge = null;
     merged.completedChallenges = merged.completedChallenges || [];
     merged.loreUnlocked = merged.loreUnlocked || [];
+    merged.activeContracts = [];
+    merged.completedContractIds = merged.completedContractIds || [];
+    merged.totalContractsCompleted = merged.totalContractsCompleted || 0;
     merged.lastSaveTime = merged.lastSaveTime || Date.now();
     merged.easterEggs = {
       ...def.easterEggs,

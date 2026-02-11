@@ -161,6 +161,22 @@ function loreAch(
   };
 }
 
+function contractAch(
+  id: string,
+  name: string,
+  desc: string,
+  req: number
+): Achievement {
+  return {
+    id,
+    name,
+    description: desc,
+    requirement: req,
+    type: 'contracts',
+    category: 'Contracts',
+  };
+}
+
 const BUILDING_NAMES: Record<string, string> = {
   cursor: 'Delivery Truck',
   grandma: 'Sorting Facility',
@@ -286,7 +302,12 @@ export const ACHIEVEMENT_DEFINITIONS: Achievement[] = [
   loreAch('lore_12', 'Archivist', 'Unlock 12 lore entries', 12),
   loreAch('lore_16', 'Omniscient', 'Unlock all lore entries', 16),
 
-  // Hidden / Secret (8)
+  // Contracts (3)
+  contractAch('contracts_5', 'Courier', 'Complete 5 delivery contracts', 5),
+  contractAch('contracts_25', 'Logistics Manager', 'Complete 25 delivery contracts', 25),
+  contractAch('contracts_100', 'Dispatch Legend', 'Complete 100 delivery contracts', 100),
+
+  // Hidden / Secret (9)
   { id: 'secret_konami', name: 'The Purple Promise', description: 'Enter the ancient code.', requirement: 1, type: 'secret' as Achievement['type'], category: 'Secret', hidden: true },
   { id: 'secret_speed_demon', name: 'Speed Demon', description: 'Click 20 times in 3 seconds.', requirement: 1, type: 'secret' as Achievement['type'], category: 'Secret', hidden: true },
   { id: 'secret_night_owl', name: 'Night Owl', description: 'Play between midnight and 4 AM.', requirement: 1, type: 'secret' as Achievement['type'], category: 'Secret', hidden: true },
@@ -295,4 +316,5 @@ export const ACHIEVEMENT_DEFINITIONS: Achievement[] = [
   { id: 'secret_combo_meal', name: 'Combo Meal', description: 'Have Frenzy and Click Frenzy active at once.', requirement: 1, type: 'secret' as Achievement['type'], category: 'Secret', hidden: true },
   { id: 'secret_long_game', name: 'The Long Game', description: 'Play for 24 cumulative hours.', requirement: 86400000, type: 'secret' as Achievement['type'], category: 'Secret', hidden: true },
   { id: 'secret_completionist', name: 'Completionist', description: 'Unlock all non-hidden achievements.', requirement: 1, type: 'secret' as Achievement['type'], category: 'Secret', hidden: true },
+  { id: 'secret_route_excellent', name: 'Master Navigator', description: 'Get an Excellent route rating.', requirement: 1, type: 'secret' as Achievement['type'], category: 'Secret', hidden: true },
 ];
