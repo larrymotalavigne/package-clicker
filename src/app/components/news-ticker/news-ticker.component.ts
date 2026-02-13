@@ -6,7 +6,7 @@ import {
   ChangeDetectionStrategy,
   signal,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import {
   ALL_NEWS_MESSAGES,
   FORTUNE_COOKIES,
@@ -17,7 +17,7 @@ import {
 @Component({
   selector: 'app-news-ticker',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="ticker">
