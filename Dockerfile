@@ -1,5 +1,5 @@
 ### STAGE 1: Build ###
-FROM node:24-alpine AS base
+FROM registry.gitlab.ggcorp.fr/internal/docker-cache/node:24-alpine AS base
 WORKDIR /usr/src/app
 COPY package.json package-lock.json* ./
 RUN npm ci --legacy-peer-deps
@@ -14,7 +14,7 @@ RUN apk add --no-cache gzip brotli \
  && find /usr/src/app/dist -type f -name '*.css' -exec brotli -f {} \;
 
 ### STAGE 2: Run ###
-FROM nginx:latest
+FROM registry.gitlab.ggcorp.fr/internal/docker-cache/nginx:latest
 RUN apt-get update && apt-get -y upgrade && apt-get clean && apt-get autoclean -y && rm -rf /var/lib/apt/list/*
 
 COPY nginx.conf /etc/nginx/nginx.conf
