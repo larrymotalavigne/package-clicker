@@ -12,7 +12,7 @@ default:
 
 build:
   stage: build
-  image: docker:29
+  image: registry.gitlab.ggcorp.fr/internal/docker-cache/docker:29
   variables:
     DOCKER_HOST: unix:///var/run/docker.sock
   before_script:
