@@ -1,32 +1,18 @@
-stages:
-  - build
+# Pipeline definition for packageclicker — frontend-only Angular SPA.
+
+include:
+  - project: 'atomstudios/ci-template'
+    ref: main
+    file: '/pipelines/frontend-only.yml'
 
 variables:
-  DOCKER_DRIVER: overlay2
-  DOCKER_TLS_CERTDIR: ""
-  GIT_DEPTH: "1"
+  APP_NAME: packageclicker
+  APP_DEPLOYMENT: packageclicker-web
+  APP_FRONTEND_URL: https://packageclicker.atomstudios.fr
+  # Image pushed at ${CI_REGISTRY_IMAGE} directly (no /suffix).
+  APP_IMAGE_NO_SUFFIX: "true"
 
-default:
-  interruptible: false
-  tags: [ci-docker]
-
-build:
-  stage: build
-  image: registry.gitlab.ggcorp.fr/internal/docker-cache/docker:29
-  variables:
-    DOCKER_HOST: unix:///var/run/docker.sock
-  before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
-    - docker buildx create --name ci-builder --driver docker-container --use
-    - docker buildx inspect --bootstrap
-  script:
-    - |
-      docker buildx build --platform linux/amd64 \
-        --cache-from "type=registry,ref=${CI_REGISTRY_IMAGE}:cache" \
-        --cache-to "type=registry,ref=${CI_REGISTRY_IMAGE}:cache,mode=max" \
-        --tag "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}" \
-        --tag "${CI_REGISTRY_IMAGE}:latest" \
-        --push .
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE == "push"'
-    - if: '$CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api"'
+lint-frontend: { extends: .lint_frontend }
+build:         { extends: .build_web }
+deploy:        { extends: .deploy_web }
+verify:        { extends: .verify }
