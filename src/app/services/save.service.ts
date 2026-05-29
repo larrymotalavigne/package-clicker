@@ -33,9 +33,7 @@ export class SaveService {
       return true;
     } catch (error) {
       console.error('Failed to save game state:', error);
-      if (
-        this.saveRetryCount < this.configService.getMaxSaveRetries()
-      ) {
+      if (this.saveRetryCount < this.configService.getMaxSaveRetries()) {
         this.saveRetryCount++;
         this.cleanupOldSaves();
         return this.saveGameState(gameState);
@@ -47,9 +45,7 @@ export class SaveService {
 
   loadGameState(): GameState | null {
     try {
-      const saved = localStorage.getItem(
-        this.configService.getStorageKey()
-      );
+      const saved = localStorage.getItem(this.configService.getStorageKey());
       if (!saved) return null;
 
       const data = JSON.parse(saved);
@@ -69,9 +65,7 @@ export class SaveService {
 
   exportSaveData(): string | null {
     try {
-      const data = localStorage.getItem(
-        this.configService.getStorageKey()
-      );
+      const data = localStorage.getItem(this.configService.getStorageKey());
       if (!data) return null;
       return JSON.stringify(
         { ...JSON.parse(data), exportedAt: new Date().toISOString() },
@@ -109,9 +103,7 @@ export class SaveService {
 
   createBackup(): boolean {
     try {
-      const current = localStorage.getItem(
-        this.configService.getStorageKey()
-      );
+      const current = localStorage.getItem(this.configService.getStorageKey());
       if (current) {
         const key = `${this.configService.getStorageKey()}_backup_${Date.now()}`;
         localStorage.setItem(key, current);
@@ -201,7 +193,9 @@ export class SaveService {
     if (typeof gs['expressPoints'] === 'number')
       migrated.expressPoints = gs['expressPoints'] as number;
     if (typeof gs['totalExpressPointsEarned'] === 'number')
-      migrated.totalExpressPointsEarned = gs['totalExpressPointsEarned'] as number;
+      migrated.totalExpressPointsEarned = gs[
+        'totalExpressPointsEarned'
+      ] as number;
     if (Array.isArray(gs['rareLoot']))
       migrated.rareLoot = gs['rareLoot'] as GameState['rareLoot'];
     migrated.activeChallenge = null;
@@ -216,7 +210,9 @@ export class SaveService {
     if (Array.isArray(gs['completedContractIds']))
       migrated.completedContractIds = gs['completedContractIds'] as string[];
     if (typeof gs['totalContractsCompleted'] === 'number')
-      migrated.totalContractsCompleted = gs['totalContractsCompleted'] as number;
+      migrated.totalContractsCompleted = gs[
+        'totalContractsCompleted'
+      ] as number;
 
     // Phase 1: Small features
     if (typeof gs['dailyStreak'] === 'number')
@@ -226,7 +222,10 @@ export class SaveService {
     if (typeof gs['totalDaysPlayed'] === 'number')
       migrated.totalDaysPlayed = gs['totalDaysPlayed'] as number;
     if (gs['packageTypeCounts'] && typeof gs['packageTypeCounts'] === 'object')
-      migrated.packageTypeCounts = gs['packageTypeCounts'] as Record<string, number>;
+      migrated.packageTypeCounts = gs['packageTypeCounts'] as Record<
+        string,
+        number
+      >;
     if (typeof gs['autoBuyUnlocked'] === 'boolean')
       migrated.autoBuyUnlocked = gs['autoBuyUnlocked'] as boolean;
     if (typeof gs['autoBuyEnabled'] === 'boolean')
@@ -257,7 +256,9 @@ export class SaveService {
 
     // Phase 3: Large features
     if (typeof gs['greatDelayStage'] === 'number')
-      migrated.greatDelayStage = gs['greatDelayStage'] as GameState['greatDelayStage'];
+      migrated.greatDelayStage = gs[
+        'greatDelayStage'
+      ] as GameState['greatDelayStage'];
     if (typeof gs['greatDelayPledged'] === 'boolean')
       migrated.greatDelayPledged = gs['greatDelayPledged'] as boolean;
     if (gs['kingdom'] && typeof gs['kingdom'] === 'object')
@@ -277,17 +278,18 @@ export class SaveService {
       if (typeof prestObj['corporateLevel'] === 'number')
         migrated.prestige.corporateLevel = prestObj['corporateLevel'] as number;
       if (typeof prestObj['corporatePoints'] === 'number')
-        migrated.prestige.corporatePoints = prestObj['corporatePoints'] as number;
+        migrated.prestige.corporatePoints = prestObj[
+          'corporatePoints'
+        ] as number;
       if (Array.isArray(prestObj['corporateUpgrades']))
-        migrated.prestige.corporateUpgrades = prestObj['corporateUpgrades'] as string[];
+        migrated.prestige.corporateUpgrades = prestObj[
+          'corporateUpgrades'
+        ] as string[];
     }
 
     // Ensure prestige totalEarnedAllTime is at least totalPackagesEarned
-    if (
-      migrated.prestige.totalEarnedAllTime < migrated.totalPackagesEarned
-    ) {
-      migrated.prestige.totalEarnedAllTime =
-        migrated.totalPackagesEarned;
+    if (migrated.prestige.totalEarnedAllTime < migrated.totalPackagesEarned) {
+      migrated.prestige.totalEarnedAllTime = migrated.totalPackagesEarned;
     }
 
     return migrated;
@@ -318,7 +320,7 @@ export class SaveService {
       million_packages: 'pkg_1m',
     };
 
-    return old.map((id) => LEGACY_MAP[id] || id);
+    return old.map(id => LEGACY_MAP[id] || id);
   }
 
   private isValidGameState(state: unknown): boolean {

@@ -8,12 +8,8 @@ export class StatsHistoryService {
   readonly packagesHistory = signal<number[]>([]);
 
   record(pps: number, packages: number): void {
-    this.ppsHistory.update((h) =>
-      [...h, pps].slice(-MAX_ENTRIES),
-    );
-    this.packagesHistory.update((h) =>
-      [...h, packages].slice(-MAX_ENTRIES),
-    );
+    this.ppsHistory.update(h => [...h, pps].slice(-MAX_ENTRIES));
+    this.packagesHistory.update(h => [...h, packages].slice(-MAX_ENTRIES));
   }
 
   getPpsHistory(): number[] {

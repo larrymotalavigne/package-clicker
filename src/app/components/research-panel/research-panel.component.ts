@@ -69,8 +69,8 @@ import { ResearchNode, ActiveResearch } from '../../models/game.models';
             </div>
             <div class="tooltip-desc">{{ hoverNode.description }}</div>
             <div class="tooltip-cost">
-              Cost: {{ hoverNode.cost.ep }} EP
-              \u00B7 {{ formatTime(hoverNode.cost.timeMs) }}
+              Cost: {{ hoverNode.cost.ep }} EP ·
+              {{ formatTime(hoverNode.cost.timeMs) }}
             </div>
             <div class="tooltip-effects">
               @for (e of hoverNode.effects; track e.type) {
@@ -109,8 +109,12 @@ import { ResearchNode, ActiveResearch } from '../../models/game.models';
         animation: fadeIn 0.2s ease-out;
       }
       @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
       }
       .panel {
         background: linear-gradient(180deg, #0d0d2b, #1a1a3e);
@@ -125,8 +129,14 @@ import { ResearchNode, ActiveResearch } from '../../models/game.models';
         animation: zoomIn 0.35s ease-out;
       }
       @keyframes zoomIn {
-        from { opacity: 0; transform: scale(0.85); }
-        to { opacity: 1; transform: scale(1); }
+        from {
+          opacity: 0;
+          transform: scale(0.85);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
       }
       .panel-header {
         display: flex;
@@ -146,7 +156,9 @@ import { ResearchNode, ActiveResearch } from '../../models/game.models';
         font-size: 1.2em;
         cursor: pointer;
       }
-      .close-btn:hover { color: #ccc; }
+      .close-btn:hover {
+        color: #ccc;
+      }
       .branch-labels {
         display: flex;
         gap: 4px;
@@ -162,10 +174,22 @@ import { ResearchNode, ActiveResearch } from '../../models/game.models';
         padding: 4px 0;
         border-radius: 4px;
       }
-      .branch-label.logistics { color: #4ea8de; background: rgba(78,168,222,0.1); }
-      .branch-label.engineering { color: #e8a035; background: rgba(232,160,53,0.1); }
-      .branch-label.finance { color: #5ec97b; background: rgba(94,201,123,0.1); }
-      .branch-label.innovation { color: #b07ee8; background: rgba(176,126,232,0.1); }
+      .branch-label.logistics {
+        color: #4ea8de;
+        background: rgba(78, 168, 222, 0.1);
+      }
+      .branch-label.engineering {
+        color: #e8a035;
+        background: rgba(232, 160, 53, 0.1);
+      }
+      .branch-label.finance {
+        color: #5ec97b;
+        background: rgba(94, 201, 123, 0.1);
+      }
+      .branch-label.innovation {
+        color: #b07ee8;
+        background: rgba(176, 126, 232, 0.1);
+      }
       .tree-area {
         background: rgba(0, 0, 0, 0.25);
         border-radius: 8px;
@@ -196,7 +220,9 @@ import { ResearchNode, ActiveResearch } from '../../models/game.models';
         min-height: 62px;
         position: relative;
       }
-      .node-icon { font-size: 1.3em; }
+      .node-icon {
+        font-size: 1.3em;
+      }
       .node-name {
         font-size: 0.65em;
         text-align: center;
@@ -209,7 +235,9 @@ import { ResearchNode, ActiveResearch } from '../../models/game.models';
         background: rgba(255, 215, 0, 0.12);
         box-shadow: 0 0 8px rgba(255, 215, 0, 0.2);
       }
-      .node.completed .node-name { color: #ffd700; }
+      .node.completed .node-name {
+        color: #ffd700;
+      }
       /* Active (researching) */
       .node.active {
         border-color: #82c8ff;
@@ -217,8 +245,13 @@ import { ResearchNode, ActiveResearch } from '../../models/game.models';
         animation: pulse 1.5s infinite;
       }
       @keyframes pulse {
-        0%, 100% { box-shadow: 0 0 4px rgba(130,200,255,0.2); }
-        50% { box-shadow: 0 0 12px rgba(130,200,255,0.4); }
+        0%,
+        100% {
+          box-shadow: 0 0 4px rgba(130, 200, 255, 0.2);
+        }
+        50% {
+          box-shadow: 0 0 12px rgba(130, 200, 255, 0.4);
+        }
       }
       /* Available */
       .node.available {
@@ -229,20 +262,20 @@ import { ResearchNode, ActiveResearch } from '../../models/game.models';
         filter: brightness(1.2);
       }
       .branch-col:nth-child(1) .node.available {
-        border-color: rgba(78,168,222,0.5);
-        background: rgba(78,168,222,0.08);
+        border-color: rgba(78, 168, 222, 0.5);
+        background: rgba(78, 168, 222, 0.08);
       }
       .branch-col:nth-child(2) .node.available {
-        border-color: rgba(232,160,53,0.5);
-        background: rgba(232,160,53,0.08);
+        border-color: rgba(232, 160, 53, 0.5);
+        background: rgba(232, 160, 53, 0.08);
       }
       .branch-col:nth-child(3) .node.available {
-        border-color: rgba(94,201,123,0.5);
-        background: rgba(94,201,123,0.08);
+        border-color: rgba(94, 201, 123, 0.5);
+        background: rgba(94, 201, 123, 0.08);
       }
       .branch-col:nth-child(4) .node.available {
-        border-color: rgba(176,126,232,0.5);
-        background: rgba(176,126,232,0.08);
+        border-color: rgba(176, 126, 232, 0.5);
+        background: rgba(176, 126, 232, 0.08);
       }
       /* Locked */
       .node.locked {
@@ -308,8 +341,12 @@ import { ResearchNode, ActiveResearch } from '../../models/game.models';
         font-size: 0.7em;
         margin-top: 4px;
       }
-      .completed-tag { color: #ffd700; }
-      .locked-tag { color: #e06060; }
+      .completed-tag {
+        color: #ffd700;
+      }
+      .locked-tag {
+        color: #e06060;
+      }
       /* EP balance footer */
       .ep-balance {
         text-align: center;
@@ -344,7 +381,7 @@ export class ResearchPanelComponent {
 
   getNodesForBranch(branch: string): ResearchNode[] {
     return this.nodes
-      .filter((n) => n.branch === branch)
+      .filter(n => n.branch === branch)
       .sort((a, b) => a.position.y - b.position.y);
   }
 
@@ -360,9 +397,7 @@ export class ResearchPanelComponent {
     if (this.isNodeCompleted(node.id)) return false;
     if (this.isNodeActive(node.id)) return false;
     if (this.active !== null) return false;
-    const hasReqs = node.requires.every((r) =>
-      this.completed.includes(r)
-    );
+    const hasReqs = node.requires.every(r => this.completed.includes(r));
     return hasReqs && this.expressPoints >= node.cost.ep;
   }
 
@@ -407,8 +442,8 @@ export class ResearchPanelComponent {
 
   getRequiredNames(node: ResearchNode): string {
     return node.requires
-      .map((r) => {
-        const dep = this.nodes.find((n) => n.id === r);
+      .map(r => {
+        const dep = this.nodes.find(n => n.id === r);
         return dep ? dep.name : r;
       })
       .join(', ');
@@ -416,12 +451,18 @@ export class ResearchPanelComponent {
 
   private effectLabel(type: string): string {
     switch (type) {
-      case 'global_multiplier': return 'production';
-      case 'click_multiplier': return 'click power';
-      case 'express_point_mult': return 'EP earnings';
-      case 'golden_frequency': return 'golden freq';
-      case 'offline_mult': return 'offline earnings';
-      default: return type;
+      case 'global_multiplier':
+        return 'production';
+      case 'click_multiplier':
+        return 'click power';
+      case 'express_point_mult':
+        return 'EP earnings';
+      case 'golden_frequency':
+        return 'golden freq';
+      case 'offline_mult':
+        return 'offline earnings';
+      default:
+        return type;
     }
   }
 }

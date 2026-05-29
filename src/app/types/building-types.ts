@@ -18,9 +18,19 @@ export type BuildingType =
 // Type guard to check if a string is a valid building type
 export function isBuildingType(value: string): value is BuildingType {
   const validTypes: readonly string[] = [
-    'cursor', 'grandma', 'farm', 'mine', 'factory',
-    'bank', 'warehouse', 'airport', 'spaceport', 'ceo',
-    'satellite', 'timemachine', 'multiverse'
+    'cursor',
+    'grandma',
+    'farm',
+    'mine',
+    'factory',
+    'bank',
+    'warehouse',
+    'airport',
+    'spaceport',
+    'ceo',
+    'satellite',
+    'timemachine',
+    'multiverse',
   ];
   return validTypes.includes(value);
 }
@@ -28,16 +38,28 @@ export function isBuildingType(value: string): value is BuildingType {
 // Get all valid building types
 export function getAllBuildingTypes(): readonly BuildingType[] {
   return [
-    'cursor', 'grandma', 'farm', 'mine', 'factory',
-    'bank', 'warehouse', 'airport', 'spaceport', 'ceo',
-    'satellite', 'timemachine', 'multiverse'
+    'cursor',
+    'grandma',
+    'farm',
+    'mine',
+    'factory',
+    'bank',
+    'warehouse',
+    'airport',
+    'spaceport',
+    'ceo',
+    'satellite',
+    'timemachine',
+    'multiverse',
   ] as const;
 }
 
 // Validate building type with error handling
 export function validateBuildingType(type: string): BuildingType {
   if (!isBuildingType(type)) {
-    throw new Error(`Invalid building type: ${type}. Valid types are: ${getAllBuildingTypes().join(', ')}`);
+    throw new Error(
+      `Invalid building type: ${type}. Valid types are: ${getAllBuildingTypes().join(', ')}`
+    );
   }
   return type;
 }

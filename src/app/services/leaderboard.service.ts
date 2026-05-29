@@ -3,17 +3,49 @@ import { LeaderboardEntry } from '../models/game.models';
 import { GameStateService } from './game-state.service';
 
 const FIRST_NAMES: string[] = [
-  'Speed', 'Mega', 'Ultra', 'Lucky', 'Swift',
-  'Turbo', 'Power', 'Flash', 'Storm', 'Blaze',
-  'Pixel', 'Quantum', 'Neo', 'Dark', 'Star',
-  'Gold', 'Silver', 'Iron', 'Steel', 'Thunder',
+  'Speed',
+  'Mega',
+  'Ultra',
+  'Lucky',
+  'Swift',
+  'Turbo',
+  'Power',
+  'Flash',
+  'Storm',
+  'Blaze',
+  'Pixel',
+  'Quantum',
+  'Neo',
+  'Dark',
+  'Star',
+  'Gold',
+  'Silver',
+  'Iron',
+  'Steel',
+  'Thunder',
 ];
 
 const LAST_NAMES: string[] = [
-  'Clicker', 'Shipper', 'Sender', 'Packer', 'Runner',
-  'Hauler', 'Mover', 'Loader', 'Driver', 'Flyer',
-  'Boss', 'King', 'Pro', 'Master', 'Wizard',
-  'Legend', 'Hero', 'Chief', 'Elite', 'Prime',
+  'Clicker',
+  'Shipper',
+  'Sender',
+  'Packer',
+  'Runner',
+  'Hauler',
+  'Mover',
+  'Loader',
+  'Driver',
+  'Flyer',
+  'Boss',
+  'King',
+  'Pro',
+  'Master',
+  'Wizard',
+  'Legend',
+  'Hero',
+  'Chief',
+  'Elite',
+  'Prime',
 ];
 
 const SEASON_DURATION_MS = 604800000; // 7 days
@@ -27,7 +59,7 @@ export class LeaderboardService {
 
   readonly playerRank = computed(() => {
     const e = this.entries();
-    const p = e.find((x) => x.isPlayer);
+    const p = e.find(x => x.isPlayer);
     return p?.rank ?? 51;
   });
 
@@ -102,9 +134,7 @@ export class LeaderboardService {
   private advanceCompetitorScores(): void {
     for (let i = 0; i < this.competitorScores.length; i++) {
       const growth = this.competitorScores[i] * 0.0001 * this.nextRandom();
-      this.competitorScores[i] = Math.floor(
-        this.competitorScores[i] + growth
-      );
+      this.competitorScores[i] = Math.floor(this.competitorScores[i] + growth);
     }
   }
 

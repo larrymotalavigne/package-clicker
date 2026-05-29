@@ -3,12 +3,12 @@ import { WeatherConfig, WEATHER_CONFIGS } from '../config/weather.config';
 
 /** Cumulative weights for weather selection: clear 30%, cloudy 25%, rainy 20%, storm 10%, foggy 10%, snow 5% */
 const WEATHER_WEIGHTS: { type: string; cumWeight: number }[] = [
-  { type: 'clear', cumWeight: 0.30 },
+  { type: 'clear', cumWeight: 0.3 },
   { type: 'cloudy', cumWeight: 0.55 },
   { type: 'rainy', cumWeight: 0.75 },
   { type: 'storm', cumWeight: 0.85 },
   { type: 'foggy', cumWeight: 0.95 },
-  { type: 'snow', cumWeight: 1.00 },
+  { type: 'snow', cumWeight: 1.0 },
 ];
 
 const MIN_CHANGE_MS = 180_000;
@@ -53,7 +53,8 @@ export class WeatherService {
     if (this.changeTimer) {
       clearTimeout(this.changeTimer);
     }
-    const delay = MIN_CHANGE_MS + Math.random() * (MAX_CHANGE_MS - MIN_CHANGE_MS);
+    const delay =
+      MIN_CHANGE_MS + Math.random() * (MAX_CHANGE_MS - MIN_CHANGE_MS);
     this.changeTimer = setTimeout(() => this.changeWeather(), delay);
   }
 
@@ -61,7 +62,7 @@ export class WeatherService {
     const roll = Math.random();
     for (const entry of WEATHER_WEIGHTS) {
       if (roll < entry.cumWeight) {
-        const found = WEATHER_CONFIGS.find((w) => w.type === entry.type);
+        const found = WEATHER_CONFIGS.find(w => w.type === entry.type);
         if (found) return found;
       }
     }

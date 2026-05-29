@@ -37,11 +37,11 @@ export class GameStateService {
   }
 
   updatePackages(packages: number): void {
-    this._gameState.update((s) => ({ ...s, packages }));
+    this._gameState.update(s => ({ ...s, packages }));
   }
 
   updateTotalPackagesEarned(earned: number): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       totalPackagesEarned: s.totalPackagesEarned + earned,
       prestige: {
@@ -52,7 +52,7 @@ export class GameStateService {
   }
 
   updateTotalPackagesClicked(clicked: number = 1): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       totalPackagesClicked: s.totalPackagesClicked + clicked,
     }));
@@ -62,7 +62,7 @@ export class GameStateService {
     if (!isBuildingType(buildingType)) {
       throw new Error(`Invalid building type: ${buildingType}`);
     }
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       buildings: {
         ...s.buildings,
@@ -80,7 +80,7 @@ export class GameStateService {
 
   updatePackagesPerSecond(pps?: number): void {
     if (pps !== undefined) {
-      this._gameState.update((s) => ({ ...s, packagesPerSecond: pps }));
+      this._gameState.update(s => ({ ...s, packagesPerSecond: pps }));
       return;
     }
     const state = this._gameState();
@@ -88,54 +88,54 @@ export class GameStateService {
       (total, b) => total + b.count * b.pps,
       0
     );
-    this._gameState.update((s) => ({ ...s, packagesPerSecond: newPps }));
+    this._gameState.update(s => ({ ...s, packagesPerSecond: newPps }));
   }
 
   addAchievement(achievementId: string): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       achievements: [...s.achievements, achievementId],
     }));
   }
 
   addPurchasedUpgrade(upgradeId: string): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       purchasedUpgrades: [...s.purchasedUpgrades, upgradeId],
     }));
   }
 
   updateActiveBuffs(buffs: GameState['activeBuffs']): void {
-    this._gameState.update((s) => ({ ...s, activeBuffs: buffs }));
+    this._gameState.update(s => ({ ...s, activeBuffs: buffs }));
   }
 
   incrementGoldenClicks(): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       goldenPackageClicks: s.goldenPackageClicks + 1,
     }));
   }
 
   updateWrinklers(wrinklers: GameState['wrinklers']): void {
-    this._gameState.update((s) => ({ ...s, wrinklers }));
+    this._gameState.update(s => ({ ...s, wrinklers }));
   }
 
   updateSettings(settings: Partial<GameSettings>): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       settings: { ...s.settings, ...settings },
     }));
   }
 
   updatePrestige(prestige: Partial<PrestigeState>): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       prestige: { ...s.prestige, ...prestige },
     }));
   }
 
   updatePlayTime(delta: number): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       totalPlayTime: s.totalPlayTime + delta,
       lastTickTime: Date.now(),
@@ -143,25 +143,25 @@ export class GameStateService {
   }
 
   updateActiveEvents(events: ActiveEvent[]): void {
-    this._gameState.update((s) => ({ ...s, activeEvents: events }));
+    this._gameState.update(s => ({ ...s, activeEvents: events }));
   }
 
   addActiveEvent(event: ActiveEvent): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       activeEvents: [...s.activeEvents, event],
     }));
   }
 
   incrementEventsExperienced(): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       totalEventsExperienced: s.totalEventsExperienced + 1,
     }));
   }
 
   addExpressPoints(amount: number): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       expressPoints: s.expressPoints + amount,
       totalExpressPointsEarned: s.totalExpressPointsEarned + amount,
@@ -171,7 +171,7 @@ export class GameStateService {
   spendExpressPoints(amount: number): boolean {
     const s = this._gameState();
     if (s.expressPoints < amount) return false;
-    this._gameState.update((st) => ({
+    this._gameState.update(st => ({
       ...st,
       expressPoints: st.expressPoints - amount,
     }));
@@ -179,21 +179,21 @@ export class GameStateService {
   }
 
   addRareLoot(loot: RareLoot): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       rareLoot: [...s.rareLoot, loot],
     }));
   }
 
   updateChallenge(challenge: ActiveChallenge | null): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       activeChallenge: challenge,
     }));
   }
 
   completeChallenge(id: string): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       activeChallenge: null,
       completedChallenges: [...s.completedChallenges, id],
@@ -201,21 +201,21 @@ export class GameStateService {
   }
 
   unlockLore(ids: string[]): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       loreUnlocked: [...s.loreUnlocked, ...ids],
     }));
   }
 
   updateContracts(contracts: ActiveContract[]): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       activeContracts: contracts,
     }));
   }
 
   completeContract(id: string): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       completedContractIds: [...s.completedContractIds, id],
       totalContractsCompleted: s.totalContractsCompleted + 1,
@@ -223,21 +223,21 @@ export class GameStateService {
   }
 
   updateLastSaveTime(): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       lastSaveTime: Date.now(),
     }));
   }
 
   updateEasterEggs(updates: Partial<EasterEggsState>): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       easterEggs: { ...s.easterEggs, ...updates },
     }));
   }
 
   updateDailyLogin(streak: number, date: string, days: number): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       dailyStreak: streak,
       lastLoginDate: date,
@@ -246,39 +246,43 @@ export class GameStateService {
   }
 
   updatePackageTypeCounts(counts: Record<string, number>): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       packageTypeCounts: counts,
     }));
   }
 
-  updateAutoBuy(u: Partial<Pick<GameState, 'autoBuyUnlocked' | 'autoBuyEnabled' | 'autoBuyInterval'>>): void {
-    this._gameState.update((s) => ({ ...s, ...u }));
+  updateAutoBuy(
+    u: Partial<
+      Pick<GameState, 'autoBuyUnlocked' | 'autoBuyEnabled' | 'autoBuyInterval'>
+    >
+  ): void {
+    this._gameState.update(s => ({ ...s, ...u }));
   }
 
   updateStockPortfolio(portfolio: Record<string, number>): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       stockPortfolio: portfolio,
     }));
   }
 
   addStockProfit(amount: number): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       stockProfitTotal: s.stockProfitTotal + amount,
     }));
   }
 
   updateResearch(research: ActiveResearch | null): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       activeResearch: research,
     }));
   }
 
   completeResearch(nodeId: string): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       completedResearch: [...s.completedResearch, nodeId],
       activeResearch: null,
@@ -286,14 +290,14 @@ export class GameStateService {
   }
 
   updateRoutes(routes: string[]): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       assignedRoutes: routes,
     }));
   }
 
   updateStamps(stamps: number, progress: number): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       priorityStamps: stamps,
       stampProgress: progress,
@@ -301,28 +305,28 @@ export class GameStateService {
   }
 
   updateBuildingLevel(buildingType: string, level: number): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       buildingLevels: { ...s.buildingLevels, [buildingType]: level },
     }));
   }
 
   updateEmployees(employees: Employee[]): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       employees,
     }));
   }
 
   incrementEmployeesHired(): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       totalEmployeesHired: s.totalEmployeesHired + 1,
     }));
   }
 
   updateGreatDelay(stage: GreatDelayStage, pledged: boolean): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       greatDelayStage: stage,
       greatDelayPledged: pledged,
@@ -330,14 +334,14 @@ export class GameStateService {
   }
 
   updateKingdom(kingdom: KingdomState): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       kingdom,
     }));
   }
 
   updateAutomation(unlocked: string[], enabled: string[]): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       unlockedAutomation: unlocked,
       enabledAutomation: enabled,
@@ -345,7 +349,7 @@ export class GameStateService {
   }
 
   updateSeasonHighScore(score: number): void {
-    this._gameState.update((s) => ({
+    this._gameState.update(s => ({
       ...s,
       seasonHighScore: Math.max(s.seasonHighScore, score),
     }));
@@ -401,7 +405,7 @@ export class GameStateService {
 
   getDefaultGameState(): GameState {
     const buildings: Record<string, Building> = {};
-    BUILDING_CONFIGS.forEach((config) => {
+    BUILDING_CONFIGS.forEach(config => {
       buildings[config.id] = {
         count: 0,
         basePrice: config.basePrice,
@@ -579,10 +583,12 @@ export class GameStateService {
     merged.totalEmployeesHired = merged.totalEmployeesHired || 0;
 
     // Phase 3: Large features
-    merged.greatDelayStage = (merged.greatDelayStage || 0) as GameState['greatDelayStage'];
+    merged.greatDelayStage = (merged.greatDelayStage ||
+      0) as GameState['greatDelayStage'];
     merged.greatDelayPledged = merged.greatDelayPledged || false;
     merged.kingdom = merged.kingdom || { cities: [], totalEpGenerated: 0 };
-    merged.leaderboardSeed = merged.leaderboardSeed || Math.floor(Math.random() * 1e9);
+    merged.leaderboardSeed =
+      merged.leaderboardSeed || Math.floor(Math.random() * 1e9);
     merged.seasonHighScore = merged.seasonHighScore || 0;
     merged.unlockedAutomation = merged.unlockedAutomation || [];
     merged.enabledAutomation = merged.enabledAutomation || [];

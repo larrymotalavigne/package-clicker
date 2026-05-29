@@ -15,7 +15,7 @@ const BUILDING_DATA = [
   { id: 'ceo', basePrice: 75000000000, pps: 10000000 },
   { id: 'satellite', basePrice: 1000000000000, pps: 65000000 },
   { id: 'timemachine', basePrice: 14000000000000, pps: 430000000 },
-  { id: 'multiverse', basePrice: 200000000000000, pps: 2900000000 }
+  { id: 'multiverse', basePrice: 200000000000000, pps: 2900000000 },
 ];
 
 export const BUILDING_CONFIGS: BuildingConfig[] = BUILDING_DATA.map(data => {
@@ -23,14 +23,14 @@ export const BUILDING_CONFIGS: BuildingConfig[] = BUILDING_DATA.map(data => {
   if (!displayInfo) {
     throw new Error(`Missing display info for building: ${data.id}`);
   }
-  
+
   return {
     id: data.id,
     name: displayInfo.name,
     description: displayInfo.description,
     icon: displayInfo.icon,
     basePrice: data.basePrice,
-    pps: data.pps
+    pps: data.pps,
   };
 });
 

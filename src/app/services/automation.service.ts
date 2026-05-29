@@ -33,7 +33,7 @@ export class AutomationService {
   }
 
   unlockRule(ruleId: string): boolean {
-    const rule = AUTOMATION_RULES.find((r) => r.id === ruleId);
+    const rule = AUTOMATION_RULES.find(r => r.id === ruleId);
     if (!rule) return false;
     if (this.isUnlocked(ruleId)) return false;
 
@@ -52,20 +52,13 @@ export class AutomationService {
 
     const current = this.enabledRules();
     const newEnabled = current.includes(ruleId)
-      ? current.filter((id) => id !== ruleId)
+      ? current.filter(id => id !== ruleId)
       : [...current, ruleId];
 
-    this.gameStateService.updateAutomation(
-      this.unlockedRules(),
-      newEnabled
-    );
+    this.gameStateService.updateAutomation(this.unlockedRules(), newEnabled);
   }
 
-  shouldTick(
-    ruleId: string,
-    deltaMs: number,
-    intervalMs: number
-  ): boolean {
+  shouldTick(ruleId: string, deltaMs: number, intervalMs: number): boolean {
     const counter = (this.tickCounters[ruleId] || 0) + deltaMs;
     if (counter >= intervalMs) {
       this.tickCounters[ruleId] = counter - intervalMs;

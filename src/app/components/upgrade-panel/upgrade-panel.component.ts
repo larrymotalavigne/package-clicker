@@ -154,13 +154,12 @@ export class UpgradePanelComponent {
           if (!e.buildingType) break;
           const b = state.buildings[e.buildingType];
           if (b && b.count > 0) {
-            const currentMult = this.upgradeService
-              .getBuildingMultiplier(e.buildingType);
+            const currentMult = this.upgradeService.getBuildingMultiplier(
+              e.buildingType
+            );
             const currentPps = b.count * b.pps * currentMult;
             const gain = currentPps * (e.value - 1);
-            parts.push(
-              `+${this.configService.formatNumber(gain)} PPS`
-            );
+            parts.push(`+${this.configService.formatNumber(gain)} PPS`);
           } else {
             parts.push(`x${e.value} building output`);
           }
@@ -200,9 +199,7 @@ export class UpgradePanelComponent {
           break;
       }
     }
-    return parts.length > 0
-      ? `Effect: ${parts.join(', ')}`
-      : '';
+    return parts.length > 0 ? `Effect: ${parts.join(', ')}` : '';
   }
 
   moveTooltip(event: MouseEvent): void {

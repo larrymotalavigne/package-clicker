@@ -59,8 +59,7 @@ export class GameActionsService {
     if (!this.canAffordBuilding(buildingType)) return false;
 
     const state = this.gameStateService.gameState();
-    const data =
-      state.buildings[buildingType as keyof typeof state.buildings];
+    const data = state.buildings[buildingType as keyof typeof state.buildings];
     const price = this.getBuildingPrice(buildingType);
 
     this.gameStateService.updatePackages(state.packages - price);
@@ -77,16 +76,14 @@ export class GameActionsService {
   canAffordBuilding(buildingType: string): boolean {
     if (!this.configService.isBuildingType(buildingType)) return false;
     const state = this.gameStateService.gameState();
-    const available =
-      this.pendingUpdates.packages ?? state.packages;
+    const available = this.pendingUpdates.packages ?? state.packages;
     return available >= this.getBuildingPrice(buildingType);
   }
 
   getBuildingPrice(buildingType: string): number {
     if (!this.configService.isBuildingType(buildingType)) return 0;
     const state = this.gameStateService.gameState();
-    const data =
-      state.buildings[buildingType as keyof typeof state.buildings];
+    const data = state.buildings[buildingType as keyof typeof state.buildings];
     const base = this.configService.calculateBuildingPrice(
       data.basePrice,
       data.count
@@ -139,22 +136,17 @@ export class GameActionsService {
       this.gameStateService.updatePackages(updates.packages);
     }
     if (updates.packagesEarned > 0) {
-      this.gameStateService.updateTotalPackagesEarned(
-        updates.packagesEarned
-      );
+      this.gameStateService.updateTotalPackagesEarned(updates.packagesEarned);
     }
     if (updates.packagesClicked > 0) {
-      this.gameStateService.updateTotalPackagesClicked(
-        updates.packagesClicked
-      );
+      this.gameStateService.updateTotalPackagesClicked(updates.packagesClicked);
     }
     if (updates.needsPpsUpdate) {
       this.recalculatePps();
     }
     if (updates.needsAchievementCheck) {
       const state = this.gameStateService.gameState();
-      const result =
-        this.achievementService.checkAchievements(state);
+      const result = this.achievementService.checkAchievements(state);
       for (const id of result.newlyUnlocked) {
         this.gameStateService.addAchievement(id);
       }
@@ -181,9 +173,7 @@ export class GameActionsService {
     };
   }
 
-  getEffectiveClickValue(
-    state = this.gameStateService.gameState()
-  ): number {
+  getEffectiveClickValue(state = this.gameStateService.gameState()): number {
     let base = state.packagesPerClick;
     base *= this.upgradeService.getClickMultiplier();
     base *= this.goldenPackageService.getClickMultiplier();
@@ -200,9 +190,7 @@ export class GameActionsService {
     return base;
   }
 
-  getEffectivePps(
-    state = this.gameStateService.gameState()
-  ): number {
+  getEffectivePps(state = this.gameStateService.gameState()): number {
     return this.calculateRawPps(state);
   }
 
@@ -213,9 +201,13 @@ export class GameActionsService {
     for (const [id, building] of Object.entries(buildings)) {
       if (building.count <= 0) continue;
       const basePps = building.count * building.pps;
-      const mult = this.upgradeService.getBuildingMultiplier(id as BuildingType);
+      const mult = this.upgradeService.getBuildingMultiplier(
+        id as BuildingType
+      );
       const eventBoost = this.eventService.getBuildingBoostMultiplier(id);
-      const synergy = this.synergyService.getSynergyMultiplier(id as BuildingType);
+      const synergy = this.synergyService.getSynergyMultiplier(
+        id as BuildingType
+      );
       total += basePps * mult * eventBoost * synergy;
     }
 
@@ -234,8 +226,7 @@ export class GameActionsService {
     const config = this.configService.getBuildingConfig(buildingType);
     if (!config) return 0;
     const state = this.gameStateService.gameState();
-    const data =
-      state.buildings[buildingType as keyof typeof state.buildings];
+    const data = state.buildings[buildingType as keyof typeof state.buildings];
     const price = this.configService.calculateBuildingPrice(
       data.basePrice,
       data.count

@@ -16,10 +16,8 @@ import { AutomationRule } from '../../models/game.models';
     <div class="overlay" (click)="onOverlayClick($event)">
       <div class="panel">
         <div class="panel-header">
-          <h2>\u2699\uFE0F Automation</h2>
-          <button class="close-btn" (click)="closePanel.emit()">
-            \u2715
-          </button>
+          <h2>⚙️ Automation</h2>
+          <button class="close-btn" (click)="closePanel.emit()">✕</button>
         </div>
 
         <p class="ep-display">

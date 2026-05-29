@@ -24,10 +24,7 @@ import { AchievementProgress } from '../../services/achievement.service';
 
         <div class="tabs">
           @for (t of tabs; track t) {
-            <button
-              [class.active]="activeTab === t"
-              (click)="activeTab = t"
-            >
+            <button [class.active]="activeTab === t" (click)="activeTab = t">
               {{ t }}
             </button>
           }
@@ -104,16 +101,19 @@ import { AchievementProgress } from '../../services/achievement.service';
                     }
                     <div class="ach-tooltip">
                       @if (a.achievement.hidden && !a.isUnlocked) {
-                        <strong>???</strong><br>Keep searching...
+                        <strong>???</strong><br />Keep searching...
                       } @else {
                         <strong>{{ a.achievement.name }}</strong>
                         @if (a.isUnlocked) {
-                          <span class="ach-unlocked-badge">\u2713</span>
+                          <span class="ach-unlocked-badge">✓</span>
                         }
-                        <br>{{ a.achievement.description }}
+                        <br />{{ a.achievement.description }}
                         @if (!a.isUnlocked) {
                           <div class="ach-progress-bar">
-                            <div class="ach-progress-fill" [style.width.%]="a.progress"></div>
+                            <div
+                              class="ach-progress-fill"
+                              [style.width.%]="a.progress"
+                            ></div>
                           </div>
                         }
                       }
@@ -122,7 +122,7 @@ import { AchievementProgress } from '../../services/achievement.service';
                 }
                 <div class="ach-summary">
                   {{ unlockedCount }} / {{ totalCount }} ({{
-                    completionPct | number : '1.0-0'
+                    completionPct | number: '1.0-0'
                   }}%)
                 </div>
               </div>
@@ -156,8 +156,12 @@ import { AchievementProgress } from '../../services/achievement.service';
         animation: panelSlideIn 0.3s ease-out;
       }
       @keyframes overlayFadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
       }
       @keyframes panelSlideIn {
         from {
@@ -342,7 +346,7 @@ export class StatsPanelComponent {
     count: number;
     cps: number;
   }[] = [];
-  @Input() fmt: (n: number) => string = (n) => n.toString();
+  @Input() fmt: (n: number) => string = n => n.toString();
   @Output() closePanel = new EventEmitter<void>();
 
   tabs = ['General', 'Buildings', 'Achievements'];

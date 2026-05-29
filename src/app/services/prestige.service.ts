@@ -19,9 +19,7 @@ export class PrestigeService {
 
   readonly pendingPrestige = computed(() => {
     const state = this.gameStateService.gameState();
-    return this.calculatePrestigeLevel(
-      state.prestige.totalEarnedAllTime
-    );
+    return this.calculatePrestigeLevel(state.prestige.totalEarnedAllTime);
   });
 
   readonly pendingGain = computed(() => {
@@ -37,7 +35,7 @@ export class PrestigeService {
     const state = this.gameStateService.gameState();
     let mult = 1;
     for (const uid of state.prestige.heavenlyUpgrades) {
-      const u = this.heavenlyUpgrades.find((h) => h.id === uid);
+      const u = this.heavenlyUpgrades.find(h => h.id === uid);
       if (!u) continue;
       for (const e of u.effects) {
         if (e.type === 'global_multiplier') mult *= e.value;
@@ -76,32 +74,27 @@ export class PrestigeService {
 
   purchaseHeavenlyUpgrade(upgradeId: string): boolean {
     const state = this.gameStateService.gameState();
-    const upgrade = this.heavenlyUpgrades.find(
-      (u) => u.id === upgradeId
-    );
+    const upgrade = this.heavenlyUpgrades.find(u => u.id === upgradeId);
     if (!upgrade) return false;
     if (state.prestige.heavenlyUpgrades.includes(upgradeId)) {
       return false;
     }
     if (state.prestige.points < upgrade.price) return false;
 
-    const hasReqs = upgrade.requires.every((r) =>
+    const hasReqs = upgrade.requires.every(r =>
       state.prestige.heavenlyUpgrades.includes(r)
     );
     if (!hasReqs) return false;
 
     this.gameStateService.updatePrestige({
       points: state.prestige.points - upgrade.price,
-      heavenlyUpgrades: [
-        ...state.prestige.heavenlyUpgrades,
-        upgradeId,
-      ],
+      heavenlyUpgrades: [...state.prestige.heavenlyUpgrades, upgradeId],
     });
     return true;
   }
 
   getUpgradeById(id: string): HeavenlyUpgradeConfig | undefined {
-    return this.heavenlyUpgrades.find((u) => u.id === id);
+    return this.heavenlyUpgrades.find(u => u.id === id);
   }
 
   isUpgradePurchased(id: string): boolean {

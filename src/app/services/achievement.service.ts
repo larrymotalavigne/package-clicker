@@ -22,9 +22,7 @@ export class AchievementService {
 
   readonly achievements = this._achievements.asReadonly();
   readonly unlockedAchievements = this._unlockedAchievements.asReadonly();
-  readonly unlockedCount = computed(
-    () => this._unlockedAchievements().size
-  );
+  readonly unlockedCount = computed(() => this._unlockedAchievements().size);
   readonly totalCount = computed(() => this._achievements().length);
   readonly completionPercentage = computed(() => {
     const t = this.totalCount();
@@ -47,15 +45,13 @@ export class AchievementService {
 
   private initializeAchievements(): void {
     const defs = this.configService.getAchievementDefinitions();
-    this._achievements.set(
-      defs.map((d) => ({ ...d, unlocked: false }))
-    );
+    this._achievements.set(defs.map(d => ({ ...d, unlocked: false })));
   }
 
   setUnlockedAchievements(unlockedIds: string[]): void {
     this._unlockedAchievements.set(new Set(unlockedIds));
-    this._achievements.update((all) =>
-      all.map((a) => ({
+    this._achievements.update(all =>
+      all.map(a => ({
         ...a,
         unlocked: unlockedIds.includes(a.id),
       }))
@@ -64,8 +60,7 @@ export class AchievementService {
 
   checkAchievements(gameState: GameState): AchievementCheckResult {
     const now = Date.now();
-    const fullCheck =
-      now - this.lastCheckTimestamp > this.checkCooldown;
+    const fullCheck = now - this.lastCheckTimestamp > this.checkCooldown;
     if (
       !fullCheck &&
       Math.random() > this.configService.getAchievementCheckChance()
@@ -75,9 +70,7 @@ export class AchievementService {
     return this.performFullCheck(gameState);
   }
 
-  private performFullCheck(
-    gameState: GameState
-  ): AchievementCheckResult {
+  private performFullCheck(gameState: GameState): AchievementCheckResult {
     const now = Date.now();
     const newlyUnlocked: string[] = [];
     const current = this._unlockedAchievements();
@@ -95,9 +88,7 @@ export class AchievementService {
 
       const cached = this.getCachedProgress(ach.id, now);
       const p =
-        cached !== null
-          ? cached
-          : this.cacheProgress(ach, gameState, now);
+        cached !== null ? cached : this.cacheProgress(ach, gameState, now);
       const unlocked = p >= ach.requirement;
 
       if (unlocked) {
@@ -131,20 +122,14 @@ export class AchievementService {
   }
 
   private unlockMultiple(ids: string[]): void {
-    const updated = new Set([
-      ...this._unlockedAchievements(),
-      ...ids,
-    ]);
+    const updated = new Set([...this._unlockedAchievements(), ...ids]);
     this._unlockedAchievements.set(updated);
-    this._achievements.update((all) =>
-      all.map((a) => ({ ...a, unlocked: updated.has(a.id) }))
+    this._achievements.update(all =>
+      all.map(a => ({ ...a, unlocked: updated.has(a.id) }))
     );
   }
 
-  private calculateProgress(
-    ach: Achievement,
-    gs: GameState
-  ): number {
+  private calculateProgress(ach: Achievement, gs: GameState): number {
     switch (ach.type) {
       case 'packages':
         return gs.totalPackagesEarned;
@@ -177,10 +162,7 @@ export class AchievementService {
     }
   }
 
-  private checkSecretProgress(
-    ach: Achievement,
-    gs: GameState
-  ): number {
+  private checkSecretProgress(ach: Achievement, gs: GameState): number {
     switch (ach.id) {
       case 'secret_konami':
         return gs.easterEggs?.konamiUsed ? 1 : 0;
@@ -188,33 +170,31 @@ export class AchievementService {
         const ts = gs.easterEggs?.rapidClickTimestamps ?? [];
         if (ts.length < 20) return 0;
         const cutoff = ts[ts.length - 1] - 3000;
-        const recent = ts.filter((t) => t >= cutoff);
+        const recent = ts.filter(t => t >= cutoff);
         return recent.length >= 20 ? 1 : 0;
       }
       case 'secret_night_owl':
         return new Date().getHours() < 4 ? 1 : 0;
       case 'secret_full_house': {
-        const allOwned = Object.values(gs.buildings)
-          .every((b) => b.count > 0);
+        const allOwned = Object.values(gs.buildings).every(b => b.count > 0);
         return allOwned ? 1 : 0;
       }
       case 'secret_watcher':
         return gs.wrinklers.length;
       case 'secret_combo_meal': {
-        const hasFrenzy = gs.activeBuffs
-          .some((b) => b.type === 'frenzy');
-        const hasClickFrenzy = gs.activeBuffs
-          .some((b) => b.type === 'click_frenzy');
+        const hasFrenzy = gs.activeBuffs.some(b => b.type === 'frenzy');
+        const hasClickFrenzy = gs.activeBuffs.some(
+          b => b.type === 'click_frenzy'
+        );
         return hasFrenzy && hasClickFrenzy ? 1 : 0;
       }
       case 'secret_long_game':
         return gs.totalPlayTime;
       case 'secret_completionist': {
         const allDefs = this._achievements();
-        const nonHidden = allDefs.filter((a) => !a.hidden);
+        const nonHidden = allDefs.filter(a => !a.hidden);
         const unlocked = this._unlockedAchievements();
-        const allNonHiddenDone = nonHidden
-          .every((a) => unlocked.has(a.id));
+        const allNonHiddenDone = nonHidden.every(a => unlocked.has(a.id));
         return allNonHiddenDone ? 1 : 0;
       }
       case 'secret_route_excellent':
@@ -226,7 +206,7 @@ export class AchievementService {
 
   getAchievementProgress(gs: GameState): AchievementProgress[] {
     const unlocked = this._unlockedAchievements();
-    return this._achievements().map((a) => ({
+    return this._achievements().map(a => ({
       achievement: a,
       progress: unlocked.has(a.id)
         ? 100
@@ -251,25 +231,16 @@ export class AchievementService {
 
   resetAchievements(): void {
     this._unlockedAchievements.set(new Set());
-    this._achievements.update((all) =>
-      all.map((a) => ({ ...a, unlocked: false }))
-    );
+    this._achievements.update(all => all.map(a => ({ ...a, unlocked: false })));
   }
 
-  private getCachedProgress(
-    id: string,
-    now: number
-  ): number | null {
+  private getCachedProgress(id: string, now: number): number | null {
     const c = this.progressCache.get(id);
     if (c && now - c.timestamp < this.cacheTtl) return c.progress;
     return null;
   }
 
-  private cacheProgress(
-    ach: Achievement,
-    gs: GameState,
-    ts: number
-  ): number {
+  private cacheProgress(ach: Achievement, gs: GameState, ts: number): number {
     const p = this.calculateProgress(ach, gs);
     this.progressCache.set(ach.id, { progress: p, timestamp: ts });
     return p;

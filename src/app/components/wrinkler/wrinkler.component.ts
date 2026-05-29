@@ -49,13 +49,10 @@ import { Wrinkler } from '../../models/game.models';
       .wrinkler-body {
         width: 20px;
         height: 28px;
-        background: radial-gradient(
-          ellipse at center,
-          #4a2060,
-          #2d1040
-        );
+        background: radial-gradient(ellipse at center, #4a2060, #2d1040);
         border-radius: 50% 50% 45% 45%;
-        box-shadow: 0 0 8px rgba(80, 20, 100, 0.6),
+        box-shadow:
+          0 0 8px rgba(80, 20, 100, 0.6),
           inset 0 -4px 6px rgba(0, 0, 0, 0.3);
         position: relative;
       }
@@ -78,8 +75,7 @@ import { Wrinkler } from '../../models/game.models';
           transform: rotate(var(--angle)) translateX(100px);
         }
         to {
-          transform: rotate(calc(var(--angle) + 360deg))
-            translateX(100px);
+          transform: rotate(calc(var(--angle) + 360deg)) translateX(100px);
         }
       }
       @keyframes wrinklerPop {

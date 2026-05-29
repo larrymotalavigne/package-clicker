@@ -48,9 +48,7 @@ export class EventService {
       this.gameStateService.updatePackages(state.packages + bonus);
     } else if (event.effect.type === 'lose_packages') {
       const loss = state.packages * event.effect.value;
-      this.gameStateService.updatePackages(
-        Math.max(0, state.packages - loss)
-      );
+      this.gameStateService.updatePackages(Math.max(0, state.packages - loss));
     }
 
     if (event.durationMs > 0) {
@@ -82,8 +80,8 @@ export class EventService {
     if (events.length === 0) return;
 
     const updated = events
-      .map((e) => ({ ...e, remainingMs: e.remainingMs - deltaMs }))
-      .filter((e) => e.remainingMs > 0);
+      .map(e => ({ ...e, remainingMs: e.remainingMs - deltaMs }))
+      .filter(e => e.remainingMs > 0);
 
     if (updated.length !== events.length) {
       this.gameStateService.updateActiveEvents(updated);
@@ -99,10 +97,7 @@ export class EventService {
       if (e.effect.type === 'production_mult') {
         mult *= e.effect.value;
       }
-      if (
-        e.effect.type === 'building_boost' &&
-        e.effect.buildingType
-      ) {
+      if (e.effect.type === 'building_boost' && e.effect.buildingType) {
         mult *= 1;
       }
     }
@@ -174,9 +169,8 @@ export class EventService {
 
     let event = this.pickRandomEvent();
     if (event.type === 'negative') {
-      const excuse = ABSURD_EXCUSES[
-        Math.floor(Math.random() * ABSURD_EXCUSES.length)
-      ];
+      const excuse =
+        ABSURD_EXCUSES[Math.floor(Math.random() * ABSURD_EXCUSES.length)];
       event = {
         ...event,
         description: event.description + ' ' + excuse,
@@ -196,11 +190,11 @@ export class EventService {
     let pool: GameEvent[];
 
     if (roll < 0.6) {
-      pool = EVENT_DEFINITIONS.filter((e) => e.type === 'positive');
+      pool = EVENT_DEFINITIONS.filter(e => e.type === 'positive');
     } else if (roll < 0.9) {
-      pool = EVENT_DEFINITIONS.filter((e) => e.type === 'negative');
+      pool = EVENT_DEFINITIONS.filter(e => e.type === 'negative');
     } else {
-      pool = EVENT_DEFINITIONS.filter((e) => e.type === 'neutral');
+      pool = EVENT_DEFINITIONS.filter(e => e.type === 'neutral');
     }
 
     return pool[Math.floor(Math.random() * pool.length)];

@@ -83,10 +83,7 @@ export class StockMarketService {
     };
   }
 
-  private tickSingleStock(
-    stock: StockPrice,
-    cfg: StockConfig
-  ): StockPrice {
+  private tickSingleStock(stock: StockPrice, cfg: StockConfig): StockPrice {
     const newMomentum =
       stock.momentum * 0.9 + (Math.random() - 0.5) * cfg.volatility;
     const newPrice = Math.max(1, stock.currentPrice * (1 + newMomentum));
@@ -101,10 +98,7 @@ export class StockMarketService {
     };
   }
 
-  private updatePortfolioHoldings(
-    buildingId: string,
-    delta: number
-  ): void {
+  private updatePortfolioHoldings(buildingId: string, delta: number): void {
     const state = this.gameStateService.gameState();
     const portfolio = { ...state.stockPortfolio };
     const current = portfolio[buildingId] || 0;

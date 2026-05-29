@@ -26,7 +26,18 @@ export class ConfigService {
   private formatCache = new Map<string, string>();
   private readonly maxCacheSize = 1000;
   private readonly suffixes = [
-    '', 'K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No', 'Dc',
+    '',
+    'K',
+    'M',
+    'B',
+    'T',
+    'Qa',
+    'Qi',
+    'Sx',
+    'Sp',
+    'Oc',
+    'No',
+    'Dc',
   ];
   private readonly divisors = [
     1, 1e3, 1e6, 1e9, 1e12, 1e15, 1e18, 1e21, 1e24, 1e27, 1e30, 1e33,
@@ -73,15 +84,15 @@ export class ConfigService {
   }
 
   getBuildingConfig(buildingId: string): BuildingConfig | undefined {
-    return this.buildingConfigs.find((c) => c.id === buildingId);
+    return this.buildingConfigs.find(c => c.id === buildingId);
   }
 
   getBuildingIds(): string[] {
-    return this.buildingConfigs.map((c) => c.id);
+    return this.buildingConfigs.map(c => c.id);
   }
 
   isBuildingType(value: string): value is BuildingType {
-    return this.buildingConfigs.some((c) => c.id === value);
+    return this.buildingConfigs.some(c => c.id === value);
   }
 
   getAchievementDefinitions(): Achievement[] {
@@ -89,11 +100,11 @@ export class ConfigService {
   }
 
   getAchievementDefinition(id: string): Achievement | undefined {
-    return this.achievementDefs.find((a) => a.id === id);
+    return this.achievementDefs.find(a => a.id === id);
   }
 
   getAchievementsByType(type: Achievement['type']): Achievement[] {
-    return this.achievementDefs.filter((a) => a.type === type);
+    return this.achievementDefs.filter(a => a.type === type);
   }
 
   calculateBuildingPrice(basePrice: number, count: number): number {

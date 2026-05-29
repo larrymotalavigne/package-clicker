@@ -27,7 +27,7 @@ export class PackageTypeService {
 
   hasAllTypes(): boolean {
     const counts = this.gameStateService.gameState().packageTypeCounts;
-    return PACKAGE_TYPES.every((t) => (counts[t.id] ?? 0) >= 1);
+    return PACKAGE_TYPES.every(t => (counts[t.id] ?? 0) >= 1);
   }
 
   private weightedRandom(): PackageTypeConfig {

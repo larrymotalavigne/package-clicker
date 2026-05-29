@@ -64,12 +64,14 @@ export class GoldenPackageService {
   tickBuffs(deltaMs: number): void {
     const state = this.gameStateService.gameState();
     const updated = state.activeBuffs
-      .map((b) => ({ ...b, remainingMs: b.remainingMs - deltaMs }))
-      .filter((b) => b.remainingMs > 0);
+      .map(b => ({ ...b, remainingMs: b.remainingMs - deltaMs }))
+      .filter(b => b.remainingMs > 0);
 
     if (updated.length !== state.activeBuffs.length) {
       this.gameStateService.updateActiveBuffs(updated);
-    } else if (updated.some((b, i) => b.remainingMs !== state.activeBuffs[i].remainingMs)) {
+    } else if (
+      updated.some((b, i) => b.remainingMs !== state.activeBuffs[i].remainingMs)
+    ) {
       this.gameStateService.updateActiveBuffs(updated);
     }
   }
@@ -94,8 +96,7 @@ export class GoldenPackageService {
 
   private scheduleNext(): void {
     if (this.spawnTimer) clearTimeout(this.spawnTimer);
-    const delay =
-      MIN_SPAWN_MS + Math.random() * (MAX_SPAWN_MS - MIN_SPAWN_MS);
+    const delay = MIN_SPAWN_MS + Math.random() * (MAX_SPAWN_MS - MIN_SPAWN_MS);
     this.spawnTimer = setTimeout(() => this.spawn(), delay);
   }
 

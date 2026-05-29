@@ -52,7 +52,9 @@ import { ConfigService } from '../../services/config.service';
         padding: 8px 12px;
         cursor: pointer;
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        transition: background 0.15s, opacity 0.3s;
+        transition:
+          background 0.15s,
+          opacity 0.3s;
         position: relative;
         min-height: 56px;
         overflow: hidden;
@@ -178,12 +180,24 @@ import { ConfigService } from '../../services/config.service';
         }
       }
       @keyframes iconWobble {
-        0% { transform: rotate(0deg) scale(1); }
-        20% { transform: rotate(-12deg) scale(1.2); }
-        40% { transform: rotate(10deg) scale(1.15); }
-        60% { transform: rotate(-6deg) scale(1.05); }
-        80% { transform: rotate(3deg) scale(1); }
-        100% { transform: rotate(0deg) scale(1); }
+        0% {
+          transform: rotate(0deg) scale(1);
+        }
+        20% {
+          transform: rotate(-12deg) scale(1.2);
+        }
+        40% {
+          transform: rotate(10deg) scale(1.15);
+        }
+        60% {
+          transform: rotate(-6deg) scale(1.05);
+        }
+        80% {
+          transform: rotate(3deg) scale(1);
+        }
+        100% {
+          transform: rotate(0deg) scale(1);
+        }
       }
       @keyframes firstBuyEntrance {
         0% {
@@ -249,9 +263,10 @@ export class BuildingCardComponent implements OnChanges {
   showTooltip(event: MouseEvent): void {
     const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
     const prod = this.buildingData.count * this.buildingData.pps;
-    const prodLine = this.buildingData.count > 0
-      ? `\nEach: ${this.configService.formatNumber(this.building.pps)}/sec — Total: ${this.configService.formatNumber(prod)}/sec`
-      : `\nProduces ${this.configService.formatNumber(this.building.pps)} per second each`;
+    const prodLine =
+      this.buildingData.count > 0
+        ? `\nEach: ${this.configService.formatNumber(this.building.pps)}/sec — Total: ${this.configService.formatNumber(prod)}/sec`
+        : `\nProduces ${this.configService.formatNumber(this.building.pps)} per second each`;
     this.tooltipService.show({
       title: `${this.building.icon} ${this.building.name}`,
       description: `${this.building.description}${prodLine}`,
@@ -273,7 +288,10 @@ export class BuildingCardComponent implements OnChanges {
     this.firstBuy = true;
     this.justBought = true;
     this.showFloater = true;
-    setTimeout(() => { this.firstBuy = false; this.justBought = false; }, 500);
+    setTimeout(() => {
+      this.firstBuy = false;
+      this.justBought = false;
+    }, 500);
     setTimeout(() => (this.showFloater = false), 800);
   }
 

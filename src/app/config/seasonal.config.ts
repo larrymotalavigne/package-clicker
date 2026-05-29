@@ -10,7 +10,8 @@ export const SEASONAL_THEMES: SeasonalTheme[] = [
     specialEvent: {
       id: 'holiday_rush',
       name: 'Holiday Rush',
-      description: 'Peak season! Everyone wants packages delivered by Christmas! +50% production!',
+      description:
+        'Peak season! Everyone wants packages delivered by Christmas! +50% production!',
       icon: '\u{1F381}',
       type: 'positive',
       effect: { type: 'production_mult', value: 1.5 },
@@ -20,14 +21,15 @@ export const SEASONAL_THEMES: SeasonalTheme[] = [
   },
   {
     id: 'valentines',
-    name: 'Valentine\'s Express',
+    name: "Valentine's Express",
     months: [1], // February
     icon: '\u{1F49D}',
-    productionBonus: 0.10,
+    productionBonus: 0.1,
     specialEvent: {
       id: 'love_delivery',
       name: 'Love Delivery',
-      description: 'Valentine\'s rush! Heart-shaped packages fly off the shelves! +30% click power!',
+      description:
+        "Valentine's rush! Heart-shaped packages fly off the shelves! +30% click power!",
       icon: '\u{1F48C}',
       type: 'positive',
       effect: { type: 'click_mult', value: 1.3 },
@@ -51,7 +53,8 @@ export const SEASONAL_THEMES: SeasonalTheme[] = [
     specialEvent: {
       id: 'heatwave',
       name: 'Summer Heatwave',
-      description: 'Record temperatures! Ice cream packages melt but spirit doesn\'t! +20% production!',
+      description:
+        "Record temperatures! Ice cream packages melt but spirit doesn't! +20% production!",
       icon: '\u{1F321}\u{FE0F}',
       type: 'positive',
       effect: { type: 'production_mult', value: 1.2 },
@@ -64,7 +67,7 @@ export const SEASONAL_THEMES: SeasonalTheme[] = [
     name: 'Back to School',
     months: [7, 8], // August, September
     icon: '\u{1F4DA}',
-    productionBonus: 0.10,
+    productionBonus: 0.1,
   },
   {
     id: 'halloween',
@@ -75,7 +78,8 @@ export const SEASONAL_THEMES: SeasonalTheme[] = [
     specialEvent: {
       id: 'ghost_delivery',
       name: 'Ghost Delivery',
-      description: 'Spooky packages appear and disappear! +25% golden package frequency!',
+      description:
+        'Spooky packages appear and disappear! +25% golden package frequency!',
       icon: '\u{1F47B}',
       type: 'positive',
       effect: { type: 'production_mult', value: 1.25 },
@@ -88,11 +92,12 @@ export const SEASONAL_THEMES: SeasonalTheme[] = [
     name: 'Black Friday',
     months: [10], // November
     icon: '\u{1F6D2}',
-    productionBonus: 0.20,
+    productionBonus: 0.2,
     specialEvent: {
       id: 'mega_sale',
       name: 'Black Friday Mega Sale',
-      description: 'EVERYTHING must ship! Buildings cost 25% less! Maximum throughput!',
+      description:
+        'EVERYTHING must ship! Buildings cost 25% less! Maximum throughput!',
       icon: '\u{1F4B8}',
       type: 'positive',
       effect: { type: 'building_discount', value: 0.75 },

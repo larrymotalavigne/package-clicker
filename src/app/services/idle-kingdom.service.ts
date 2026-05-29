@@ -1,15 +1,16 @@
 import { Injectable, computed, inject } from '@angular/core';
 import { GameStateService } from './game-state.service';
 import { KingdomCity, KingdomState } from '../models/game.models';
-import { KINGDOM_CITIES, KingdomCityConfig } from '../config/idle-kingdom.config';
+import {
+  KINGDOM_CITIES,
+  KingdomCityConfig,
+} from '../config/idle-kingdom.config';
 
 @Injectable({ providedIn: 'root' })
 export class IdleKingdomService {
   private gameStateService = inject(GameStateService);
 
-  readonly kingdom = computed(
-    () => this.gameStateService.gameState().kingdom
-  );
+  readonly kingdom = computed(() => this.gameStateService.gameState().kingdom);
 
   readonly totalEpPerMinute = computed(() => this.getTotalEpPerMinute());
 
@@ -68,7 +69,7 @@ export class IdleKingdomService {
     totalEp: number,
     existing: KingdomCity[]
   ): KingdomCity[] {
-    const cityMap = new Map(existing.map((c) => [c.id, c]));
+    const cityMap = new Map(existing.map(c => [c.id, c]));
     const result: KingdomCity[] = [];
 
     for (const cfg of KINGDOM_CITIES) {
@@ -106,7 +107,7 @@ export class IdleKingdomService {
     cityId: string,
     config: KingdomCityConfig
   ): KingdomCity[] {
-    return cities.map((c) => {
+    return cities.map(c => {
       if (c.id !== cityId) return c;
       const newLevel = c.level + 1;
       return {
@@ -118,11 +119,11 @@ export class IdleKingdomService {
   }
 
   private findCity(cityId: string): KingdomCity | undefined {
-    return this.kingdom().cities.find((c) => c.id === cityId);
+    return this.kingdom().cities.find(c => c.id === cityId);
   }
 
   private getCityConfig(cityId: string): KingdomCityConfig | undefined {
-    return KINGDOM_CITIES.find((c) => c.id === cityId);
+    return KINGDOM_CITIES.find(c => c.id === cityId);
   }
 
   private updateKingdom(kingdom: KingdomState): void {

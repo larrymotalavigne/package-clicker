@@ -9,7 +9,7 @@ import {
   ElementRef,
   ViewChild,
   signal,
-  computed
+  computed,
 } from '@angular/core';
 import { BuildingConfig, Building } from '../../models/game.models';
 import { BuildingCardComponent } from '../building-card/building-card.component';
@@ -59,29 +59,31 @@ export interface VirtualItem {
       </div>
     </div>
   `,
-  styles: [`
-    .virtual-scroll-container {
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      background: #f9f9f9;
-    }
-
-    .virtual-scroll-content {
-      min-height: 100%;
-    }
-
-    .virtual-item {
-      padding: 4px;
-      box-sizing: border-box;
-    }
-
-    @media (max-width: 768px) {
-      .virtual-item {
-        padding: 2px;
+  styles: [
+    `
+      .virtual-scroll-container {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background: #f9f9f9;
       }
-    }
-  `],
-  changeDetection: ChangeDetectionStrategy.OnPush
+
+      .virtual-scroll-content {
+        min-height: 100%;
+      }
+
+      .virtual-item {
+        padding: 4px;
+        box-sizing: border-box;
+      }
+
+      @media (max-width: 768px) {
+        .virtual-item {
+          padding: 2px;
+        }
+      }
+    `,
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VirtualBuildingsListComponent implements OnInit, OnDestroy {
   @Input() buildingConfigs: BuildingConfig[] = [];
@@ -92,20 +94,24 @@ export class VirtualBuildingsListComponent implements OnInit, OnDestroy {
 
   @Output() buyBuilding = new EventEmitter<string>();
 
-  @ViewChild('scrollContainer', { static: true }) scrollContainer!: ElementRef<HTMLDivElement>;
+  @ViewChild('scrollContainer', { static: true })
+  scrollContainer!: ElementRef<HTMLDivElement>;
 
   private scrollTop = signal(0);
   private resizeObserver?: ResizeObserver;
 
   // Computed signals for virtual scrolling
-  readonly totalHeight = computed(() => this.buildingConfigs.length * this.itemHeight);
+  readonly totalHeight = computed(
+    () => this.buildingConfigs.length * this.itemHeight
+  );
   readonly visibleStartIndex = computed(() =>
     Math.max(0, Math.floor(this.scrollTop() / this.itemHeight) - this.overscan)
   );
   readonly visibleEndIndex = computed(() =>
     Math.min(
       this.buildingConfigs.length - 1,
-      Math.ceil((this.scrollTop() + this.containerHeight) / this.itemHeight) + this.overscan
+      Math.ceil((this.scrollTop() + this.containerHeight) / this.itemHeight) +
+        this.overscan
     )
   );
   readonly visibleItems = computed(() => {
@@ -123,7 +129,7 @@ export class VirtualBuildingsListComponent implements OnInit, OnDestroy {
           data: config,
           buildingData: building,
           top: i * this.itemHeight,
-          height: this.itemHeight
+          height: this.itemHeight,
         });
       }
     }
@@ -175,7 +181,9 @@ export class VirtualBuildingsListComponent implements OnInit, OnDestroy {
 
   // Scroll to specific building
   scrollToBuilding(buildingId: string): void {
-    const index = this.buildingConfigs.findIndex(config => config.id === buildingId);
+    const index = this.buildingConfigs.findIndex(
+      config => config.id === buildingId
+    );
     if (index >= 0) {
       const targetScrollTop = index * this.itemHeight;
       if (this.scrollContainer) {
@@ -190,7 +198,7 @@ export class VirtualBuildingsListComponent implements OnInit, OnDestroy {
     return {
       start: this.visibleStartIndex(),
       end: this.visibleEndIndex(),
-      total: this.buildingConfigs.length
+      total: this.buildingConfigs.length,
     };
   }
 
@@ -206,7 +214,7 @@ export class VirtualBuildingsListComponent implements OnInit, OnDestroy {
     if (this.scrollContainer) {
       this.scrollContainer.nativeElement.scrollTo({
         top: 0,
-        behavior: 'smooth'
+        behavior: 'smooth',
       });
     }
   }
@@ -217,7 +225,7 @@ export class VirtualBuildingsListComponent implements OnInit, OnDestroy {
       const maxScroll = this.totalHeight() - this.containerHeight;
       this.scrollContainer.nativeElement.scrollTo({
         top: maxScroll,
-        behavior: 'smooth'
+        behavior: 'smooth',
       });
     }
   }

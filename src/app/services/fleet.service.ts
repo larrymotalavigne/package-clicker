@@ -13,7 +13,7 @@ export class FleetService {
 
   getAvailableRoutes(): FleetRoute[] {
     const state = this.gameStateService.gameState();
-    return FLEET_ROUTES.filter((route) =>
+    return FLEET_ROUTES.filter(route =>
       this.meetsRequirements(route, state.buildings)
     );
   }
@@ -23,24 +23,21 @@ export class FleetService {
   }
 
   assignRoute(routeId: string): void {
-    const route = FLEET_ROUTES.find((r) => r.id === routeId);
+    const route = FLEET_ROUTES.find(r => r.id === routeId);
     if (!route) return;
 
     const state = this.gameStateService.gameState();
     if (!this.meetsRequirements(route, state.buildings)) return;
     if (this.isAssigned(routeId)) return;
 
-    this.gameStateService.updateRoutes([
-      ...this.assignedRoutes(),
-      routeId,
-    ]);
+    this.gameStateService.updateRoutes([...this.assignedRoutes(), routeId]);
   }
 
   unassignRoute(routeId: string): void {
     if (!this.isAssigned(routeId)) return;
 
     this.gameStateService.updateRoutes(
-      this.assignedRoutes().filter((r) => r !== routeId)
+      this.assignedRoutes().filter(r => r !== routeId)
     );
   }
 
@@ -49,7 +46,7 @@ export class FleetService {
     let multiplier = 1;
 
     for (const routeId of assigned) {
-      const route = FLEET_ROUTES.find((r) => r.id === routeId);
+      const route = FLEET_ROUTES.find(r => r.id === routeId);
       if (route) {
         multiplier *= route.bonusMultiplier;
       }
@@ -62,7 +59,7 @@ export class FleetService {
     route: FleetRoute,
     buildings: Record<string, { count: number }>
   ): boolean {
-    return route.requirement.every((req) => {
+    return route.requirement.every(req => {
       const building = buildings[req.buildingType];
       return building && building.count >= req.count;
     });

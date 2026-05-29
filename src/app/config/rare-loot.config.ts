@@ -60,11 +60,11 @@ export const RARE_LOOT_DEFINITIONS: RareLootConfig[] = [
   // Rare drops
   {
     id: 'loot_freds_hat',
-    name: 'Fred\'s Lucky Hat',
+    name: "Fred's Lucky Hat",
     description: '+10% all production permanently',
     icon: '\u{1F3A9}',
     rarity: 'rare',
-    effect: { type: 'global_multiplier', value: 1.10 },
+    effect: { type: 'global_multiplier', value: 1.1 },
     dropWeight: 5,
   },
   {
@@ -83,7 +83,7 @@ export const RARE_LOOT_DEFINITIONS: RareLootConfig[] = [
     description: '+20% click power permanently',
     icon: '\u{1F9E4}',
     rarity: 'epic',
-    effect: { type: 'click_multiplier', value: 1.20 },
+    effect: { type: 'click_multiplier', value: 1.2 },
     dropWeight: 0,
   },
   {
@@ -120,12 +120,12 @@ export const RARE_LOOT_DEFINITIONS: RareLootConfig[] = [
     description: '+50% all production permanently. "C\'est pas faux."',
     icon: '\u{1F3C6}',
     rarity: 'legendary',
-    effect: { type: 'global_multiplier', value: 1.50 },
+    effect: { type: 'global_multiplier', value: 1.5 },
     dropWeight: 1,
   },
   {
     id: 'loot_freds_dice',
-    name: 'Fred\'s Lucky Dice',
+    name: "Fred's Lucky Dice",
     description: 'Golden packages appear 50% more often',
     icon: '\u{1F3B2}',
     rarity: 'legendary',

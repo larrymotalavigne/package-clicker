@@ -13,7 +13,9 @@
       <h1>Package Clicker</h1>
       <div id="stats" aria-live="polite">
         <div id="package-counter">
-          <span id="package-count">{{ formatNumber(gameState().packages) }}</span>
+          <span id="package-count">{{
+            formatNumber(gameState().packages)
+          }}</span>
           <span class="label">packages</span>
         </div>
         <div id="pps-display">
@@ -22,7 +24,9 @@
         @if (gameState().expressPoints > 0) {
           <div class="ep-display">
             <span class="ep-icon">⚡</span>
-            <span class="ep-count">{{ formatNumber(gameState().expressPoints) }} EP</span>
+            <span class="ep-count"
+              >{{ formatNumber(gameState().expressPoints) }} EP</span
+            >
           </div>
         }
       </div>
@@ -39,7 +43,13 @@
     ></app-buff-display>
 
     <div id="main-game-area">
-      <div id="package-container" (click)="clickPackage($event)" role="button" aria-label="Click to earn packages" tabindex="0">
+      <div
+        id="package-container"
+        (click)="clickPackage($event)"
+        role="button"
+        aria-label="Click to earn packages"
+        tabindex="0"
+      >
         <!-- CSS-only 3D cardboard box -->
         <div id="big-package" [class.clicking]="isClicking">
           <div class="box-3d">
@@ -51,7 +61,9 @@
         @if (streakDisplay()) {
           <div class="streak-counter">{{ streakDisplay() }}</div>
         }
-        <app-particle-effects [enabled]="gameState().settings.particleEffects"></app-particle-effects>
+        <app-particle-effects
+          [enabled]="gameState().settings.particleEffects"
+        ></app-particle-effects>
         <app-wrinkler
           [wrinklers]="wrinklers()"
           (pop)="popWrinkler($event)"
@@ -74,8 +86,20 @@
 
     <!-- Bottom bar -->
     <div id="bottom-bar" role="navigation" aria-label="Game actions">
-      <button class="bar-btn" (click)="showStats = true" aria-label="Open stats (S)">Stats</button>
-      <button class="bar-btn" (click)="showOptions = true" aria-label="Open options (O)">Options</button>
+      <button
+        class="bar-btn"
+        (click)="showStats = true"
+        aria-label="Open stats (S)"
+      >
+        Stats
+      </button>
+      <button
+        class="bar-btn"
+        (click)="showOptions = true"
+        aria-label="Open options (O)"
+      >
+        Options
+      </button>
       @if (gameState().prestige.level > 0 || prestigePendingGain() > 0) {
         <button
           class="bar-btn prestige-btn"
@@ -84,69 +108,128 @@
         >
           Ascend
           @if (prestigePendingGain() > 0) {
-            <span class="prestige-badge">
-              +{{ prestigePendingGain() }}
-            </span>
+            <span class="prestige-badge"> +{{ prestigePendingGain() }} </span>
           }
         </button>
       }
-      @if (gameState().completedChallenges.length > 0 || gameState().expressPoints >= 10) {
-        <button class="bar-btn challenge-btn" (click)="showChallenges = true" aria-label="Open challenges (C)">
+      @if (
+        gameState().completedChallenges.length > 0 ||
+        gameState().expressPoints >= 10
+      ) {
+        <button
+          class="bar-btn challenge-btn"
+          (click)="showChallenges = true"
+          aria-label="Open challenges (C)"
+        >
           Challenges
         </button>
       }
       @if (gameState().loreUnlocked.length > 0) {
-        <button class="bar-btn lore-btn" (click)="showLore = true" aria-label="Open lore (L)">
+        <button
+          class="bar-btn lore-btn"
+          (click)="showLore = true"
+          aria-label="Open lore (L)"
+        >
           Lore
         </button>
       }
       @if (gameState().expressPoints >= 5) {
-        <button class="bar-btn minigame-btn" (click)="showMiniGame = true" aria-label="Play mini-game">
+        <button
+          class="bar-btn minigame-btn"
+          (click)="showMiniGame = true"
+          aria-label="Play mini-game"
+        >
           Mini-Game
         </button>
       }
       @if (totalBuildings() >= 10) {
-        <button class="bar-btn contract-btn" (click)="showContracts = true" aria-label="Open contracts (R)">
+        <button
+          class="bar-btn contract-btn"
+          (click)="showContracts = true"
+          aria-label="Open contracts (R)"
+        >
           Contracts
         </button>
       }
       @if (totalBuildings() >= 25) {
-        <button class="bar-btn route-btn" (click)="showRoutePlanner = true" aria-label="Route planner (P)">
+        <button
+          class="bar-btn route-btn"
+          (click)="showRoutePlanner = true"
+          aria-label="Route planner (P)"
+        >
           Route Plan
         </button>
       }
-      @if (gameState().completedResearch.length > 0 || gameState().expressPoints >= 20) {
-        <button class="bar-btn research-btn" (click)="showResearch = true" aria-label="Research (H)">
+      @if (
+        gameState().completedResearch.length > 0 ||
+        gameState().expressPoints >= 20
+      ) {
+        <button
+          class="bar-btn research-btn"
+          (click)="showResearch = true"
+          aria-label="Research (H)"
+        >
           Research
         </button>
       }
       @if (totalBuildings() >= 20) {
-        <button class="bar-btn fleet-btn" (click)="showFleet = true" aria-label="Fleet (F)">
+        <button
+          class="bar-btn fleet-btn"
+          (click)="showFleet = true"
+          aria-label="Fleet (F)"
+        >
           Fleet
         </button>
       }
-      @if (gameState().expressPoints >= 15 || gameState().totalEmployeesHired > 0) {
-        <button class="bar-btn employee-btn" (click)="showEmployees = true" aria-label="Employees (E)">
+      @if (
+        gameState().expressPoints >= 15 || gameState().totalEmployeesHired > 0
+      ) {
+        <button
+          class="bar-btn employee-btn"
+          (click)="showEmployees = true"
+          aria-label="Employees (E)"
+        >
           Employees
         </button>
       }
-      @if (gameState().prestige.level >= 1 || gameState().unlockedAutomation.length > 0) {
-        <button class="bar-btn automation-btn" (click)="showAutomation = true" aria-label="Automation (A)">
+      @if (
+        gameState().prestige.level >= 1 ||
+        gameState().unlockedAutomation.length > 0
+      ) {
+        <button
+          class="bar-btn automation-btn"
+          (click)="showAutomation = true"
+          aria-label="Automation (A)"
+        >
           Automation
         </button>
       }
       @if (totalBuildings() >= 30) {
-        <button class="bar-btn stock-btn" (click)="showStockMarket = true" aria-label="Stock Market (M)">
+        <button
+          class="bar-btn stock-btn"
+          (click)="showStockMarket = true"
+          aria-label="Stock Market (M)"
+        >
           Market
         </button>
       }
-      @if (gameState().expressPoints >= 50 || gameState().kingdom.cities.length > 0) {
-        <button class="bar-btn kingdom-btn" (click)="showKingdom = true" aria-label="Kingdom (K)">
+      @if (
+        gameState().expressPoints >= 50 || gameState().kingdom.cities.length > 0
+      ) {
+        <button
+          class="bar-btn kingdom-btn"
+          (click)="showKingdom = true"
+          aria-label="Kingdom (K)"
+        >
           Kingdom
         </button>
       }
       @if (gameState().totalPackagesEarned >= 1e9) {
-        <button class="bar-btn leaderboard-btn" (click)="showLeaderboard = true" aria-label="Leaderboard (B)">
+        <button
+          class="bar-btn leaderboard-btn"
+          (click)="showLeaderboard = true"
+          aria-label="Leaderboard (B)"
+        >
           Leaderboard
         </button>
       }
@@ -191,7 +274,11 @@
 
 <!-- Challenge Result -->
 @if (challengeResult(); as result) {
-  <div class="achievement-toast" [class.challenge-fail]="!result.success" role="alert">
+  <div
+    class="achievement-toast"
+    [class.challenge-fail]="!result.success"
+    role="alert"
+  >
     {{ result.success ? '✅ Challenge Complete!' : '❌ Challenge Failed' }}
     @if (result.reward) {
       <span class="toast-reward">+{{ result.reward }} EP</span>
@@ -201,7 +288,11 @@
 
 <!-- Contract Result -->
 @if (contractResult(); as cResult) {
-  <div class="achievement-toast" [class.challenge-fail]="!cResult.success" role="alert">
+  <div
+    class="achievement-toast"
+    [class.challenge-fail]="!cResult.success"
+    role="alert"
+  >
     {{ cResult.success ? '✅ Contract Complete!' : '❌ Contract Expired' }}
     @if (cResult.reward) {
       <span class="toast-reward">+{{ cResult.reward }} EP</span>

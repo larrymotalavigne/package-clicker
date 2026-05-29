@@ -41,8 +41,7 @@ export class AutoBuyService {
 
     this.tickAccumulator += deltaMs;
 
-    const interval =
-      this.gameStateService.gameState().autoBuyInterval;
+    const interval = this.gameStateService.gameState().autoBuyInterval;
 
     if (this.tickAccumulator < interval) {
       return;

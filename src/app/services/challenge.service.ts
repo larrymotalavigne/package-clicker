@@ -7,9 +7,16 @@ import { ActiveChallenge, ChallengeConfig } from '../models/game.models';
 export class ChallengeService {
   private gameStateService = inject(GameStateService);
 
-  readonly activeChallenge = computed(() => this.gameStateService.gameState().activeChallenge);
-  readonly completedChallenges = computed(() => this.gameStateService.gameState().completedChallenges);
-  readonly challengeResult = signal<{ success: boolean; reward: number } | null>(null);
+  readonly activeChallenge = computed(
+    () => this.gameStateService.gameState().activeChallenge
+  );
+  readonly completedChallenges = computed(
+    () => this.gameStateService.gameState().completedChallenges
+  );
+  readonly challengeResult = signal<{
+    success: boolean;
+    reward: number;
+  } | null>(null);
 
   private clicksDuringChallenge = 0;
   private buildingsDuringChallenge = 0;
@@ -126,7 +133,10 @@ export class ChallengeService {
     this.gameStateService.completeChallenge(ch.id);
     this.gameStateService.addExpressPoints(config.reward.expressPoints);
 
-    this.challengeResult.set({ success: true, reward: config.reward.expressPoints });
+    this.challengeResult.set({
+      success: true,
+      reward: config.reward.expressPoints,
+    });
     setTimeout(() => this.challengeResult.set(null), 3000);
     this.resetChallenge();
   }

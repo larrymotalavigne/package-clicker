@@ -58,8 +58,24 @@ export const EMPLOYEE_CONFIGS: EmployeeConfig[] = [
 ];
 
 export const EMPLOYEE_NAMES: string[] = [
-  'Alex', 'Jordan', 'Riley', 'Morgan', 'Casey',
-  'Quinn', 'Avery', 'Charlie', 'Dakota', 'Emerson',
-  'Finley', 'Hayden', 'Jamie', 'Kai', 'Lane',
-  'Parker', 'Reese', 'Sage', 'Taylor', 'Wren',
+  'Alex',
+  'Jordan',
+  'Riley',
+  'Morgan',
+  'Casey',
+  'Quinn',
+  'Avery',
+  'Charlie',
+  'Dakota',
+  'Emerson',
+  'Finley',
+  'Hayden',
+  'Jamie',
+  'Kai',
+  'Lane',
+  'Parker',
+  'Reese',
+  'Sage',
+  'Taylor',
+  'Wren',
 ];

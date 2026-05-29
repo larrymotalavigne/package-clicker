@@ -218,13 +218,8 @@ function buildingAchievements(): Achievement[] {
     for (const m of MILESTONES) {
       const id = `${bid}_${m}`;
       const name =
-        m === 1
-          ? `First ${bname}`
-          : `${m} ${bname}${m > 1 ? 's' : ''}`;
-      const desc =
-        m === 1
-          ? `Buy your first ${bname}`
-          : `Own ${m} ${bname}s`;
+        m === 1 ? `First ${bname}` : `${m} ${bname}${m > 1 ? 's' : ''}`;
+      const desc = m === 1 ? `Buy your first ${bname}` : `Own ${m} ${bname}s`;
       achs.push(bldAch(bid, m, id, name, desc));
     }
   }
@@ -282,7 +277,7 @@ export const ACHIEVEMENT_DEFINITIONS: Achievement[] = [
   eventAch('event_1', 'First DEBRIEF', 'Experience your first event', 1),
   eventAch('event_10', 'Station Agent', 'Experience 10 events', 10),
   eventAch('event_25', 'Kaamelott Veteran', 'Experience 25 events', 25),
-  eventAch('event_50', 'C\'est Pas Faux', 'Experience 50 events. Not bad.', 50),
+  eventAch('event_50', "C'est Pas Faux", 'Experience 50 events. Not bad.', 50),
 
   // Challenges (4)
   challengeAch('chal_1', 'First Challenge', 'Complete your first challenge', 1),
@@ -304,17 +299,99 @@ export const ACHIEVEMENT_DEFINITIONS: Achievement[] = [
 
   // Contracts (3)
   contractAch('contracts_5', 'Courier', 'Complete 5 delivery contracts', 5),
-  contractAch('contracts_25', 'Logistics Manager', 'Complete 25 delivery contracts', 25),
-  contractAch('contracts_100', 'Dispatch Legend', 'Complete 100 delivery contracts', 100),
+  contractAch(
+    'contracts_25',
+    'Logistics Manager',
+    'Complete 25 delivery contracts',
+    25
+  ),
+  contractAch(
+    'contracts_100',
+    'Dispatch Legend',
+    'Complete 100 delivery contracts',
+    100
+  ),
 
   // Hidden / Secret (9)
-  { id: 'secret_konami', name: 'The Purple Promise', description: 'Enter the ancient code.', requirement: 1, type: 'secret' as Achievement['type'], category: 'Secret', hidden: true },
-  { id: 'secret_speed_demon', name: 'Speed Demon', description: 'Click 20 times in 3 seconds.', requirement: 1, type: 'secret' as Achievement['type'], category: 'Secret', hidden: true },
-  { id: 'secret_night_owl', name: 'Night Owl', description: 'Play between midnight and 4 AM.', requirement: 1, type: 'secret' as Achievement['type'], category: 'Secret', hidden: true },
-  { id: 'secret_full_house', name: 'Full House', description: 'Own at least 1 of every building type.', requirement: 1, type: 'secret' as Achievement['type'], category: 'Secret', hidden: true },
-  { id: 'secret_watcher', name: 'The Watcher', description: 'Have 10 wrinklers simultaneously.', requirement: 10, type: 'secret' as Achievement['type'], category: 'Secret', hidden: true },
-  { id: 'secret_combo_meal', name: 'Combo Meal', description: 'Have Frenzy and Click Frenzy active at once.', requirement: 1, type: 'secret' as Achievement['type'], category: 'Secret', hidden: true },
-  { id: 'secret_long_game', name: 'The Long Game', description: 'Play for 24 cumulative hours.', requirement: 86400000, type: 'secret' as Achievement['type'], category: 'Secret', hidden: true },
-  { id: 'secret_completionist', name: 'Completionist', description: 'Unlock all non-hidden achievements.', requirement: 1, type: 'secret' as Achievement['type'], category: 'Secret', hidden: true },
-  { id: 'secret_route_excellent', name: 'Master Navigator', description: 'Get an Excellent route rating.', requirement: 1, type: 'secret' as Achievement['type'], category: 'Secret', hidden: true },
+  {
+    id: 'secret_konami',
+    name: 'The Purple Promise',
+    description: 'Enter the ancient code.',
+    requirement: 1,
+    type: 'secret' as Achievement['type'],
+    category: 'Secret',
+    hidden: true,
+  },
+  {
+    id: 'secret_speed_demon',
+    name: 'Speed Demon',
+    description: 'Click 20 times in 3 seconds.',
+    requirement: 1,
+    type: 'secret' as Achievement['type'],
+    category: 'Secret',
+    hidden: true,
+  },
+  {
+    id: 'secret_night_owl',
+    name: 'Night Owl',
+    description: 'Play between midnight and 4 AM.',
+    requirement: 1,
+    type: 'secret' as Achievement['type'],
+    category: 'Secret',
+    hidden: true,
+  },
+  {
+    id: 'secret_full_house',
+    name: 'Full House',
+    description: 'Own at least 1 of every building type.',
+    requirement: 1,
+    type: 'secret' as Achievement['type'],
+    category: 'Secret',
+    hidden: true,
+  },
+  {
+    id: 'secret_watcher',
+    name: 'The Watcher',
+    description: 'Have 10 wrinklers simultaneously.',
+    requirement: 10,
+    type: 'secret' as Achievement['type'],
+    category: 'Secret',
+    hidden: true,
+  },
+  {
+    id: 'secret_combo_meal',
+    name: 'Combo Meal',
+    description: 'Have Frenzy and Click Frenzy active at once.',
+    requirement: 1,
+    type: 'secret' as Achievement['type'],
+    category: 'Secret',
+    hidden: true,
+  },
+  {
+    id: 'secret_long_game',
+    name: 'The Long Game',
+    description: 'Play for 24 cumulative hours.',
+    requirement: 86400000,
+    type: 'secret' as Achievement['type'],
+    category: 'Secret',
+    hidden: true,
+  },
+  {
+    id: 'secret_completionist',
+    name: 'Completionist',
+    description: 'Unlock all non-hidden achievements.',
+    requirement: 1,
+    type: 'secret' as Achievement['type'],
+    category: 'Secret',
+    hidden: true,
+  },
+  {
+    id: 'secret_route_excellent',
+    name: 'Master Navigator',
+    description: 'Get an Excellent route rating.',
+    requirement: 1,
+    type: 'secret' as Achievement['type'],
+    category: 'Secret',
+    hidden: true,
+  },
 ];

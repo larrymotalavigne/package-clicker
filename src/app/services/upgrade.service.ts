@@ -23,7 +23,7 @@ export class UpgradeService {
 
   getAvailableUpgrades(state: GameState): UpgradeConfig[] {
     return this.upgrades.filter(
-      (u) =>
+      u =>
         !state.purchasedUpgrades.includes(u.id) &&
         this.meetsRequirement(u, state)
     );
@@ -31,7 +31,7 @@ export class UpgradeService {
 
   purchaseUpgrade(upgradeId: string): boolean {
     const state = this.gameStateService.gameState();
-    const upgrade = this.upgrades.find((u) => u.id === upgradeId);
+    const upgrade = this.upgrades.find(u => u.id === upgradeId);
     if (!upgrade) return false;
     if (state.purchasedUpgrades.includes(upgradeId)) return false;
 
@@ -50,7 +50,7 @@ export class UpgradeService {
   }
 
   getUpgradeEffects(upgradeId: string): UpgradeEffect[] {
-    const u = this.upgrades.find((up) => up.id === upgradeId);
+    const u = this.upgrades.find(up => up.id === upgradeId);
     return u ? u.effects : [];
   }
 
@@ -58,10 +58,13 @@ export class UpgradeService {
     const state = this.gameStateService.gameState();
     let mult = 1;
     for (const uid of state.purchasedUpgrades) {
-      const u = this.upgrades.find((up) => up.id === uid);
+      const u = this.upgrades.find(up => up.id === uid);
       if (!u) continue;
       for (const e of u.effects) {
-        if (e.type === 'building_multiplier' && e.buildingType === buildingType) {
+        if (
+          e.type === 'building_multiplier' &&
+          e.buildingType === buildingType
+        ) {
           mult *= e.value;
         }
       }
@@ -89,7 +92,7 @@ export class UpgradeService {
     const state = this.gameStateService.gameState();
     let total = 0;
     for (const uid of state.purchasedUpgrades) {
-      const u = this.upgrades.find((up) => up.id === uid);
+      const u = this.upgrades.find(up => up.id === uid);
       if (!u) continue;
       for (const e of u.effects) {
         if (e.type === 'click_add_pps_percent') {
@@ -101,14 +104,14 @@ export class UpgradeService {
   }
 
   getUpgradeById(id: string): UpgradeConfig | undefined {
-    return this.upgrades.find((u) => u.id === id);
+    return this.upgrades.find(u => u.id === id);
   }
 
   private getMultiplier(type: string): number {
     const state = this.gameStateService.gameState();
     let mult = 1;
     for (const uid of state.purchasedUpgrades) {
-      const u = this.upgrades.find((up) => up.id === uid);
+      const u = this.upgrades.find(up => up.id === uid);
       if (!u) continue;
       for (const e of u.effects) {
         if (e.type === type) {

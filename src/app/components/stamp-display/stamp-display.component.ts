@@ -13,13 +13,10 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <button class="stamp-pill" (click)="openStampPanel.emit()">
-      <span class="stamp-icon">\uD83D\uDCEE</span>
+      <span class="stamp-icon">📮</span>
       <span class="stamp-count">{{ stamps }}</span>
       <div class="progress-track">
-        <div
-          class="progress-fill"
-          [style.width.%]="progressPercent"
-        ></div>
+        <div class="progress-fill" [style.width.%]="progressPercent"></div>
       </div>
     </button>
   `,
@@ -34,7 +31,9 @@ import {
         border-radius: 20px;
         padding: 4px 12px 4px 8px;
         cursor: pointer;
-        transition: border-color 0.2s, background 0.2s;
+        transition:
+          border-color 0.2s,
+          background 0.2s;
         color: #ccc;
         font-family: inherit;
         font-size: 0.85em;

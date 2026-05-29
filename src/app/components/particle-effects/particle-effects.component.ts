@@ -89,11 +89,11 @@ export class ParticleEffectsComponent {
       });
     }
 
-    this.particles.update((p) => [...p, ...newParticles]);
+    this.particles.update(p => [...p, ...newParticles]);
 
     setTimeout(() => {
-      const ids = new Set(newParticles.map((np) => np.id));
-      this.particles.update((p) => p.filter((pp) => !ids.has(pp.id)));
+      const ids = new Set(newParticles.map(np => np.id));
+      this.particles.update(p => p.filter(pp => !ids.has(pp.id)));
     }, 850);
   }
 

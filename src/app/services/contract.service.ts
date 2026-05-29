@@ -1,6 +1,9 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { GameStateService } from './game-state.service';
-import { CONTRACT_DEFINITIONS, ContractConfig } from '../config/contracts.config';
+import {
+  CONTRACT_DEFINITIONS,
+  ContractConfig,
+} from '../config/contracts.config';
 import { ActiveContract } from '../models/game.models';
 
 @Injectable({ providedIn: 'root' })
@@ -24,10 +27,10 @@ export class ContractService {
   refreshBoard(): void {
     const pps = this.gs.gameState().packagesPerSecond;
     const eligible = CONTRACT_DEFINITIONS.filter(
-      (c) => !c.minPps || pps >= c.minPps
+      c => !c.minPps || pps >= c.minPps
     );
     const picked = this.pickWeightedRandom(eligible, 3);
-    const contracts = picked.map((c) => this.toActive(c));
+    const contracts = picked.map(c => this.toActive(c));
     this.gs.updateContracts(contracts);
     this.boardRefreshTimer.set(600000);
     this.packagesAtAccept = {};
@@ -45,11 +48,11 @@ export class ContractService {
     if (!this.gs.spendExpressPoints(5)) return;
     const pps = this.gs.gameState().packagesPerSecond;
     const eligible = CONTRACT_DEFINITIONS.filter(
-      (c) => !c.minPps || pps >= c.minPps
+      c => !c.minPps || pps >= c.minPps
     );
     const current = this.activeContracts();
-    const usedIds = current.map((c) => c.configId);
-    const pool = eligible.filter((c) => !usedIds.includes(c.id));
+    const usedIds = current.map(c => c.configId);
+    const pool = eligible.filter(c => !usedIds.includes(c.id));
     if (pool.length === 0) return;
     const picked = this.pickWeightedRandom(pool, 1);
     const contracts = [...current];
@@ -150,10 +153,7 @@ export class ContractService {
     if (changed) this.gs.updateContracts(next);
   }
 
-  private completeAtIndex(
-    _index: number,
-    contract: ActiveContract
-  ): void {
+  private completeAtIndex(_index: number, contract: ActiveContract): void {
     this.gs.completeContract(contract.configId);
     this.gs.addExpressPoints(contract.reward.expressPoints);
     this.contractResult.set({
@@ -196,7 +196,10 @@ export class ContractService {
       let picked = remaining[0];
       for (const c of remaining) {
         roll -= c.weight;
-        if (roll <= 0) { picked = c; break; }
+        if (roll <= 0) {
+          picked = c;
+          break;
+        }
       }
       result.push(picked);
       const idx = remaining.indexOf(picked);

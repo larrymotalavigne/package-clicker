@@ -21,7 +21,9 @@ import { GameEvent } from '../../models/game.models';
       </div>
       <div class="event-actions">
         <button class="event-btn accept" (click)="accept.emit()">Accept</button>
-        <button class="event-btn dismiss" (click)="dismiss.emit()">Dismiss</button>
+        <button class="event-btn dismiss" (click)="dismiss.emit()">
+          Dismiss
+        </button>
       </div>
     </div>
   `,

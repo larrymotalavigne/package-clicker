@@ -16,7 +16,7 @@ export class EmployeeService {
   );
 
   getConfig(type: EmployeeType): EmployeeConfig | undefined {
-    return EMPLOYEE_CONFIGS.find((c) => c.type === type);
+    return EMPLOYEE_CONFIGS.find(c => c.type === type);
   }
 
   getAllConfigs(): EmployeeConfig[] {
@@ -24,7 +24,7 @@ export class EmployeeService {
   }
 
   getTypeCount(type: EmployeeType): number {
-    return this.employees().filter((e) => e.type === type).length;
+    return this.employees().filter(e => e.type === type).length;
   }
 
   getHireCost(type: EmployeeType): number {
@@ -55,10 +55,8 @@ export class EmployeeService {
     const trainerBonus = this.getTrainerBonus();
     let changed = false;
 
-    const updated = list.map((emp) => {
-      const result = this.tickSingleEmployee(
-        emp, deltaMs, trainerBonus
-      );
+    const updated = list.map(emp => {
+      const result = this.tickSingleEmployee(emp, deltaMs, trainerBonus);
       if (result !== emp) changed = true;
       return result;
     });
@@ -89,14 +87,12 @@ export class EmployeeService {
   }
 
   hasAllTypes(): boolean {
-    return EMPLOYEE_CONFIGS.every(
-      (c) => this.getTypeCount(c.type) > 0
-    );
+    return EMPLOYEE_CONFIGS.every(c => this.getTypeCount(c.type) > 0);
   }
 
   private sumLevelsForType(type: EmployeeType): number {
     return this.employees()
-      .filter((e) => e.type === type)
+      .filter(e => e.type === type)
       .reduce((sum, e) => sum + e.level, 0);
   }
 
@@ -118,8 +114,12 @@ export class EmployeeService {
   }
 
   private generateId(): string {
-    return 'emp_' + Date.now().toString(36) + '_' +
-      Math.random().toString(36).substring(2, 7);
+    return (
+      'emp_' +
+      Date.now().toString(36) +
+      '_' +
+      Math.random().toString(36).substring(2, 7)
+    );
   }
 
   private tickSingleEmployee(

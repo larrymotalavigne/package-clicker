@@ -18,7 +18,9 @@ export class LoreService {
   readonly newlyAvailable = computed(() => {
     const state = this.gameStateService.gameState();
     const unlocked = state.loreUnlocked;
-    return LORE_ENTRIES.filter(l => !unlocked.includes(l.id) && this.meetsRequirement(l, state));
+    return LORE_ENTRIES.filter(
+      l => !unlocked.includes(l.id) && this.meetsRequirement(l, state)
+    );
   });
 
   checkLoreUnlocks(): string[] {
@@ -44,7 +46,10 @@ export class LoreService {
     return LORE_ENTRIES.find(l => l.id === id);
   }
 
-  private meetsRequirement(entry: LoreEntry, state: ReturnType<GameStateService['gameState']>): boolean {
+  private meetsRequirement(
+    entry: LoreEntry,
+    state: ReturnType<GameStateService['gameState']>
+  ): boolean {
     const req = entry.requirement;
     switch (req.type) {
       case 'packages':
@@ -63,7 +68,10 @@ export class LoreService {
         if (req.buildingType) {
           return (state.buildings[req.buildingType]?.count ?? 0) >= req.value;
         }
-        return Object.values(state.buildings).reduce((t, b) => t + b.count, 0) >= req.value;
+        return (
+          Object.values(state.buildings).reduce((t, b) => t + b.count, 0) >=
+          req.value
+        );
       default:
         return false;
     }

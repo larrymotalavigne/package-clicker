@@ -25,7 +25,7 @@ export class ResearchService {
     if (this.isCompleted(node.id)) return false;
     if (this.activeResearch() !== null) return false;
     const completed = this.completedResearch();
-    const hasReqs = node.requires.every((r) => completed.includes(r));
+    const hasReqs = node.requires.every(r => completed.includes(r));
     if (!hasReqs) return false;
     const state = this.gameStateService.gameState();
     return state.expressPoints >= node.cost.ep;
@@ -58,7 +58,7 @@ export class ResearchService {
   }
 
   getNodeById(id: string): ResearchNode | undefined {
-    return this.nodes.find((n) => n.id === id);
+    return this.nodes.find(n => n.id === id);
   }
 
   getGlobalMultiplier(): number {
@@ -85,7 +85,7 @@ export class ResearchService {
     const completed = this.completedResearch();
     let mult = 1;
     for (const nodeId of completed) {
-      const node = this.nodes.find((n) => n.id === nodeId);
+      const node = this.nodes.find(n => n.id === nodeId);
       if (!node) continue;
       for (const e of node.effects) {
         if (e.type === type) {

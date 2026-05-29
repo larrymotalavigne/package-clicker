@@ -42,7 +42,12 @@ import { ResearchService } from './services/research.service';
 import { StatsHistoryService } from './services/stats-history.service';
 import { StockMarketService } from './services/stock-market.service';
 import { WeatherService } from './services/weather.service';
-import { GameSettings, MiniGameResult, RoutePlannerResult, SeasonalTheme } from './models/game.models';
+import {
+  GameSettings,
+  MiniGameResult,
+  RoutePlannerResult,
+  SeasonalTheme,
+} from './models/game.models';
 import { getCurrentSeason } from './config/seasonal.config';
 import { BuildingCardComponent } from './components/building-card/building-card.component';
 import { UpgradePanelComponent } from './components/upgrade-panel/upgrade-panel.component';
@@ -61,7 +66,10 @@ import { OfflinePopupComponent } from './components/offline-popup/offline-popup.
 import { ChallengePanelComponent } from './components/challenge-panel/challenge-panel.component';
 import { LoreViewerComponent } from './components/lore-viewer/lore-viewer.component';
 import { LootDisplayComponent } from './components/loot-display/loot-display.component';
-import { ProgressHintsComponent, ProgressHint } from './components/progress-hints/progress-hints.component';
+import {
+  ProgressHintsComponent,
+  ProgressHint,
+} from './components/progress-hints/progress-hints.component';
 import { SeasonalBannerComponent } from './components/seasonal-banner/seasonal-banner.component';
 import { MiniGameComponent } from './components/mini-game/mini-game.component';
 import { ContractPanelComponent } from './components/contract-panel/contract-panel.component';
@@ -183,9 +191,16 @@ export class AppComponent implements OnInit, OnDestroy {
 
   // Konami code
   private readonly konamiSequence = [
-    'ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown',
-    'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight',
-    'b', 'a',
+    'ArrowUp',
+    'ArrowUp',
+    'ArrowDown',
+    'ArrowDown',
+    'ArrowLeft',
+    'ArrowRight',
+    'ArrowLeft',
+    'ArrowRight',
+    'b',
+    'a',
   ];
   private konamiBuffer: string[] = [];
 
@@ -212,12 +227,14 @@ export class AppComponent implements OnInit, OnDestroy {
   readonly weatherCurrent = this.weatherService.currentWeather;
 
   readonly totalBuildings = this.gameStateService.totalBuildings;
-  readonly milkPercent = computed(() => this.achievementService.completionPercentage());
+  readonly milkPercent = computed(() =>
+    this.achievementService.completionPercentage()
+  );
 
   readonly effectivePps = computed(() => {
     const state = this.gameStateService.gameState();
     let pps = this.gameActionsService.getEffectivePps(state);
-    if (this.currentSeason) pps *= (1 + this.currentSeason.productionBonus);
+    if (this.currentSeason) pps *= 1 + this.currentSeason.productionBonus;
     return pps;
   });
 
@@ -245,7 +262,7 @@ export class AppComponent implements OnInit, OnDestroy {
   readonly buildingStats = computed(() => {
     const configs = this.configService.getBuildingConfigs();
     const state = this.gameState();
-    return configs.map((c) => {
+    return configs.map(c => {
       const data = state.buildings[c.id as keyof typeof state.buildings];
       return {
         name: c.name,
@@ -334,7 +351,10 @@ export class AppComponent implements OnInit, OnDestroy {
     this.ppsRecalcInterval = setInterval(() => {
       this.gameActionsService.recalculatePps();
       this.stockMarketService.tickPrices();
-      this.statsHistoryService.record(this.packagesPerSecond(), this.gameState().packages);
+      this.statsHistoryService.record(
+        this.packagesPerSecond(),
+        this.gameState().packages
+      );
       this.greatDelayService.checkStageAdvance();
     }, 1000);
 
@@ -377,8 +397,10 @@ export class AppComponent implements OnInit, OnDestroy {
     if (this.konamiBuffer.length > 10) {
       this.konamiBuffer.shift();
     }
-    if (this.konamiBuffer.length === 10 &&
-        this.konamiBuffer.every((k, i) => k === this.konamiSequence[i])) {
+    if (
+      this.konamiBuffer.length === 10 &&
+      this.konamiBuffer.every((k, i) => k === this.konamiSequence[i])
+    ) {
       this.activateKonamiCode();
       this.konamiBuffer = [];
     }
@@ -390,26 +412,60 @@ export class AppComponent implements OnInit, OnDestroy {
         this.soundService.playClick();
         this.challengeService.recordClick();
         break;
-      case '1': case '2': case '3': case '4': case '5':
-      case '6': case '7': case '8': case '9': case '0': {
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+      case '8':
+      case '9':
+      case '0': {
         const idx = event.key === '0' ? 9 : parseInt(event.key, 10) - 1;
         const configs = this.configService.getBuildingConfigs();
         if (idx < configs.length) this.buyBuilding(configs[idx].id);
         break;
       }
-      case 's': this.showStats = !this.showStats; break;
-      case 'o': this.showOptions = !this.showOptions; break;
-      case 'c': this.showChallenges = !this.showChallenges; break;
-      case 'l': this.showLore = !this.showLore; break;
-      case 'r': this.showContracts = !this.showContracts; break;
-      case 'p': this.showRoutePlanner = !this.showRoutePlanner; break;
-      case 'a': this.showAutomation = !this.showAutomation; break;
-      case 'e': this.showEmployees = !this.showEmployees; break;
-      case 'f': this.showFleet = !this.showFleet; break;
-      case 'k': this.showKingdom = !this.showKingdom; break;
-      case 'b': this.showLeaderboard = !this.showLeaderboard; break;
-      case 'h': this.showResearch = !this.showResearch; break;
-      case 'm': this.showStockMarket = !this.showStockMarket; break;
+      case 's':
+        this.showStats = !this.showStats;
+        break;
+      case 'o':
+        this.showOptions = !this.showOptions;
+        break;
+      case 'c':
+        this.showChallenges = !this.showChallenges;
+        break;
+      case 'l':
+        this.showLore = !this.showLore;
+        break;
+      case 'r':
+        this.showContracts = !this.showContracts;
+        break;
+      case 'p':
+        this.showRoutePlanner = !this.showRoutePlanner;
+        break;
+      case 'a':
+        this.showAutomation = !this.showAutomation;
+        break;
+      case 'e':
+        this.showEmployees = !this.showEmployees;
+        break;
+      case 'f':
+        this.showFleet = !this.showFleet;
+        break;
+      case 'k':
+        this.showKingdom = !this.showKingdom;
+        break;
+      case 'b':
+        this.showLeaderboard = !this.showLeaderboard;
+        break;
+      case 'h':
+        this.showResearch = !this.showResearch;
+        break;
+      case 'm':
+        this.showStockMarket = !this.showStockMarket;
+        break;
       case 'Escape':
         this.showStats = false;
         this.showOptions = false;
@@ -444,7 +500,11 @@ export class AppComponent implements OnInit, OnDestroy {
       const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
-      this.particles.spawn(x, y, '+' + this.formatNumber(this.effectiveClick()));
+      this.particles.spawn(
+        x,
+        y,
+        '+' + this.formatNumber(this.effectiveClick())
+      );
     }
   }
 
@@ -503,7 +563,9 @@ export class AppComponent implements OnInit, OnDestroy {
     this.prestigeService.ascend();
     this.achievementService.resetAchievements();
     this.showPrestige = false;
-    this.gameStateService.addExpressPoints(10 * this.prestigeService.pendingGain());
+    this.gameStateService.addExpressPoints(
+      10 * this.prestigeService.pendingGain()
+    );
   }
 
   purchaseHeavenly(id: string): void {
@@ -744,8 +806,7 @@ export class AppComponent implements OnInit, OnDestroy {
       konamiUsed: false,
       rapidClickTimestamps: [],
     };
-    const timestamps = [...eggs.rapidClickTimestamps, now]
-      .slice(-20);
+    const timestamps = [...eggs.rapidClickTimestamps, now].slice(-20);
     this.gameStateService.updateEasterEggs({
       rapidClickTimestamps: timestamps,
     });
@@ -774,10 +835,7 @@ export class AppComponent implements OnInit, OnDestroy {
       '%cPsst... the ancient ones spoke of a code. Up, Up, Down, Down...',
       'color:#888;font-style:italic;'
     );
-    console.warn(
-      '%c' + dayMsg,
-      'color:#ffd700;font-size:0.9em;'
-    );
+    console.warn('%c' + dayMsg, 'color:#ffd700;font-size:0.9em;');
   }
 
   resetGame(): void {

@@ -7,10 +7,10 @@ export const ABSURD_EXCUSES: string[] = [
   'A time traveler warned us not to deliver today.',
   'The conveyor belt developed an existential crisis.',
   'Someone sorted packages by vibes instead of zip code.',
-  'The K-API returned a 418: I\'m a teapot.',
+  "The K-API returned a 418: I'm a teapot.",
   'A wrinkler ate the entire manifest.',
-  'Mercury is in retrograde. Logistics don\'t work during retrograde.',
-  'The CEO\'s cat sat on the keyboard and canceled all routes.',
+  "Mercury is in retrograde. Logistics don't work during retrograde.",
+  "The CEO's cat sat on the keyboard and canceled all routes.",
   'An intern deployed to production. Again.',
   'The packages are staging a union protest.',
 ];
@@ -20,7 +20,8 @@ export const EVENT_DEFINITIONS: GameEvent[] = [
   {
     id: 'package_rush',
     name: 'Package Rush',
-    description: 'FedEx Express priority surge! Production doubled across all stations!',
+    description:
+      'FedEx Express priority surge! Production doubled across all stations!',
     icon: '\u{1F4E6}',
     type: 'positive',
     effect: { type: 'production_mult', value: 2 },
@@ -29,7 +30,8 @@ export const EVENT_DEFINITIONS: GameEvent[] = [
   {
     id: 'express_delivery',
     name: 'FedEx Priority Overnight',
-    description: 'When it absolutely, positively has to be clicked faster. +50% click value!',
+    description:
+      'When it absolutely, positively has to be clicked faster. +50% click value!',
     icon: '\u{26A1}',
     type: 'positive',
     effect: { type: 'click_mult', value: 1.5 },
@@ -47,7 +49,8 @@ export const EVENT_DEFINITIONS: GameEvent[] = [
   {
     id: 'tax_rebate',
     name: 'Fred Smith Bonus',
-    description: 'The CEO himself returns 5% of your packages. "Old habits," he says.',
+    description:
+      'The CEO himself returns 5% of your packages. "Old habits," he says.',
     icon: '\u{1F4B0}',
     type: 'positive',
     effect: { type: 'instant_packages', value: 0.05 },
@@ -56,7 +59,8 @@ export const EVENT_DEFINITIONS: GameEvent[] = [
   {
     id: 'overtime_workers',
     name: 'Overtime at the Hub',
-    description: 'Memphis hub workers pull overtime! A random building triples output.',
+    description:
+      'Memphis hub workers pull overtime! A random building triples output.',
     icon: '\u{1F4AA}',
     type: 'positive',
     effect: { type: 'building_boost', value: 3 },
@@ -65,7 +69,8 @@ export const EVENT_DEFINITIONS: GameEvent[] = [
   {
     id: 'shipping_surge',
     name: 'Peak Season Surge',
-    description: 'Holiday season! Shipment volume boosts all production by 50%!',
+    description:
+      'Holiday season! Shipment volume boosts all production by 50%!',
     icon: '\u{1F6A2}',
     type: 'positive',
     effect: { type: 'production_mult', value: 1.5 },
@@ -76,7 +81,8 @@ export const EVENT_DEFINITIONS: GameEvent[] = [
   {
     id: 'shipping_delay',
     name: 'Non-Compliant Trip',
-    description: 'DEBRIEF flagged a non-compliant route! Production cut in half.',
+    description:
+      'DEBRIEF flagged a non-compliant route! Production cut in half.',
     icon: '\u{1F6A7}',
     type: 'negative',
     effect: { type: 'production_mult', value: 0.5 },
@@ -85,7 +91,8 @@ export const EVENT_DEFINITIONS: GameEvent[] = [
   {
     id: 'supply_chain_disruption',
     name: 'K-API Outage',
-    description: 'The API is returning 500s! "It can be broken... but that is fine." Buildings cost 20% more.',
+    description:
+      'The API is returning 500s! "It can be broken... but that is fine." Buildings cost 20% more.',
     icon: '\u{26D3}\u{FE0F}',
     type: 'negative',
     effect: { type: 'building_discount', value: 1.2 },
@@ -94,7 +101,8 @@ export const EVENT_DEFINITIONS: GameEvent[] = [
   {
     id: 'lost_shipment',
     name: 'DEX 07 - Not Home',
-    description: 'Customer not available! Shipment returned. You lose 1% of your packages.',
+    description:
+      'Customer not available! Shipment returned. You lose 1% of your packages.',
     icon: '\u{1F4ED}',
     type: 'negative',
     effect: { type: 'lose_packages', value: 0.01 },
@@ -103,7 +111,8 @@ export const EVENT_DEFINITIONS: GameEvent[] = [
   {
     id: 'quality_inspection',
     name: 'Quality Audit',
-    description: 'FedEx Quality Drive inspection. Station agents checking every scan. -25% production.',
+    description:
+      'FedEx Quality Drive inspection. Station agents checking every scan. -25% production.',
     icon: '\u{1F50D}',
     type: 'negative',
     effect: { type: 'production_mult', value: 0.75 },
@@ -114,7 +123,8 @@ export const EVENT_DEFINITIONS: GameEvent[] = [
   {
     id: 'market_shift',
     name: 'Route Optimization',
-    description: 'The Kaamelott Team deployed a new algorithm. One building booms, another busts.',
+    description:
+      'The Kaamelott Team deployed a new algorithm. One building booms, another busts.',
     icon: '\u{1F4CA}',
     type: 'neutral',
     effect: { type: 'production_mult', value: 1 },
@@ -123,7 +133,8 @@ export const EVENT_DEFINITIONS: GameEvent[] = [
   {
     id: 'efficiency_review',
     name: 'System Maintenance',
-    description: 'Brief K-API maintenance window then triple throughput! "Where the magic really happens!"',
+    description:
+      'Brief K-API maintenance window then triple throughput! "Where the magic really happens!"',
     icon: '\u{1F4CB}',
     type: 'neutral',
     effect: { type: 'production_mult', value: 3 },
@@ -134,27 +145,45 @@ export const EVENT_DEFINITIONS: GameEvent[] = [
   {
     id: 'route_choice',
     name: 'Route Decision',
-    description: 'Two routes available! The highway is safe, the shortcut is risky but rewarding.',
+    description:
+      'Two routes available! The highway is safe, the shortcut is risky but rewarding.',
     icon: '\u{1F6E3}\u{FE0F}',
     type: 'neutral',
     effect: { type: 'player_choice', value: 0 },
     durationMs: 0,
     choices: [
-      { label: 'Safe Highway (+20% prod, 30s)', effect: { type: 'production_mult', value: 1.2 }, durationMs: 30_000 },
-      { label: 'Risky Shortcut (+80% prod, 15s)', effect: { type: 'production_mult', value: 1.8 }, durationMs: 15_000 },
+      {
+        label: 'Safe Highway (+20% prod, 30s)',
+        effect: { type: 'production_mult', value: 1.2 },
+        durationMs: 30_000,
+      },
+      {
+        label: 'Risky Shortcut (+80% prod, 15s)',
+        effect: { type: 'production_mult', value: 1.8 },
+        durationMs: 15_000,
+      },
     ],
   },
   {
     id: 'investment_choice',
     name: 'Investment Opportunity',
-    description: 'A mysterious investor offers you a deal. What will you choose?',
+    description:
+      'A mysterious investor offers you a deal. What will you choose?',
     icon: '\u{1F4BC}',
     type: 'neutral',
     effect: { type: 'player_choice', value: 0 },
     durationMs: 0,
     choices: [
-      { label: 'Cheap buildings (-20%, 60s)', effect: { type: 'building_discount', value: 0.8 }, durationMs: 60_000 },
-      { label: 'Click power (+100%, 30s)', effect: { type: 'click_mult', value: 2 }, durationMs: 30_000 },
+      {
+        label: 'Cheap buildings (-20%, 60s)',
+        effect: { type: 'building_discount', value: 0.8 },
+        durationMs: 60_000,
+      },
+      {
+        label: 'Click power (+100%, 30s)',
+        effect: { type: 'click_mult', value: 2 },
+        durationMs: 30_000,
+      },
     ],
   },
 
@@ -182,7 +211,8 @@ export const EVENT_DEFINITIONS: GameEvent[] = [
   {
     id: 'power_surge',
     name: 'Power Surge',
-    description: 'Lightning strikes the hub! After a brief outage, everything runs at triple speed!',
+    description:
+      'Lightning strikes the hub! After a brief outage, everything runs at triple speed!',
     icon: '\u{26A1}',
     type: 'positive',
     effect: { type: 'production_mult', value: 3 },
@@ -191,7 +221,8 @@ export const EVENT_DEFINITIONS: GameEvent[] = [
   {
     id: 'viral_moment',
     name: 'Viral Moment',
-    description: 'Your package delivery goes viral on social media! Click power 5x for 20 seconds!',
+    description:
+      'Your package delivery goes viral on social media! Click power 5x for 20 seconds!',
     icon: '\u{1F4F1}',
     type: 'positive',
     effect: { type: 'click_mult', value: 5 },

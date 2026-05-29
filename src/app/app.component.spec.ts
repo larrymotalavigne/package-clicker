@@ -431,7 +431,13 @@ describe('AppComponent', () => {
     const greatDelayService = {
       stage: signal(0 as const),
       isPledged: signal(false),
-      stageConfig: signal({ name: 'Peace', wrinklerSpawnMult: 1, divertPercent: 5, returnPercent: 110, tintColor: '' }),
+      stageConfig: signal({
+        name: 'Peace',
+        wrinklerSpawnMult: 1,
+        divertPercent: 5,
+        returnPercent: 110,
+        tintColor: '',
+      }),
       checkStageAdvance: jest.fn(),
       pledgeOrder: jest.fn(),
       getWrinklerSpawnMult: jest.fn().mockReturnValue(1),
@@ -464,7 +470,13 @@ describe('AppComponent', () => {
 
     const packageTypeService = {
       lastRolledType: signal(null),
-      rollPackageType: jest.fn().mockReturnValue({ id: 'standard', name: 'Standard', weight: 60, valueMultiplier: 1, icon: '' }),
+      rollPackageType: jest.fn().mockReturnValue({
+        id: 'standard',
+        name: 'Standard',
+        weight: 60,
+        valueMultiplier: 1,
+        icon: '',
+      }),
       getValueMultiplier: jest.fn().mockReturnValue(1),
       hasAllTypes: jest.fn().mockReturnValue(false),
     };
@@ -517,7 +529,15 @@ describe('AppComponent', () => {
     };
 
     const weatherService = {
-      currentWeather: signal({ type: 'sunny', name: 'Sunny', icon: '', ppsMult: 1, clickMult: 1, goldenFreqMult: 1, description: '' }),
+      currentWeather: signal({
+        type: 'sunny',
+        name: 'Sunny',
+        icon: '',
+        ppsMult: 1,
+        clickMult: 1,
+        goldenFreqMult: 1,
+        description: '',
+      }),
       start: jest.fn(),
       stop: jest.fn(),
       getPpsMult: jest.fn().mockReturnValue(1),
@@ -538,9 +558,23 @@ describe('AppComponent', () => {
         { provide: PrestigeService, useValue: prestigeService },
         { provide: WrinklerService, useValue: wrinklerService },
         { provide: EventService, useValue: eventService },
-        { provide: TooltipService, useValue: { show: jest.fn(), hide: jest.fn(), visible: signal(false), data: signal(null) } },
+        {
+          provide: TooltipService,
+          useValue: {
+            show: jest.fn(),
+            hide: jest.fn(),
+            visible: signal(false),
+            data: signal(null),
+          },
+        },
         { provide: OfflineEarningsService, useValue: offlineService },
-        { provide: SynergyService, useValue: { getSynergyMultiplier: jest.fn().mockReturnValue(1), getSynergiesForBuilding: jest.fn().mockReturnValue([]) } },
+        {
+          provide: SynergyService,
+          useValue: {
+            getSynergyMultiplier: jest.fn().mockReturnValue(1),
+            getSynergiesForBuilding: jest.fn().mockReturnValue([]),
+          },
+        },
         { provide: ChallengeService, useValue: challengeService },
         { provide: ContractService, useValue: contractService },
         { provide: LoreService, useValue: loreService },
@@ -662,7 +696,14 @@ describe('AppComponent', () => {
     it('should play click sound on click', () => {
       const event = new MouseEvent('click', { clientX: 100, clientY: 100 });
       Object.defineProperty(event, 'currentTarget', {
-        value: { getBoundingClientRect: () => ({ left: 0, top: 0, width: 200, height: 200 }) },
+        value: {
+          getBoundingClientRect: () => ({
+            left: 0,
+            top: 0,
+            width: 200,
+            height: 200,
+          }),
+        },
       });
       component.clickPackage(event);
       expect(soundService.playClick).toHaveBeenCalled();
@@ -681,7 +722,7 @@ describe('AppComponent', () => {
 
     it('should handle buying different building types', () => {
       const types = ['cursor', 'grandma', 'farm'];
-      types.forEach((t) => {
+      types.forEach(t => {
         component.buyBuilding(t);
         expect(gameActionsService.buyBuilding).toHaveBeenCalledWith(t);
       });
@@ -862,7 +903,9 @@ describe('AppComponent', () => {
 
     it('should start a challenge', () => {
       component.startChallenge('speed_click_1');
-      expect(challengeService.startChallenge).toHaveBeenCalledWith('speed_click_1');
+      expect(challengeService.startChallenge).toHaveBeenCalledWith(
+        'speed_click_1'
+      );
     });
   });
 

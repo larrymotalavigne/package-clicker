@@ -77,7 +77,13 @@ export interface UpgradeConfig {
 }
 
 export interface UpgradeRequirement {
-  type: 'building_count' | 'total_packages' | 'upgrade_count' | 'clicks' | 'express_points' | 'challenge_count';
+  type:
+    | 'building_count'
+    | 'total_packages'
+    | 'upgrade_count'
+    | 'clicks'
+    | 'express_points'
+    | 'challenge_count';
   buildingType?: BuildingType;
   value: number;
 }
@@ -214,7 +220,12 @@ export interface ChallengeConfig {
   name: string;
   description: string;
   icon: string;
-  type: 'speed_click' | 'no_click' | 'building_rush' | 'golden_hunt' | 'endurance';
+  type:
+    | 'speed_click'
+    | 'no_click'
+    | 'building_rush'
+    | 'golden_hunt'
+    | 'endurance';
   durationMs: number;
   target: number;
   reward: ChallengeReward;
@@ -245,7 +256,14 @@ export interface LoreEntry {
 }
 
 export interface LoreRequirement {
-  type: 'packages' | 'buildings' | 'prestige' | 'clicks' | 'events' | 'challenges' | 'pps';
+  type:
+    | 'packages'
+    | 'buildings'
+    | 'prestige'
+    | 'clicks'
+    | 'events'
+    | 'challenges'
+    | 'pps';
   value: number;
   buildingType?: BuildingType;
 }

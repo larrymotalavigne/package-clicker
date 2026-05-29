@@ -90,7 +90,7 @@ export class NewsTickerComponent implements OnInit, OnDestroy {
     }
 
     const eligible = ALL_NEWS_MESSAGES.filter(
-      (m) => !m.condition || m.condition(this.context)
+      m => !m.condition || m.condition(this.context)
     );
     if (eligible.length === 0) return;
     const idx = Math.floor(Math.random() * eligible.length);

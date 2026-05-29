@@ -49,12 +49,12 @@ import { HeavenlyUpgradeConfig, PrestigeState } from '../../models/game.models';
               [class.available]="
                 canAfford(u) && hasReqs(u) && !isPurchased(u.id)
               "
-              [class.locked]="
-                !hasReqs(u) && !isPurchased(u.id)
-              "
+              [class.locked]="!hasReqs(u) && !isPurchased(u.id)"
               [style.left]="getX(u)"
               [style.top]="getY(u)"
-              [title]="u.name + ': ' + u.description + ' (Cost: ' + u.price + ')'"
+              [title]="
+                u.name + ': ' + u.description + ' (Cost: ' + u.price + ')'
+              "
               (click)="onPurchase(u)"
             >
               {{ u.icon }}
@@ -97,8 +97,12 @@ import { HeavenlyUpgradeConfig, PrestigeState } from '../../models/game.models';
         animation: prestigeZoomIn 0.4s ease-out;
       }
       @keyframes overlayFadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
       }
       @keyframes prestigeZoomIn {
         from {
@@ -226,9 +230,7 @@ export class PrestigeScreenComponent {
   }
 
   hasReqs(u: HeavenlyUpgradeConfig): boolean {
-    return u.requires.every((r) =>
-      this.prestige.heavenlyUpgrades.includes(r)
-    );
+    return u.requires.every(r => this.prestige.heavenlyUpgrades.includes(r));
   }
 
   getX(u: HeavenlyUpgradeConfig): string {
@@ -240,11 +242,7 @@ export class PrestigeScreenComponent {
   }
 
   onPurchase(u: HeavenlyUpgradeConfig): void {
-    if (
-      !this.isPurchased(u.id) &&
-      this.canAfford(u) &&
-      this.hasReqs(u)
-    ) {
+    if (!this.isPurchased(u.id) && this.canAfford(u) && this.hasReqs(u)) {
       this.purchaseUpgrade.emit(u.id);
     }
   }

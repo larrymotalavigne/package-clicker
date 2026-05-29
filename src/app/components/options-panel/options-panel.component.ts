@@ -17,7 +17,13 @@ import { GameSettings } from '../../models/game.models';
       <div class="panel" (click)="$event.stopPropagation()">
         <div class="panel-header">
           <h2>Options</h2>
-          <button class="close-btn" (click)="closePanel.emit()" aria-label="Close options">x</button>
+          <button
+            class="close-btn"
+            (click)="closePanel.emit()"
+            aria-label="Close options"
+          >
+            x
+          </button>
         </div>
 
         <div class="options-body">
@@ -27,9 +33,7 @@ import { GameSettings } from '../../models/game.models';
               <button (click)="save.emit()">Save Game</button>
               <button (click)="exportSave.emit()">Export</button>
               <button (click)="onImport()">Import</button>
-              <button class="danger" (click)="onWipe()">
-                Wipe Save
-              </button>
+              <button class="danger" (click)="onWipe()">Wipe Save</button>
             </div>
           </div>
 
@@ -131,8 +135,12 @@ import { GameSettings } from '../../models/game.models';
         animation: panelSlideIn 0.3s ease-out;
       }
       @keyframes overlayFadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
       }
       @keyframes panelSlideIn {
         from {
@@ -297,11 +305,7 @@ export class OptionsPanelComponent {
   }
 
   onWipe(): void {
-    if (
-      confirm(
-        'Are you sure? This will permanently delete your save!'
-      )
-    ) {
+    if (confirm('Are you sure? This will permanently delete your save!')) {
       this.wipeSave.emit();
     }
   }

@@ -16,7 +16,7 @@ import { LeaderboardEntry } from '../../models/game.models';
     <div class="overlay" (click)="closePanel.emit()">
       <div class="panel" (click)="$event.stopPropagation()">
         <div class="panel-header">
-          <h2>\uD83C\uDFC6 Leaderboard</h2>
+          <h2>🏆 Leaderboard</h2>
           <button class="close-btn" (click)="closePanel.emit()">x</button>
         </div>
 
@@ -39,11 +39,11 @@ import { LeaderboardEntry } from '../../models/game.models';
             >
               <span class="entry-rank">
                 @if (entry.rank === 1) {
-                  \uD83E\uDD47
+                  🥇
                 } @else if (entry.rank === 2) {
-                  \uD83E\uDD48
+                  🥈
                 } @else if (entry.rank === 3) {
-                  \uD83E\uDD49
+                  🥉
                 } @else {
                   #{{ entry.rank }}
                 }
@@ -53,13 +53,10 @@ import { LeaderboardEntry } from '../../models/game.models';
             </div>
           }
           @if (showSeparator) {
-            <div class="separator">\u00B7 \u00B7 \u00B7</div>
+            <div class="separator">· · ·</div>
           }
           @for (entry of neighborEntries; track entry.rank) {
-            <div
-              class="entry-row"
-              [class.player-row]="entry.isPlayer"
-            >
+            <div class="entry-row" [class.player-row]="entry.isPlayer">
               <span class="entry-rank">#{{ entry.rank }}</span>
               <span class="entry-name">{{ entry.name }}</span>
               <span class="entry-score">{{ fmt(entry.score) }}</span>
@@ -93,12 +90,22 @@ import { LeaderboardEntry } from '../../models/game.models';
         animation: panelSlideIn 0.3s ease-out;
       }
       @keyframes overlayFadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
       }
       @keyframes panelSlideIn {
-        from { opacity: 0; transform: translateY(30px); }
-        to { opacity: 1; transform: translateY(0); }
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
       .panel-header {
         display: flex;
@@ -218,7 +225,7 @@ export class LeaderboardComponent {
   @Input() entries: LeaderboardEntry[] = [];
   @Input() playerRank: number = 51;
   @Input() seasonTimer: number = 0;
-  @Input() fmt: (n: number) => string = (n) => n.toString();
+  @Input() fmt: (n: number) => string = n => n.toString();
   @Output() closePanel = new EventEmitter<void>();
 
   get visibleEntries(): LeaderboardEntry[] {

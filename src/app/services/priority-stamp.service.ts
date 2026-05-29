@@ -46,9 +46,7 @@ export class PriorityStampService {
   }
 
   getBuildingLevel(buildingType: string): number {
-    return (
-      this.gameStateService.gameState().buildingLevels[buildingType] || 0
-    );
+    return this.gameStateService.gameState().buildingLevels[buildingType] || 0;
   }
 
   getBuildingLevelBonus(buildingType: string): number {

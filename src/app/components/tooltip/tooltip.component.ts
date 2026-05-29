@@ -8,11 +8,7 @@ import { TooltipService } from '../../services/tooltip.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (tooltipService.tooltip(); as tip) {
-      <div
-        class="tooltip"
-        [style.left.px]="tip.x"
-        [style.top.px]="tip.y"
-      >
+      <div class="tooltip" [style.left.px]="tip.x" [style.top.px]="tip.y">
         <div class="tooltip-title">{{ tip.title }}</div>
         <div class="tooltip-desc">{{ tip.description }}</div>
         @if (tip.extra) {

@@ -16,13 +16,11 @@ export class WrinklerService {
 
   readonly activeCount = computed(() => this.wrinklers().length);
 
-  readonly totalDiverted = computed(
-    () => this.wrinklers().reduce((t, w) => t + w.eaten, 0)
+  readonly totalDiverted = computed(() =>
+    this.wrinklers().reduce((t, w) => t + w.eaten, 0)
   );
 
-  readonly divertFraction = computed(
-    () => this.activeCount() * DIVERT_PERCENT
-  );
+  readonly divertFraction = computed(() => this.activeCount() * DIVERT_PERCENT);
 
   tick(ppsThisTick: number): number {
     const state = this.gameStateService.gameState();
@@ -41,7 +39,7 @@ export class WrinklerService {
     const totalDiverted = divertPerWrinkler * wrinklers.length;
 
     if (wrinklers.length > 0) {
-      wrinklers = wrinklers.map((w) => ({
+      wrinklers = wrinklers.map(w => ({
         ...w,
         eaten: w.eaten + divertPerWrinkler,
       }));
@@ -53,13 +51,11 @@ export class WrinklerService {
 
   pop(wrinklerId: number): number {
     const state = this.gameStateService.gameState();
-    const wrinkler = state.wrinklers.find((w) => w.id === wrinklerId);
+    const wrinkler = state.wrinklers.find(w => w.id === wrinklerId);
     if (!wrinkler) return 0;
 
     const reward = wrinkler.eaten * POP_BONUS;
-    const remaining = state.wrinklers.filter(
-      (w) => w.id !== wrinklerId
-    );
+    const remaining = state.wrinklers.filter(w => w.id !== wrinklerId);
     this.gameStateService.updateWrinklers(remaining);
     this.gameStateService.updatePackages(state.packages + reward);
     return reward;
@@ -73,9 +69,7 @@ export class WrinklerService {
     }
     this.gameStateService.updateWrinklers([]);
     if (totalReward > 0) {
-      this.gameStateService.updatePackages(
-        state.packages + totalReward
-      );
+      this.gameStateService.updatePackages(state.packages + totalReward);
     }
     return totalReward;
   }

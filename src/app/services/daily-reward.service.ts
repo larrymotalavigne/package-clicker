@@ -33,7 +33,10 @@ export class DailyRewardService {
       return;
     }
 
-    const newStreak = this.calculateStreak(state.lastLoginDate, state.dailyStreak);
+    const newStreak = this.calculateStreak(
+      state.lastLoginDate,
+      state.dailyStreak
+    );
     const newDays = state.totalDaysPlayed + 1;
 
     this.gameStateService.updateDailyLogin(newStreak, today, newDays);
@@ -42,7 +45,7 @@ export class DailyRewardService {
 
   claimReward(): void {
     const day = this.currentDay();
-    const reward = DAILY_REWARDS.find((r) => r.day === day);
+    const reward = DAILY_REWARDS.find(r => r.day === day);
 
     if (!reward) {
       this.showPopup.set(false);

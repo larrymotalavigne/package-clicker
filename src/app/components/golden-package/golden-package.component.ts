@@ -32,7 +32,8 @@ import {
         height: 60px;
         cursor: pointer;
         z-index: 100;
-        animation: goldenFloat 2s ease-in-out infinite,
+        animation:
+          goldenFloat 2s ease-in-out infinite,
           goldenPulse 0.5s ease-in-out infinite alternate;
         transform: translate(-50%, -50%);
       }
